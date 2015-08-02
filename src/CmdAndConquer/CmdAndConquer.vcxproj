@@ -57,6 +57,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalManifestDependencies>
+      </AdditionalManifestDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,6 +80,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\TextView\CPP\TextView.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
   </ItemGroup>
@@ -85,8 +88,17 @@
     <ResourceCompile Include="resource\Hookah.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\TextView\Header\TextView.h" />
+    <ClInclude Include="..\TextView\Header\TextViewInternal.h" />
     <ClInclude Include="Header\CmdAndConquer_MainWindow.h" />
-    <ClInclude Include="Header\resource.h" />
+    <ClInclude Include="resource\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resource\bitmap3.bmp" />
+    <Image Include="resource\bitmap4.bmp" />
+    <Image Include="resource\toolbar1.bmp" />
+    <Image Include="resource\toolbar2.bmp" />
+    <Image Include="resource\toolbar3.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

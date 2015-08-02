@@ -21,6 +21,9 @@
     <ClCompile Include="CPP\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\Hookah.rc">
@@ -28,11 +31,34 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Header\CmdAndConquer_MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Header\resource.h">
+    <ClInclude Include="..\TextView\Header\TextViewInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\TextView\Header\TextView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resource\toolbar1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\toolbar2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\bitmap3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\bitmap4.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\toolbar3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

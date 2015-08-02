@@ -1,5 +1,7 @@
 #include "../Header/CmdAndConquer_MainWindow.h"
 
+DWORD g_BytesTransferred = 0;
+
 CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText, HMENU hMenu) : hWnd_(NULL)
 {
 	assert(HIWORD(class_atom) == 0);
@@ -67,23 +69,35 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(UINT Msg, WPARAM wParam
 	
 	switch (Msg)
 	{
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	case WM_CREATE:
-	{
-		LPCREATESTRUCT create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
-		void * lpCreateParam = create_struct->lpCreateParams;
-		CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
-		assert(this_window == this);
+		case WM_COMMAND:
+		{
+			DWORD wmId = LOWORD(wParam);
+			switch (wmId)
+			{
+				case ID_FILE_NEW:
+					openFile();
+					break;
+			}
+			break;
 
-		onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
+		}
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			break;
+		case WM_CREATE:
+		{
+			LPCREATESTRUCT create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
+			void * lpCreateParam = create_struct->lpCreateParams;
+			CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
+			assert(this_window == this);
 
-		return DefWindowProc(hWnd_, Msg, wParam, lParam);
-		break;
-	}
-	default:
-		return DefWindowProc(hWnd_, Msg, wParam, lParam);
+			onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
+
+			return DefWindowProc(hWnd_, Msg, wParam, lParam);
+			break;
+		}
+		default:
+			return DefWindowProc(hWnd_, Msg, wParam, lParam);
 	}
 
 	return 0;
@@ -140,11 +154,83 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 		height = wndRECT.bottom - wndRECT.top;
 	}
 
-	RECT lineNorc = { 0, 0, 15, height };
-	RECT mainBoxrc = { 15, 0, width - 15, height };
+	RECT lineNorc = { 0, 29, 15, height };
+	RECT mainBoxrc = { 15, 29, width - 15, height };
 	
-	createEditBox(hWnd_, cs->hInstance, ES_MULTILINE, lineNorc, IDCE_MULTILINE, _T("1\n2\n3"));
-	createEditBox(hWnd_, cs->hInstance, ES_MULTILINE | WS_VSCROLL, mainBoxrc, IDCE_MULTILINE, _T("Main box"));
+	lineNoHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE, lineNorc, IDCE_MULTILINE, _T("1\n2\n3"));
+	mainEditHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE | WS_VSCROLL, mainBoxrc, IDCE_MULTILINE, _T("Main box"));
+
+	INITCOMMONCONTROLSEX InitCtrlEx;
+
+	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
+	InitCommonControlsEx(&InitCtrlEx);
+
+	TBBUTTON tbrButtons[7];
+
+	tbrButtons[0].iBitmap = 0;
+	tbrButtons[0].idCommand = ID_FILE_NEW;
+	tbrButtons[0].fsState = TBSTATE_ENABLED;
+	tbrButtons[0].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[0].dwData = 0L;
+	tbrButtons[0].iBitmap = 0;
+	tbrButtons[0].iString = 0;
+
+	tbrButtons[1].iBitmap = 1;
+	tbrButtons[1].idCommand = ID_FILE_OPEN;
+	tbrButtons[1].fsState = TBSTATE_ENABLED;
+	tbrButtons[1].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[1].dwData = 0L;
+	tbrButtons[1].iString = 0;
+
+	tbrButtons[2].iBitmap = 0;
+	tbrButtons[2].idCommand = ID_FILE_EXIT;
+	tbrButtons[2].fsState = TBSTATE_ENABLED;
+	tbrButtons[2].fsStyle = TBSTYLE_SEP;
+	tbrButtons[2].dwData = 0L;
+	tbrButtons[2].iString = 0;
+
+	tbrButtons[3].iBitmap = 2;
+	tbrButtons[3].idCommand = ID_FILE_OPEN;
+	tbrButtons[3].fsState = TBSTATE_ENABLED;
+	tbrButtons[3].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[3].dwData = 0L;
+	tbrButtons[3].iString = 0;
+
+	tbrButtons[4].iBitmap = 3;
+	tbrButtons[4].idCommand = ID_FILE_OPEN;
+	tbrButtons[4].fsState = TBSTATE_ENABLED;
+	tbrButtons[4].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[4].dwData = 0L;
+	tbrButtons[4].iString = 0;
+
+	tbrButtons[5].iBitmap = 4;
+	tbrButtons[5].idCommand = ID_FILE_OPEN;
+	tbrButtons[5].fsState = TBSTATE_ENABLED;
+	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[5].dwData = 0L;
+	tbrButtons[5].iString = 0;
+
+	tbrButtons[6].iBitmap = 5;
+	tbrButtons[6].idCommand = ID_FILE_OPEN;
+	tbrButtons[6].fsState = TBSTATE_ENABLED;
+	tbrButtons[6].fsStyle = TBSTYLE_BUTTON;
+	tbrButtons[6].dwData = 0L;
+	tbrButtons[6].iString = 0;
+
+	HWND hWndToolbar;
+	hWndToolbar = CreateToolbarEx(hWnd,
+		WS_VISIBLE | WS_CHILD | WS_BORDER,
+		IDR_TOOLBAR3,
+		7,
+		cs->hInstance,
+		IDR_TOOLBAR3,
+		tbrButtons,
+		7,
+		16, 16, 16, 16,
+		sizeof(TBBUTTON));
+
+	UpdateWindow(hWnd);
 
 	return 0;
 }
@@ -169,4 +255,83 @@ HWND CmdAndConquer_MainWindow::createEditBox(HWND hParent, HINSTANCE hInst, DWOR
 	oldEditProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)editWndProc);
 
 	return hwnd;
+}
+
+VOID CALLBACK FileIOCompletionRoutine(
+	__in  DWORD dwErrorCode,
+	__in  DWORD dwNumberOfBytesTransfered,
+	__in  LPOVERLAPPED lpOverlapped)
+{
+	_tprintf(TEXT("Error code:\t%x\n"), dwErrorCode);
+	_tprintf(TEXT("Number of bytes:\t%x\n"), dwNumberOfBytesTransfered);
+	g_BytesTransferred = dwNumberOfBytesTransfered;
+}
+
+void DisplayError(LPTSTR lpszFunction)
+// Routine Description:
+// Retrieve and output the system error message for the last-error code
+{
+	LPVOID lpMsgBuf;
+	LPVOID lpDisplayBuf;
+	DWORD dw = GetLastError();
+
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dw,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf,
+		0,
+		NULL);
+
+	lpDisplayBuf =
+		(LPVOID)LocalAlloc(LMEM_ZEROINIT,
+		(lstrlen((LPCTSTR)lpMsgBuf)
+		+ lstrlen((LPCTSTR)lpszFunction)
+		+ 40) // account for format string
+		* sizeof(TCHAR));
+
+	if (FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+		TEXT("%s failed with error code %d as follows:\n%s"),
+		lpszFunction,
+		dw,
+		lpMsgBuf)))
+	{
+		printf("FATAL ERROR: Unable to output error code.\n");
+	}
+
+	_tprintf(TEXT("ERROR: %s\n"), (LPCTSTR)lpDisplayBuf);
+
+	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
+}
+
+
+void CmdAndConquer_MainWindow::openFile()
+{
+	OPENFILENAME ofn;
+	char szFileName[MAX_PATH] = "C:\\Windows";
+	size_t size = strlen(szFileName) + 1;
+	wchar_t* wtext = new wchar_t[size];
+	size_t outSize;
+	mbstowcs_s(&outSize, wtext, size, szFileName, strlen(szFileName - 1));
+	LPWSTR ptr = wtext;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hWnd_;
+	ofn.lpstrFilter = _T("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
+	ofn.lpstrFile = ptr;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = _T("txt");
+
+	if (GetOpenFileName(&ofn))
+	{
+
+	}
 }
