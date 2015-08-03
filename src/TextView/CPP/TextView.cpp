@@ -103,15 +103,15 @@ BOOL InitTextView()
 //
 //	Create a TextView control!
 //
-HWND CreateTextView(HWND hwndParent)
+HWND CreateTextView(HWND hwndParent, HINSTANCE hInst)
 {
-	return CreateWindowEx(WS_EX_CLIENTEDGE, 
+	return CreateWindowEx(WS_EX_WINDOWEDGE, 
 		TEXTVIEW_CLASS, _T(""), 
 		WS_VSCROLL |WS_HSCROLL | WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0, 
 		hwndParent, 
 		0, 
-		GetModuleHandle(0), 
+		hInst, 
 		0);
 }
 

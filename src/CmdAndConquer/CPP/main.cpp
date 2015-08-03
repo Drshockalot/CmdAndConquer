@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include "../Header/CmdAndConquer_MainWindow.h" 
 
-using namespace std;
 
 LPCTSTR CmdAndConquer_MainWindow::class_name = _T("CmdAndConquer");
 ATOM CmdAndConquer_MainWindow::class_atom = 0;
@@ -10,8 +9,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 {
 	try
 	{
+		InitTextView();
+
 		CmdAndConquer_MainWindow::registerWindowClass(hInstance);
-		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"), NULL);
+		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
 
 		for (;;)
 		{

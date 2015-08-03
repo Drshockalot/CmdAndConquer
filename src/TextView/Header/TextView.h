@@ -13,7 +13,7 @@ extern "C" {
 //	TextView API declared here
 //
 BOOL InitTextView();
-HWND CreateTextView(HWND hwndParent);
+HWND CreateTextView(HWND hwndParent, HINSTANCE hInst);
 
 //
 //	TextView Window Messages defined here

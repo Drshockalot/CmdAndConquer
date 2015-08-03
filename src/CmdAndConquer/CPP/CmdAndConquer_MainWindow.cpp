@@ -2,7 +2,7 @@
 
 DWORD g_BytesTransferred = 0;
 
-CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText, HMENU hMenu) : hWnd_(NULL)
+CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : hWnd_(NULL)
 {
 	assert(HIWORD(class_atom) == 0);
 	assert(class_atom);
@@ -16,7 +16,7 @@ CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdS
 							 CW_USEDEFAULT,
 							 CW_USEDEFAULT,
 							 NULL,
-							 hMenu,
+							 NULL,
 							 hInstance,
 							 this);
 
@@ -45,7 +45,6 @@ void CmdAndConquer_MainWindow::registerWindowClass(HINSTANCE hInstance)
 		NULL,
 		CmdAndConquer_MainWindow::class_name
 	};
-
 	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 
 	class_atom = RegisterClass(&wc);
@@ -64,7 +63,7 @@ LPCTSTR CmdAndConquer_MainWindow::getClassName(void)
 	return class_name;
 }
 
-LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	
 	switch (Msg)
@@ -75,7 +74,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(UINT Msg, WPARAM wParam
 			switch (wmId)
 			{
 				case ID_FILE_NEW:
-					openFile();
+					
 					break;
 			}
 			break;
@@ -119,17 +118,21 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::editWndProc(HWND hWnd, UINT Msg, WPAR
 
 LRESULT CALLBACK CmdAndConquer_MainWindow::InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Msg = WM_NCCREATE)
+	if (Msg == WM_NCCREATE)
 	{
 		LPCREATESTRUCT create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
 		void * lpCreateParam = create_struct->lpCreateParams;
 		CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
-		assert(this_window->hWnd_ == 0);
-
+		assert(this_window->hWnd_ == 0); // this should be the first (and only) time
+		// WM_NCCREATE is processed
 		this_window->hWnd_ = hWnd;
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this_window));
-		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&CmdAndConquer_MainWindow::StaticWndProc));
-		return this_window->actualWndProc(Msg, wParam, lParam);
+		SetWindowLongPtr(hWnd,
+			GWLP_USERDATA,
+			reinterpret_cast<LONG_PTR>(this_window));
+		SetWindowLongPtr(hWnd,
+			GWLP_WNDPROC,
+			reinterpret_cast<LONG_PTR>(&CmdAndConquer_MainWindow::StaticWndProc)); 
+		return this_window->actualWndProc(hWnd, Msg, wParam, lParam);
 	}
 
 	return DefWindowProc(hWnd, Msg, wParam, lParam);
@@ -141,7 +144,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::StaticWndProc(HWND hWnd, UINT Msg, WP
 	CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(user_data);
 	assert(this_window);
 	assert(hWnd == this_window->hWnd_);
-	return this_window->actualWndProc(Msg, wParam, lParam);
+	return this_window->actualWndProc(hWnd, Msg, wParam, lParam);
 }
 
 int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
@@ -157,9 +160,39 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 	RECT lineNorc = { 0, 29, 15, height };
 	RECT mainBoxrc = { 15, 29, width - 15, height };
 	
-	lineNoHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE, lineNorc, IDCE_MULTILINE, _T("1\n2\n3"));
-	mainEditHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE | WS_VSCROLL, mainBoxrc, IDCE_MULTILINE, _T("Main box"));
+	//lineNoHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE, lineNorc, IDCE_MULTILINE, _T("1\n2\n3"));
+	//mainEditHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE | WS_VSCROLL, mainBoxrc, IDCE_MULTILINE, _T("Main box"));
+	lineNoHwnd = CreateTextView(hWnd_, cs->hInstance);
 
+	initToolbar(hWnd, cs);
+
+	return 0;
+}
+
+HWND CmdAndConquer_MainWindow::createEditBox(HWND hParent, HINSTANCE hInst, DWORD dwStyle, const RECT& rc, const int id, const ustring& caption)
+{   
+	dwStyle|= WS_CHILD | WS_VISIBLE;
+
+	HWND hwnd = CreateWindowEx(WS_EX_WINDOWEDGE,
+		_T("edit"),
+		caption.c_str(),
+		dwStyle,
+		rc.left,
+		rc.top,
+		rc.right,
+		rc.bottom,
+		hParent,
+		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
+		hInst,
+		0);
+
+	oldEditProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)editWndProc);
+
+	return hwnd;
+}
+
+void initToolbar(HWND hWnd, CREATESTRUCT *cs)
+{
 	INITCOMMONCONTROLSEX InitCtrlEx;
 
 	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -231,107 +264,4 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 		sizeof(TBBUTTON));
 
 	UpdateWindow(hWnd);
-
-	return 0;
-}
-
-HWND CmdAndConquer_MainWindow::createEditBox(HWND hParent, HINSTANCE hInst, DWORD dwStyle, const RECT& rc, const int id, const ustring& caption)
-{   
-	dwStyle|= WS_CHILD | WS_VISIBLE;
-
-	HWND hwnd = CreateWindowEx(WS_EX_WINDOWEDGE,
-		_T("edit"),
-		caption.c_str(),
-		dwStyle,
-		rc.left,
-		rc.top,
-		rc.right,
-		rc.bottom,
-		hParent,
-		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
-		hInst,
-		0);
-
-	oldEditProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)editWndProc);
-
-	return hwnd;
-}
-
-VOID CALLBACK FileIOCompletionRoutine(
-	__in  DWORD dwErrorCode,
-	__in  DWORD dwNumberOfBytesTransfered,
-	__in  LPOVERLAPPED lpOverlapped)
-{
-	_tprintf(TEXT("Error code:\t%x\n"), dwErrorCode);
-	_tprintf(TEXT("Number of bytes:\t%x\n"), dwNumberOfBytesTransfered);
-	g_BytesTransferred = dwNumberOfBytesTransfered;
-}
-
-void DisplayError(LPTSTR lpszFunction)
-// Routine Description:
-// Retrieve and output the system error message for the last-error code
-{
-	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
-	DWORD dw = GetLastError();
-
-	FormatMessage(
-		FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
-		dw,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf,
-		0,
-		NULL);
-
-	lpDisplayBuf =
-		(LPVOID)LocalAlloc(LMEM_ZEROINIT,
-		(lstrlen((LPCTSTR)lpMsgBuf)
-		+ lstrlen((LPCTSTR)lpszFunction)
-		+ 40) // account for format string
-		* sizeof(TCHAR));
-
-	if (FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
-		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error code %d as follows:\n%s"),
-		lpszFunction,
-		dw,
-		lpMsgBuf)))
-	{
-		printf("FATAL ERROR: Unable to output error code.\n");
-	}
-
-	_tprintf(TEXT("ERROR: %s\n"), (LPCTSTR)lpDisplayBuf);
-
-	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
-}
-
-
-void CmdAndConquer_MainWindow::openFile()
-{
-	OPENFILENAME ofn;
-	char szFileName[MAX_PATH] = "C:\\Windows";
-	size_t size = strlen(szFileName) + 1;
-	wchar_t* wtext = new wchar_t[size];
-	size_t outSize;
-	mbstowcs_s(&outSize, wtext, size, szFileName, strlen(szFileName - 1));
-	LPWSTR ptr = wtext;
-
-	ZeroMemory(&ofn, sizeof(ofn));
-
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = hWnd_;
-	ofn.lpstrFilter = _T("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0");
-	ofn.lpstrFile = ptr;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-	ofn.lpstrDefExt = _T("txt");
-
-	if (GetOpenFileName(&ofn))
-	{
-
-	}
 }

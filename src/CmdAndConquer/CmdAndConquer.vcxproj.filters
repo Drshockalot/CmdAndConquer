@@ -37,10 +37,10 @@
     <ClInclude Include="Header\CmdAndConquer_MainWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\TextView\Header\TextViewInternal.h">
+    <ClInclude Include="..\TextView\Header\TextView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\TextView\Header\TextView.h">
+    <ClInclude Include="..\TextView\Header\TextViewInternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
