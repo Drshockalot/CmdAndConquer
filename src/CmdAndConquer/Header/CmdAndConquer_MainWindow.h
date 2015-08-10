@@ -29,6 +29,9 @@ typedef std::basic_stringstream<TCHAR> tstringstream;
 typedef std::basic_string<TCHAR> ustring;
 static WNDPROC oldEditProc;
 
+#define APP_TITLE   _T("CmdAndConquer")
+#define WEBSITE_STR _T("www.drshockalot.com")
+
 enum
 {
 	IDCE_SINGLELINE = 200, 
@@ -37,26 +40,37 @@ enum
 class CmdAndConquer_MainWindow
 {
 public:
+	TCHAR		*szAppName;
+	static HWND hWnd_;
+
 	CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText);
 	~CmdAndConquer_MainWindow();
-	void WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static void registerWindowClass(HINSTANCE hInstance);
 	static ATOM getClassATOM(void);
 	static LPCTSTR getClassName(void);
+	static HWND getMainHWND();
+	BOOL DoOpenFile(HWND hWnd, TCHAR * szFileName, TCHAR * szFileTitle);
+	void HandleDropFiles(HWND hWnd, HDROP hDrop);
 private:
-	HWND hWnd_;
-	HWND mainEditHwnd;
-	HWND lineNoHwnd;
 	
+	HWND hwndTextView;
+	HWND hwndLineNo;
+	
+	TCHAR szFileName[MAX_PATH];
+	TCHAR szFileTitle[MAX_PATH];
+
 	static ATOM class_atom;
 	static LPCTSTR class_name;
 	LRESULT CALLBACK actualWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-	static LRESULT CALLBACK editWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	int onCreate(const HWND hWnd, CREATESTRUCT *cs);
-	HWND createEditBox(const HWND hParent, const HINSTANCE hInst, DWORD dwStyle, const RECT& rc, const int id, const ustring& caption);
 	void initToolbar(HWND hWnd, CREATESTRUCT *cs);
+	BOOL ShowOpenFileDlg(HWND hwnd, TCHAR * pstrFileName, TCHAR * pstrTitleName);
+	void SetWindowFileName(HWND hwnd, TCHAR * szFileName);
+	void ShowAboutDlg(HWND hwndParent);
 };
 
 #endif
+
+

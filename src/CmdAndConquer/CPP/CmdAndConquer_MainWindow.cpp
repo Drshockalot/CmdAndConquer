@@ -2,8 +2,9 @@
 
 DWORD g_BytesTransferred = 0;
 
-CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : hWnd_(NULL)
+CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE)
 {
+	hWnd_ = NULL;
 	assert(HIWORD(class_atom) == 0);
 	assert(class_atom);
 	if (!class_atom)
@@ -63,26 +64,51 @@ LPCTSTR CmdAndConquer_MainWindow::getClassName(void)
 	return class_name;
 }
 
+HWND CmdAndConquer_MainWindow::getMainHWND()
+{
+	return hWnd_;
+}
+
+BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
+{
+	if (TextView_OpenFile(hwndTextView, szFileName))
+	{
+		SetWindowFileName(hWnd, szFileTitle);
+		return TRUE;
+	}
+	else
+	{
+		MessageBox(hWnd, _T("Error opening file"), APP_TITLE, MB_ICONEXCLAMATION);
+		return FALSE;
+	}
+}
+
+void CmdAndConquer_MainWindow::HandleDropFiles(HWND hWnd, HDROP hDrop)
+{
+	TCHAR buf[MAX_PATH];
+	TCHAR *name;
+
+	if (DragQueryFile(hDrop, 0, buf, MAX_PATH))
+	{
+		strcpy_s(szFileName, buf);
+
+		name = strrchr(szFileName, '\\');
+		strcpy_s(szFileTitle, name ? name + 1 : buf);
+
+		DoOpenFile(hWnd, szFileName, szFileTitle);
+	}
+
+	DragFinish(hDrop);
+}
+
 LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	
+	static int width, height;
+	HFONT hFont;
+
 	switch (Msg)
 	{
-		case WM_COMMAND:
-		{
-			DWORD wmId = LOWORD(wParam);
-			switch (wmId)
-			{
-				case ID_FILE_NEW:
-					
-					break;
-			}
-			break;
-
-		}
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			break;
 		case WM_CREATE:
 		{
 			LPCREATESTRUCT create_struct = reinterpret_cast<LPCREATESTRUCT>(lParam);
@@ -90,27 +116,68 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
 			assert(this_window == this);
 
+			hFont = CreateFont(-13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Courier New");
+
+			SendMessage(hwndTextView, WM_SETFONT, (WPARAM)hFont, 0);
+
+			PostMessage(hWnd, WM_COMMAND, ID_FILE_NEW, 0);
+
+			DragAcceptFiles(hWnd, TRUE);
+
 			onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
 
-			return DefWindowProc(hWnd_, Msg, wParam, lParam);
-			break;
+			PostMessage(hWnd, WM_COMMAND, ID_FILE_NEW, 0);
+			return 0;
 		}
+
+		case WM_DROPFILES:
+			HandleDropFiles(hWnd, (HDROP)wParam);
+			return 0;
+
+		case WM_DESTROY:
+			PostQuitMessage(0);
+			return 0;
+
+		case WM_COMMAND:
+		{
+			switch (LOWORD(wParam))
+			{
+				case ID_FILE_NEW:
+					SetWindowFileName(hWnd, _T("Untitled"));
+					TextView_Clear(hwndTextView);
+					return 0;
+				case ID_FILE_OPEN:
+					if (ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
+					{
+						DoOpenFile(hWnd, szFileName, szFileTitle);
+					}
+					return 0;
+				case ID_HELP_ABOUTUS:
+					ShowAboutDlg(hWnd);
+					return 0;
+			}
+			return 0;
+		}
+
+		case WM_SETFOCUS:
+			SetFocus(hwndTextView);
+			return 0;
+
+		case WM_CLOSE:
+			DestroyWindow(hWnd);
+			return 0;
+
+		case WM_SIZE:
+			width = (short)LOWORD(lParam);
+			height = (short)HIWORD(lParam);
+
+			//need 
+			MoveWindow(hwndTextView, 15, 29, width - 15, height - 30, TRUE);
+			MoveWindow(hwndLineNo, 0, 29, 15, height - 30, TRUE);
+			return 0;
+		
 		default:
 			return DefWindowProc(hWnd_, Msg, wParam, lParam);
-	}
-
-	return 0;
-}
-
-LRESULT CALLBACK CmdAndConquer_MainWindow::editWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (Msg)
-	{
-	case WM_KEYDOWN:
-		MessageBox(NULL, _T("help"), _T("help"), 0);
-		break;
-	default:
-		return CallWindowProc(oldEditProc, hWnd, Msg, wParam, lParam);
 	}
 
 	return 0;
@@ -160,38 +227,15 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 	RECT lineNorc = { 0, 29, 15, height };
 	RECT mainBoxrc = { 15, 29, width - 15, height };
 	
-	//lineNoHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE, lineNorc, IDCE_MULTILINE, _T("1\n2\n3"));
-	//mainEditHwnd = createEditBox(hWnd_, cs->hInstance, ES_MULTILINE | WS_VSCROLL, mainBoxrc, IDCE_MULTILINE, _T("Main box"));
-	lineNoHwnd = CreateTextView(hWnd_, cs->hInstance);
+	hwndLineNo = CreateTextView(hWnd_, cs->hInstance, lineNorc);
+	hwndTextView = CreateTextView(hWnd_, cs->hInstance, mainBoxrc);
 
 	initToolbar(hWnd, cs);
 
 	return 0;
 }
 
-HWND CmdAndConquer_MainWindow::createEditBox(HWND hParent, HINSTANCE hInst, DWORD dwStyle, const RECT& rc, const int id, const ustring& caption)
-{   
-	dwStyle|= WS_CHILD | WS_VISIBLE;
-
-	HWND hwnd = CreateWindowEx(WS_EX_WINDOWEDGE,
-		_T("edit"),
-		caption.c_str(),
-		dwStyle,
-		rc.left,
-		rc.top,
-		rc.right,
-		rc.bottom,
-		hParent,
-		reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)),
-		hInst,
-		0);
-
-	oldEditProc = (WNDPROC)SetWindowLongPtr(hwnd, GWLP_WNDPROC, (LONG_PTR)editWndProc);
-
-	return hwnd;
-}
-
-void initToolbar(HWND hWnd, CREATESTRUCT *cs)
+void CmdAndConquer_MainWindow::initToolbar(HWND hWnd, CREATESTRUCT *cs)
 {
 	INITCOMMONCONTROLSEX InitCtrlEx;
 
@@ -264,4 +308,46 @@ void initToolbar(HWND hWnd, CREATESTRUCT *cs)
 		sizeof(TBBUTTON));
 
 	UpdateWindow(hWnd);
+}
+
+BOOL CmdAndConquer_MainWindow::ShowOpenFileDlg(HWND hwnd, TCHAR *pstrFileName, TCHAR *pstrTitleName)
+{
+	TCHAR *szFilter = _T("Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0\0");
+
+	OPENFILENAME ofn = { sizeof(ofn) };
+
+	ofn.hwndOwner = hwnd;
+	ofn.hInstance = GetModuleHandle(0);
+	ofn.lpstrFilter = szFilter;
+	ofn.lpstrFile = pstrFileName;
+	ofn.lpstrFileTitle = pstrTitleName;
+
+	ofn.nFilterIndex = 1;
+	ofn.nMaxFile = _MAX_PATH;
+	ofn.nMaxFileTitle = _MAX_FNAME + _MAX_EXT;
+
+	// flags to control appearance of open-file dialog
+	ofn.Flags = OFN_EXPLORER |
+		OFN_ENABLESIZING |
+		OFN_ALLOWMULTISELECT |
+		OFN_FILEMUSTEXIST;
+
+	return GetOpenFileName(&ofn);
+}
+
+void CmdAndConquer_MainWindow::SetWindowFileName(HWND hwnd, TCHAR *szFileName)
+{
+	TCHAR ach[MAX_PATH + sizeof(szAppName) + 4];
+
+	wsprintf(ach, _T("%s - %s"), szFileName, szAppName);
+	SetWindowText(hwnd, ach);
+}
+
+void CmdAndConquer_MainWindow::ShowAboutDlg(HWND hwndParent)
+{
+	MessageBox(hwndParent,
+		APP_TITLE _T("\r\n\r\n")  WEBSITE_STR,
+		APP_TITLE,
+		MB_OK | MB_ICONINFORMATION
+		);
 }

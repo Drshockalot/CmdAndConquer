@@ -12,30 +12,71 @@
 #include "../Header/TextViewInternal.h"
 
 //
-//	Painting procedure for TextView objects
+//	Constructor for TextView class
 //
-LRESULT WINAPI TextView::OnPaint()
+TextView::TextView(HWND hwnd)
 {
-	HDC			hdc;
-	PAINTSTRUCT ps;
-	RECT		rect;
-	wchar_t		*text = _T("Hello World!");
+	m_hWnd = hwnd;
 
-	HANDLE		hOldFont;
-	HFONT		hFont;
+	// Set the default font
+	OnSetFont((HFONT)GetStockObject(ANSI_FIXED_FONT));
 
-	hdc = BeginPaint(m_hWnd, &ps);
+	// Scrollbar related data
+	m_nVScrollPos = 0;
+	m_nHScrollPos = 0;
+	m_nVScrollMax = 0;
+	m_nHScrollMax = 0;
 
-	hFont = (HFONT)GetStockObject(ANSI_FIXED_FONT);
-	hOldFont = SelectObject(hdc, hFont);
+	// File-related data
+	m_nLineCount   = 0;
+	m_nLongestLine = 0;
 
+	m_pTextDoc = new TextDocument();
+
+	SetupScrollbars();
+}
+
+//
+//	Destructor for TextView class
+//
+TextView::~TextView()
+{
+	if (m_pTextDoc)
+		delete m_pTextDoc;
+}
+
+VOID TextView::UpdateMetrics()
+{
+	RECT rect;
 	GetClientRect(m_hWnd, &rect);
 
-	ExtTextOut(hdc, 10, 10, ETO_OPAQUE, &rect, text, lstrlen(text), 0);
+	OnSize(0, rect.right, rect.bottom);
+	RefreshWindow();
+}
 
-	SelectObject(hdc, hOldFont);
+//
+//	Set a new font
+//
+LONG TextView::OnSetFont(HFONT hFont)
+{
+	HDC hdc;
+	TEXTMETRIC tm;
+	HANDLE hOld;
 
-	EndPaint(m_hWnd, &ps);
+	m_hFont = hFont;
+
+	hdc = GetDC(m_hWnd);
+	hOld = SelectObject(hdc, hFont);
+
+	GetTextMetrics(hdc, &tm);
+
+	m_nFontHeight = tm.tmHeight;
+	m_nFontWidth = tm.tmAveCharWidth;
+
+	SelectObject(hdc, hOld);
+	ReleaseDC(m_hWnd, hdc);
+
+	UpdateMetrics();
 
 	return 0;
 }
@@ -47,27 +88,49 @@ LRESULT WINAPI TextViewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 {
 	TextView *ptv = (TextView *)GetWindowLong(hwnd, 0);
 
-	switch(msg)
+	switch (msg)
 	{
-	// First message received by any window - make a new TextView object
-	// and store pointer to it in our extra-window-bytes
+		// First message received by any window - make a new TextView object
+		// and store pointer to it in our extra-window-bytes
 	case WM_NCCREATE:
 
-		if((ptv = new TextView(hwnd)) == 0)
+		if ((ptv = new TextView(hwnd)) == 0)
 			return FALSE;
 
 		SetWindowLong(hwnd, 0, (LONG)ptv);
 		return TRUE;
 
-	// Last message received by any window - delete the TextView object
+		// Last message received by any window - delete the TextView object
 	case WM_NCDESTROY:
 
 		delete ptv;
 		return 0;
 
-	// Draw contents of TextView whenever window needs updating
+		// Draw contents of TextView whenever window needs updating
 	case WM_PAINT:
 		return ptv->OnPaint();
+
+		// Set a new font 
+	case WM_SETFONT:
+		return ptv->OnSetFont((HFONT)wParam);
+
+	case WM_SIZE:
+		return ptv->OnSize(wParam, LOWORD(lParam), HIWORD(lParam));
+
+	case WM_VSCROLL:
+		return ptv->OnVScroll(LOWORD(wParam), HIWORD(wParam));
+
+	case WM_HSCROLL:
+		return ptv->OnHScroll(LOWORD(wParam), HIWORD(wParam));
+
+	case WM_MOUSEWHEEL:
+		return ptv->OnMouseWheel((short)HIWORD(wParam));
+
+	case TXM_OPENFILE:
+		return ptv->OpenFile((TCHAR *)lParam);
+
+	case TXM_CLEAR:
+		return ptv->ClearFile();
 
 	default:
 		break;
@@ -103,15 +166,14 @@ BOOL InitTextView()
 //
 //	Create a TextView control!
 //
-HWND CreateTextView(HWND hwndParent, HINSTANCE hInst)
+HWND CreateTextView(HWND hwndParent, HINSTANCE hInst, RECT rc)
 {
-	return CreateWindowEx(WS_EX_WINDOWEDGE, 
-		TEXTVIEW_CLASS, _T(""), 
-		WS_VSCROLL |WS_HSCROLL | WS_CHILD | WS_VISIBLE,
-		0, 0, 0, 0, 
-		hwndParent, 
-		0, 
-		hInst, 
+	return CreateWindowEx(WS_EX_WINDOWEDGE,
+		TEXTVIEW_CLASS, _T(""),
+		WS_VSCROLL | WS_HSCROLL | WS_CHILD | WS_VISIBLE,
+		rc.left, rc.top, rc.right, rc.bottom,
+		hwndParent,
+		0,
+		hInst,
 		0);
 }
-

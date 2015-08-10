@@ -5,6 +5,8 @@
 LPCTSTR CmdAndConquer_MainWindow::class_name = _T("CmdAndConquer");
 ATOM CmdAndConquer_MainWindow::class_atom = 0;
 
+HWND CmdAndConquer_MainWindow::hWnd_;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
 	try
@@ -13,6 +15,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 
 		CmdAndConquer_MainWindow::registerWindowClass(hInstance);
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
+
+		TCHAR szFileName[MAX_PATH];
+		TCHAR szFileTitle[MAX_PATH];
+
+		HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
 		for (;;)
 		{
@@ -33,8 +40,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 			}
 			else
 			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				if (!TranslateAccelerator(CmdAndConquer_MainWindow::getMainHWND(), hAccel, &msg))
+				{
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
 			}
 		}
 	}
