@@ -116,17 +116,18 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
 			assert(this_window == this);
 
-			hFont = CreateFont(-13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Courier New");
-
+			hFont = EasyCreateFont(10, FALSE, "Courier New");
 			SendMessage(hwndTextView, WM_SETFONT, (WPARAM)hFont, 0);
+
+			//hFont = EasyCreateFont(10, FALSE, "Lucida Console");
+			//hFont = EasyCreateFont(16, FALSE, "Arial");
+			//TextView_AddFont(hwndTextView, hFont);
 
 			PostMessage(hWnd, WM_COMMAND, ID_FILE_NEW, 0);
 
 			DragAcceptFiles(hWnd, TRUE);
 
 			onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
-
-			PostMessage(hWnd, WM_COMMAND, ID_FILE_NEW, 0);
 			return 0;
 		}
 
@@ -350,4 +351,22 @@ void CmdAndConquer_MainWindow::ShowAboutDlg(HWND hwndParent)
 		APP_TITLE,
 		MB_OK | MB_ICONINFORMATION
 		);
+}
+
+int CmdAndConquer_MainWindow::PointsToLogical(int nPointSize)
+{
+	HDC hdc = GetDC(0);
+	int nLogSize = -MulDiv(nPointSize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+	ReleaseDC(0, hdc);
+
+	return nLogSize;
+}
+
+HFONT CmdAndConquer_MainWindow::EasyCreateFont(int nPointSize, BOOL fBold, TCHAR *szFace)
+{
+	return CreateFont(PointsToLogical(nPointSize),
+						0, 0, 0,
+						fBold ? FW_BOLD : 0,
+						0, 0, 0, 0, 0, 0, 0, 0,
+						szFace);
 }

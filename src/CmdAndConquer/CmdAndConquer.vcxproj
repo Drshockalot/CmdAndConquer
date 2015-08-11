@@ -84,6 +84,7 @@
     <ClCompile Include="..\TextView\CPP\TextDocument.cpp" />
     <ClCompile Include="..\TextView\CPP\TextView.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewFile.cpp" />
+    <ClCompile Include="..\TextView\CPP\TextViewFont.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />

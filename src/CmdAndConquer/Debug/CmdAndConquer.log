@@ -1,13 +1,14 @@
-﻿Build started 10/08/2015 12:12:59.
+﻿Build started 11/08/2015 16:39:44.
      1>Project "C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\src\CmdAndConquer\CmdAndConquer.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt CPP\CmdAndConquer_MainWindow.cpp
-         CmdAndConquer_MainWindow.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ..\TextView\CPP\TextDocument.cpp
+         TextDocument.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.lib" /MACHINE:X86 Debug\CmdAndConquer.res
          Debug\TextDocument.obj
          Debug\TextView.obj
          Debug\TextViewFile.obj
+         Debug\TextViewFont.obj
          Debug\TextViewPaint.obj
          Debug\TextViewScroll.obj
          Debug\CmdAndConquer_MainWindow.obj
@@ -17,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.60
+Time Elapsed 00:00:01.21

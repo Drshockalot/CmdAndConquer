@@ -69,6 +69,8 @@ private:
 	BOOL ShowOpenFileDlg(HWND hwnd, TCHAR * pstrFileName, TCHAR * pstrTitleName);
 	void SetWindowFileName(HWND hwnd, TCHAR * szFileName);
 	void ShowAboutDlg(HWND hwndParent);
+	int PointsToLogical(int nPointSize);
+	HFONT EasyCreateFont(int nPointSize, BOOL fBold, TCHAR * szFace);
 };
 
 #endif

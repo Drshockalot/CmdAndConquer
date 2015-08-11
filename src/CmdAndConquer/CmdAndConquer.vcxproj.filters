@@ -36,6 +36,9 @@
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextViewFont.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">

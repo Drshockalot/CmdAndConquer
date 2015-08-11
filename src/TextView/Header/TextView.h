@@ -24,7 +24,8 @@ HWND CreateTextView(HWND hwndParent, HINSTANCE hInst, RECT rc);
 #define TXM_BASE				(WM_USER)
 #define TXM_OPENFILE			(TXM_BASE + 0)
 #define TXM_CLEAR				(TXM_BASE + 1)
-#define TXM_UPDATELINENUMBERS	(TXM_BASE + 2)
+#define TXM_SETLINESPACING		(TXM_BASE + 2)
+#define TXM_ADDFONT				(TXM_BASE + 3)
 
 //
 //	TextView Message Macros defined here
@@ -32,12 +33,13 @@ HWND CreateTextView(HWND hwndParent, HINSTANCE hInst, RECT rc);
 
 #define TextView_OpenFile(hwndTV, szFile)	SendMessage((hwndTV), TXM_OPENFILE, 0, (LPARAM)(szFile))
 #define TextView_Clear(hwndTV)				SendMessage((hwndTV), TXM_CLEAR, 0, 0)
-#define TextView_UpdateLineNumbers(hwndTV, noOfLines)	SendMessage((hwndTV), TXM_UPDATELINENUMBERS, 0, (LPARAM)(noOfLines))
+#define TextView_SetLineSpacing(hwndTV, nAbove, nBelow) SendMessage((hwndTV), TXM_SETLINESPACING, (int)(nAbove), (int)(nBelow))
+#define TextView_AddFont(hwndTV, hFont)		SendMessage((hwndTV), TXM_ADDFONT, (WPARAM)(HFONT)(hFont), 0)
 
 //
 //	TextView Macros defined here
 //
-#define TEXTVIEW_CLASS _T("TextView32")
+#define TEXTVIEW_CLASS _T("CmdAndConquer_TextView")
 
 //
 //	TextView colours
@@ -45,6 +47,8 @@ HWND CreateTextView(HWND hwndParent, HINSTANCE hInst, RECT rc);
 
 #define TXC_BACKGROUND		0			// normal background colour
 #define TXC_FOREGROUND		1			// normal foreground colour
+#define TXC_HIGHLIGHT		2
+#define TXC_HIGHLIGHTTEXT	3
 
 #define TXC_MAX_COLOURS		2			// keep this updated!
 
