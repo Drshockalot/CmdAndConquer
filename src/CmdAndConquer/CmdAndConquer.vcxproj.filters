@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Options">
+      <UniqueIdentifier>{88c24d60-e6a4-44fc-a5c0-1b176b8d1fe6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp">
@@ -39,6 +42,21 @@
     <ClCompile Include="..\TextView\CPP\TextViewFont.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextViewMouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\CPP\Options.c">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\CPP\OptionsFont.c">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\CPP\OptionsMisc.c">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="CPP\CmdAndConquer_Globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">
@@ -59,6 +77,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\TextView\Header\TextDocument.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\CmdAndConquer_Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

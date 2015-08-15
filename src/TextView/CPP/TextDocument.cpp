@@ -85,10 +85,8 @@ bool TextDocument::init_linebuffer()
 	// loop through every byte in the file
 	for(i = 0; i < length; )
 	{
-		if(buffer[i] == '\r')
+		if(buffer[i++] == '\r')
 		{
-			i++;
-
 			// carriage-return / line-feed combination
 			if(buffer[i] == '\n')
 				i++;
@@ -97,21 +95,10 @@ bool TextDocument::init_linebuffer()
 			linebuffer[numlines++] = linestart;
 			linestart = i;
 		}
-		else if (buffer[i] == '\n')
-		{
-			linebuffer[numlines++] = linestart;
-			linestart = ++i;
-		}
-		else
-		{
-			i++;
-		}
 	}
 
-	if (length > 0)
-	{
+	if(length > 0)
 		linebuffer[numlines++] = linestart;
-	}
 
 	linebuffer[numlines] = length;
 
@@ -148,16 +135,22 @@ ULONG TextDocument::getline(ULONG lineno, ULONG offset, char *buf, size_t len, U
 	char *lineptr;
 	ULONG linelen;
 
-	if(lineno >= numlines || buffer == 0 || length == 0)
+	if (lineno >= numlines || buffer == 0 || length == 0)
 		return 0;
+
+	//	if(linebuffer[lineno]
 
 	// find the start of the specified line
 	lineptr = buffer + linebuffer[lineno];
 
 	// work out how long it is, by looking at the next line's starting point
-	linelen = linebuffer[lineno+1] - linebuffer[lineno];
-	
+	linelen = linebuffer[lineno + 1] - linebuffer[lineno];
+
 	offset = min(offset, linelen);
+
+	// make sure the CR/LF is always fetched in one go
+	if (linelen - (offset + len) < 2 && len > 2)
+		len -= 2;
 
 	// make sure we don't overflow caller's buffer
 	linelen = min(len, linelen - offset);
@@ -167,14 +160,20 @@ ULONG TextDocument::getline(ULONG lineno, ULONG offset, char *buf, size_t len, U
 	memcpy(buf, lineptr, linelen);
 
 	if (fileoff)
-		*fileoff = linebuffer[lineno];
-	
+		*fileoff = linebuffer[lineno];// + offset;
+
 	return linelen;
 }
 
 ULONG TextDocument::getline(ULONG lineno, char *buf, size_t len, ULONG *fileoff)
 {
 	return getline(lineno, 0, buf, len, fileoff);
+}
+
+ULONG TextDocument::getdata(ULONG offset, char *buf, size_t len)
+{
+	memcpy(buf, buffer + offset, len);
+	return len;
 }
 
 //
@@ -216,4 +215,66 @@ ULONG TextDocument::longestline(int tabwidth)
 
 	longest = max(longest, xpos);
 	return longest;
+}
+
+bool TextDocument::getlineinfo(ULONG lineno, ULONG *fileoff, ULONG *length)
+{
+	if (lineno < numlines)
+	{
+		if (length)
+			*length = linebuffer[lineno + 1] - linebuffer[lineno];
+
+		if (fileoff)
+			*fileoff = linebuffer[lineno];
+
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//
+//	Perform a reverse lookup - file-offset to line number
+//
+bool TextDocument::offset_to_line(ULONG fileoff, ULONG *lineno, ULONG *offset)
+{
+	ULONG low = 0, high = numlines - 1;
+	ULONG line = 0;
+
+	if (numlines == 0)
+	{
+		if (lineno) *lineno = 0;
+		if (offset) *offset = 0;
+		return false;
+	}
+
+	while (low <= high)
+	{
+		line = (high + low) / 2;
+
+		if (fileoff >= linebuffer[line] && fileoff < linebuffer[line + 1])
+		{
+			break;
+		}
+		else if (fileoff < linebuffer[line])
+		{
+			high = line - 1;
+		}
+		else
+		{
+			low = line + 1;
+		}
+	}
+
+	if (lineno)  *lineno = line;
+	if (offset)	*offset = fileoff - linebuffer[line];
+
+	return true;
+}
+
+ULONG TextDocument::size()
+{
+	return length;
 }

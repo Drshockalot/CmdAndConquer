@@ -39,9 +39,24 @@ TextView::TextView(HWND hwnd)
 	// display-related data
 	m_nTabWidthChars = 4;
 
-	// (EXAMPLE) selection markers
+	// Default display colours
+	m_rgbColourList[TXC_FOREGROUND] = SYSCOL(COLOR_WINDOWTEXT);
+	m_rgbColourList[TXC_BACKGROUND] = SYSCOL(COLOR_WINDOW);
+	m_rgbColourList[TXC_HIGHLIGHTTEXT] = SYSCOL(COLOR_HIGHLIGHTTEXT);
+	m_rgbColourList[TXC_HIGHLIGHT] = SYSCOL(COLOR_HIGHLIGHT);
+	m_rgbColourList[TXC_HIGHLIGHTTEXT2] = SYSCOL(COLOR_INACTIVECAPTIONTEXT);
+	m_rgbColourList[TXC_HIGHLIGHT2] = SYSCOL(COLOR_INACTIVECAPTION);
+
+	// Runtime data
+	m_fMouseDown = false;
+	m_nScrollTimer = 0;
+
 	m_nSelectionStart = 0;
 	m_nSelectionEnd = 0;
+	m_nCursorOffset = 0;
+
+	// Set the default font
+	OnSetFont((HFONT)GetStockObject(ANSI_FIXED_FONT));
 
 	m_pTextDoc = new TextDocument();
 
@@ -64,6 +79,24 @@ VOID TextView::UpdateMetrics()
 
 	OnSize(0, rect.right, rect.bottom);
 	RefreshWindow();
+}
+
+LONG TextView::OnSetFocus(HWND hwndOld)
+{
+	CreateCaret(m_hWnd, (HBITMAP)NULL, 2, m_nLineHeight);
+	RepositionCaret();
+
+	ShowCaret(m_hWnd);
+	RefreshWindow();
+	return 0;
+}
+
+LONG TextView::OnKillFocus(HWND hwndNew)
+{
+	HideCaret(m_hWnd);
+	DestroyCaret();
+	RefreshWindow();
+	return 0;
 }
 
 //
@@ -108,10 +141,30 @@ LRESULT WINAPI TextViewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	case WM_HSCROLL:
 		return ptv->OnHScroll(LOWORD(wParam), HIWORD(wParam));
 
+	case WM_MOUSEACTIVATE:
+		return ptv->OnMouseActivate((HWND)wParam, LOWORD(lParam), HIWORD(lParam));
+
 	case WM_MOUSEWHEEL:
 		return ptv->OnMouseWheel((short)HIWORD(wParam));
+	
+	case WM_SETFOCUS:
+		return ptv->OnSetFocus((HWND)wParam);
 
-		//
+	case WM_KILLFOCUS:
+		return ptv->OnKillFocus((HWND)wParam);
+
+	case WM_LBUTTONDOWN:
+		return ptv->OnLButtonDown(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_LBUTTONUP:
+		return ptv->OnLButtonUp(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_MOUSEMOVE:
+		return ptv->OnMouseMove(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+	
+	case WM_TIMER:
+		return ptv->OnTimer(wParam);
+
 	case TXM_OPENFILE:
 		return ptv->OpenFile((TCHAR *)lParam);
 
@@ -123,7 +176,9 @@ LRESULT WINAPI TextViewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 	case TXM_ADDFONT:
 		return ptv->AddFont((HFONT)wParam);
-
+		
+	case TXM_SETCOLOR:
+		return ptv->SetColour(wParam, lParam);
 	default:
 		break;
 	}

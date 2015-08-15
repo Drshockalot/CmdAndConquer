@@ -1,16 +1,26 @@
-﻿Build started 11/08/2015 16:39:44.
+﻿Build started 14/08/2015 19:06:59.
      1>Project "C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\src\CmdAndConquer\CmdAndConquer.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ..\TextView\CPP\TextDocument.cpp
-         TextDocument.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Options\CPP\Options.c
+         Options.c
+     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\options.c(145): warning C4047: 'function': 'TCHAR *' differs in levels of indirection from 'LONG'
+     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\options.c(145): warning C4024: 'EasyCreateFont': different types for formal and actual parameter 3
+     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\options.c(145): warning C4020: 'EasyCreateFont': too many actual parameters
+     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\options.c(158): warning C4028: formal parameter 3 different from declaration
+     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\options.c(158): warning C4029: declared formal parameter list different from definition
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.lib" /MACHINE:X86 Debug\CmdAndConquer.res
+         Debug\Options.obj
+         Debug\OptionsFont.obj
+         Debug\OptionsMisc.obj
          Debug\TextDocument.obj
          Debug\TextView.obj
          Debug\TextViewFile.obj
          Debug\TextViewFont.obj
+         Debug\TextViewMouse.obj
          Debug\TextViewPaint.obj
          Debug\TextViewScroll.obj
+         Debug\CmdAndConquer_Globals.obj
          Debug\CmdAndConquer_MainWindow.obj
          Debug\main.obj
          CmdAndConquer.vcxproj -> C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe
@@ -18,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.21
+Time Elapsed 00:00:01.43

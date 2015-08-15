@@ -1,4 +1,6 @@
 #include "../Header/CmdAndConquer_MainWindow.h"
+#include "../Header/CmdAndConquer_Globals.h"
+
 
 DWORD g_BytesTransferred = 0;
 
@@ -69,9 +71,14 @@ HWND CmdAndConquer_MainWindow::getMainHWND()
 	return hWnd_;
 }
 
+HWND CmdAndConquer_MainWindow::getTextHWND()
+{
+	return g_hwndTextView;
+}
+
 BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
 {
-	if (TextView_OpenFile(hwndTextView, szFileName))
+	if (TextView_OpenFile(g_hwndTextView, szFileName))
 	{
 		SetWindowFileName(hWnd, szFileTitle);
 		return TRUE;
@@ -105,7 +112,6 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 {
 	
 	static int width, height;
-	HFONT hFont;
 
 	switch (Msg)
 	{
@@ -116,14 +122,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
 			assert(this_window == this);
 
-			hFont = EasyCreateFont(10, FALSE, "Courier New");
-			SendMessage(hwndTextView, WM_SETFONT, (WPARAM)hFont, 0);
-
-			//hFont = EasyCreateFont(10, FALSE, "Lucida Console");
-			//hFont = EasyCreateFont(16, FALSE, "Arial");
-			//TextView_AddFont(hwndTextView, hFont);
-
-			PostMessage(hWnd, WM_COMMAND, ID_FILE_NEW, 0);
+			PostMessage(hWnd, WM_COMMAND, IDM_FILE_NEW, 0);
 
 			DragAcceptFiles(hWnd, TRUE);
 
@@ -143,17 +142,22 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 		{
 			switch (LOWORD(wParam))
 			{
-				case ID_FILE_NEW:
+				case IDM_FILE_NEW:
 					SetWindowFileName(hWnd, _T("Untitled"));
-					TextView_Clear(hwndTextView);
+					TextView_Clear(g_hwndTextView);
 					return 0;
-				case ID_FILE_OPEN:
+				case IDM_FILE_OPEN:
 					if (ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
 					{
 						DoOpenFile(hWnd, szFileName, szFileTitle);
 					}
 					return 0;
-				case ID_HELP_ABOUTUS:
+
+				case IDM_VIEW_FONT:
+					ShowProperties(hWnd);
+					return 0;
+
+				case IDM_HELP_ABOUT:
 					ShowAboutDlg(hWnd);
 					return 0;
 			}
@@ -161,7 +165,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 		}
 
 		case WM_SETFOCUS:
-			SetFocus(hwndTextView);
+			SetFocus(g_hwndTextView);
 			return 0;
 
 		case WM_CLOSE:
@@ -172,9 +176,8 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			width = (short)LOWORD(lParam);
 			height = (short)HIWORD(lParam);
 
-			//need 
-			MoveWindow(hwndTextView, 15, 29, width - 15, height - 30, TRUE);
-			MoveWindow(hwndLineNo, 0, 29, 15, height - 30, TRUE);
+			MoveWindow(g_hwndTextView, 0, 0 /*29 for toolbar*/, width, height /*- 30 for toolbar*/, TRUE);
+			//MoveWindow(hwndLineNo, 0, 0 /*29 for toolbar*/, 15, height /*- 30 for toolbar*/, TRUE);
 			return 0;
 		
 		default:
@@ -225,91 +228,91 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 		height = wndRECT.bottom - wndRECT.top;
 	}
 
-	RECT lineNorc = { 0, 29, 15, height };
-	RECT mainBoxrc = { 15, 29, width - 15, height };
+	//RECT lineNorc = { 0, 29, 15, height };
+	RECT mainBoxrc = { 0, 0, width, height };
 	
-	hwndLineNo = CreateTextView(hWnd_, cs->hInstance, lineNorc);
-	hwndTextView = CreateTextView(hWnd_, cs->hInstance, mainBoxrc);
+	//hwndLineNo = CreateTextView(hWnd_, cs->hInstance, lineNorc);
+	g_hwndTextView = CreateTextView(hWnd_, cs->hInstance, mainBoxrc);
 
-	initToolbar(hWnd, cs);
+	//initToolbar(hWnd, cs);
 
 	return 0;
 }
 
-void CmdAndConquer_MainWindow::initToolbar(HWND hWnd, CREATESTRUCT *cs)
-{
-	INITCOMMONCONTROLSEX InitCtrlEx;
-
-	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
-	InitCommonControlsEx(&InitCtrlEx);
-
-	TBBUTTON tbrButtons[7];
-
-	tbrButtons[0].iBitmap = 0;
-	tbrButtons[0].idCommand = ID_FILE_NEW;
-	tbrButtons[0].fsState = TBSTATE_ENABLED;
-	tbrButtons[0].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[0].dwData = 0L;
-	tbrButtons[0].iBitmap = 0;
-	tbrButtons[0].iString = 0;
-
-	tbrButtons[1].iBitmap = 1;
-	tbrButtons[1].idCommand = ID_FILE_OPEN;
-	tbrButtons[1].fsState = TBSTATE_ENABLED;
-	tbrButtons[1].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[1].dwData = 0L;
-	tbrButtons[1].iString = 0;
-
-	tbrButtons[2].iBitmap = 0;
-	tbrButtons[2].idCommand = ID_FILE_EXIT;
-	tbrButtons[2].fsState = TBSTATE_ENABLED;
-	tbrButtons[2].fsStyle = TBSTYLE_SEP;
-	tbrButtons[2].dwData = 0L;
-	tbrButtons[2].iString = 0;
-
-	tbrButtons[3].iBitmap = 2;
-	tbrButtons[3].idCommand = ID_FILE_OPEN;
-	tbrButtons[3].fsState = TBSTATE_ENABLED;
-	tbrButtons[3].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[3].dwData = 0L;
-	tbrButtons[3].iString = 0;
-
-	tbrButtons[4].iBitmap = 3;
-	tbrButtons[4].idCommand = ID_FILE_OPEN;
-	tbrButtons[4].fsState = TBSTATE_ENABLED;
-	tbrButtons[4].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[4].dwData = 0L;
-	tbrButtons[4].iString = 0;
-
-	tbrButtons[5].iBitmap = 4;
-	tbrButtons[5].idCommand = ID_FILE_OPEN;
-	tbrButtons[5].fsState = TBSTATE_ENABLED;
-	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[5].dwData = 0L;
-	tbrButtons[5].iString = 0;
-
-	tbrButtons[6].iBitmap = 5;
-	tbrButtons[6].idCommand = ID_FILE_OPEN;
-	tbrButtons[6].fsState = TBSTATE_ENABLED;
-	tbrButtons[6].fsStyle = TBSTYLE_BUTTON;
-	tbrButtons[6].dwData = 0L;
-	tbrButtons[6].iString = 0;
-
-	HWND hWndToolbar;
-	hWndToolbar = CreateToolbarEx(hWnd,
-		WS_VISIBLE | WS_CHILD | WS_BORDER,
-		IDR_TOOLBAR3,
-		7,
-		cs->hInstance,
-		IDR_TOOLBAR3,
-		tbrButtons,
-		7,
-		16, 16, 16, 16,
-		sizeof(TBBUTTON));
-
-	UpdateWindow(hWnd);
-}
+//void CmdAndConquer_MainWindow::initToolbar(HWND hWnd, CREATESTRUCT *cs)
+//{
+//	INITCOMMONCONTROLSEX InitCtrlEx;
+//
+//	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+//	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
+//	InitCommonControlsEx(&InitCtrlEx);
+//
+//	TBBUTTON tbrButtons[7];
+//
+//	tbrButtons[0].iBitmap = 0;
+//	tbrButtons[0].idCommand = IDM_FILE_NEW;
+//	tbrButtons[0].fsState = TBSTATE_ENABLED;
+//	tbrButtons[0].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[0].dwData = 0L;
+//	tbrButtons[0].iBitmap = 0;
+//	tbrButtons[0].iString = 0;
+//
+//	tbrButtons[1].iBitmap = 1;
+//	tbrButtons[1].idCommand = IDM_FILE_OPEN;
+//	tbrButtons[1].fsState = TBSTATE_ENABLED;
+//	tbrButtons[1].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[1].dwData = 0L;
+//	tbrButtons[1].iString = 0;
+//
+//	tbrButtons[2].iBitmap = 0;
+//	tbrButtons[2].idCommand = IDM_FILE_EXIT;
+//	tbrButtons[2].fsState = TBSTATE_ENABLED;
+//	tbrButtons[2].fsStyle = TBSTYLE_SEP;
+//	tbrButtons[2].dwData = 0L;
+//	tbrButtons[2].iString = 0;
+//
+//	tbrButtons[3].iBitmap = 2;
+//	tbrButtons[3].idCommand = IDM_FILE_OPEN;
+//	tbrButtons[3].fsState = TBSTATE_ENABLED;
+//	tbrButtons[3].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[3].dwData = 0L;
+//	tbrButtons[3].iString = 0;
+//
+//	tbrButtons[4].iBitmap = 3;
+//	tbrButtons[4].idCommand = IDM_FILE_OPEN;
+//	tbrButtons[4].fsState = TBSTATE_ENABLED;
+//	tbrButtons[4].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[4].dwData = 0L;
+//	tbrButtons[4].iString = 0;
+//
+//	tbrButtons[5].iBitmap = 4;
+//	tbrButtons[5].idCommand = IDM_FILE_OPEN;
+//	tbrButtons[5].fsState = TBSTATE_ENABLED;
+//	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[5].dwData = 0L;
+//	tbrButtons[5].iString = 0;
+//
+//	tbrButtons[6].iBitmap = 5;
+//	tbrButtons[6].idCommand = IDM_FILE_OPEN;
+//	tbrButtons[6].fsState = TBSTATE_ENABLED;
+//	tbrButtons[6].fsStyle = TBSTYLE_BUTTON;
+//	tbrButtons[6].dwData = 0L;
+//	tbrButtons[6].iString = 0;
+//
+//	HWND hWndToolbar;
+//	hWndToolbar = CreateToolbarEx(hWnd,
+//		WS_VISIBLE | WS_CHILD | WS_BORDER,
+//		IDR_TOOLBAR3,
+//		7,
+//		cs->hInstance,
+//		IDR_TOOLBAR3,
+//		tbrButtons,
+//		7,
+//		16, 16, 16, 16,
+//		sizeof(TBBUTTON));
+//
+//	UpdateWindow(hWnd);
+//}
 
 BOOL CmdAndConquer_MainWindow::ShowOpenFileDlg(HWND hwnd, TCHAR *pstrFileName, TCHAR *pstrTitleName)
 {

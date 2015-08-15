@@ -50,12 +50,13 @@ public:
 	static ATOM getClassATOM(void);
 	static LPCTSTR getClassName(void);
 	static HWND getMainHWND();
+	static HWND getTextHWND();
 	BOOL DoOpenFile(HWND hWnd, TCHAR * szFileName, TCHAR * szFileTitle);
 	void HandleDropFiles(HWND hWnd, HDROP hDrop);
 private:
 	
-	HWND hwndTextView;
-	HWND hwndLineNo;
+	static HWND g_hwndTextView;
+	//HWND hwndLineNo;
 	
 	TCHAR szFileName[MAX_PATH];
 	TCHAR szFileTitle[MAX_PATH];
@@ -65,7 +66,7 @@ private:
 	LRESULT CALLBACK actualWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	int onCreate(const HWND hWnd, CREATESTRUCT *cs);
-	void initToolbar(HWND hWnd, CREATESTRUCT *cs);
+	//void initToolbar(HWND hWnd, CREATESTRUCT *cs);
 	BOOL ShowOpenFileDlg(HWND hwnd, TCHAR * pstrFileName, TCHAR * pstrTitleName);
 	void SetWindowFileName(HWND hwnd, TCHAR * szFileName);
 	void ShowAboutDlg(HWND hwndParent);

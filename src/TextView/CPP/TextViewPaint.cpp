@@ -3,10 +3,9 @@
 #include "../Header/TextView.h"
 #include "../Header/TextViewInternal.h"
 
-#define TEXTBUFSIZE 128
-
 int		StripCRLF(TCHAR *szText, int nLength);
 void	PaintRect(HDC hdc, int x, int y, int width, int height, COLORREF fill);
+void	DrawCheckedRect(HDC hdc, RECT *rect, COLORREF fg, COLORREF bg);
 
 //
 //	Perform a full redraw of the entire window
@@ -86,24 +85,25 @@ void TextView::PaintLine(HDC hdc, ULONG nLineNo)
 //
 void TextView::PaintText(HDC hdc, ULONG nLineNo, RECT *rect)
 {
-	TCHAR	buff[TEXTBUFSIZE];
-	ATTR	attr[TEXTBUFSIZE];
+	TCHAR		buff[TEXTBUFSIZE];
+	ATTR		attr[TEXTBUFSIZE];
 
-	ULONG	charoff = 0;
-	int		len;
+	ULONG		charoff = 0;
+	int			len;
 
-	int		xpos = rect->left;
-	int		ypos = rect->top;
-	int		xtab = rect->left;
+	int			xpos = rect->left;
+	int			ypos = rect->top;
+	int			xtab = rect->left;
 
 	//
 	//	TODO: Clip text to left side of window
 	//
 
+
 	//
 	//	Keep drawing until we reach the edge of the window
 	//
-	while (charoff < m_nWindowColumns + m_nHScrollPos)
+	while (xpos < rect->right)
 	{
 		ULONG fileoff;
 		int	  lasti = 0;
@@ -116,13 +116,15 @@ void TextView::PaintText(HDC hdc, ULONG nLineNo, RECT *rect)
 			break;
 
 		// ready for the next block of characters (do this before stripping CR/LF)
-		//fileoff += charoff;
+		fileoff += charoff;
 		charoff += len;
+
 
 		//
 		//	Apply text attributes - 
 		//	i.e. syntax highlighting, mouse selection colours etc.
 		//
+		//len = ApplyTextAttributes(nLineNo, fileoff+charoff, buff, len, attr);
 		len = ApplyTextAttributes(nLineNo, fileoff, buff, len, attr);
 
 		//
@@ -162,31 +164,40 @@ void TextView::PaintText(HDC hdc, ULONG nLineNo, RECT *rect)
 //
 int TextView::ApplyTextAttributes(ULONG nLineNo, ULONG nOffset, TCHAR *szText, int nTextLen, ATTR *attr)
 {
-	// randomize this value to give different fonts
-	int style = nLineNo % m_nNumFonts;
+	int		 font = nLineNo % m_nNumFonts;
+	COLORREF fg = RGB(rand() % 200, rand() % 200, rand() % 200);
+
+	int i;
+
+	ULONG selstart = min(m_nSelectionStart, m_nSelectionEnd);
+	ULONG selend = max(m_nSelectionStart, m_nSelectionEnd);
 
 	//
-	//	TODO: 1. Apply a default single-colour first of all
-	//
-
-	//
-	//	TODO: 2. Apply syntax colouring (overrides default text)
-	//
-
-	//
-	//	TODO: 3. Apply bookmarks, line highlighting etc (overrides syntax colouring)
+	//	TODO: 1. Apply syntax colouring first of all
 	//
 
 	//
-	//	STEP 4:  Now apply text-selection (overrides everything else)
+	//	TODO: 2. Apply bookmarks, line highlighting etc (override syntax colouring)
 	//
-	for (int i = 0; i < nTextLen; i++)
+
+	//
+	//	STEP 3:  Now apply text-selection (overrides everything else)
+	//
+	for (i = 0; i < nTextLen; i++)
 	{
 		// apply highlight colours 
-		if (nOffset + i >= m_nSelectionStart && nOffset + i < m_nSelectionEnd)
+		if (nOffset + i >= selstart && nOffset + i < selend)
 		{
-			attr[i].fg = GetColour(TXC_HIGHLIGHTTEXT);
-			attr[i].bg = GetColour(TXC_HIGHLIGHT);
+			if (GetFocus() == m_hWnd)
+			{
+				attr[i].fg = GetColour(TXC_HIGHLIGHTTEXT);
+				attr[i].bg = GetColour(TXC_HIGHLIGHT);
+			}
+			else
+			{
+				attr[i].fg = GetColour(TXC_HIGHLIGHTTEXT2);
+				attr[i].bg = GetColour(TXC_HIGHLIGHT2);
+			}
 		}
 		// normal text colours
 		else
@@ -195,13 +206,14 @@ int TextView::ApplyTextAttributes(ULONG nLineNo, ULONG nOffset, TCHAR *szText, i
 			attr[i].bg = GetColour(TXC_BACKGROUND);
 		}
 
-		attr[i].style = style;
+		if (szText[i] == ' ')
+			font = (font + 1) % m_nNumFonts;
+
+		attr[i].style = font;
 	}
 
 	//
 	//	Turn any CR/LF at the end of a line into a single 'space' character
-	//	when a selection goes past the end of this line, this extra 'space' will be 
-	//  drawn using the highlight colours.
 	//
 	return StripCRLF(szText, nTextLen);
 }
@@ -244,7 +256,7 @@ int TextView::NeatTextOut(HDC hdc, int xpos, int ypos, TCHAR *szText, int nLen, 
 			SetRect(&rect, xpos, ypos, xpos + sz.cx, ypos + m_nLineHeight);
 
 			// draw the text and erase it's background at the same time
-			ExtTextOut(hdc, xpos, ypos + yoff, ETO_OPAQUE, &rect, szText + lasti, i - lasti, 0);
+			ExtTextOut(hdc, xpos, ypos + yoff, ETO_CLIPPED | ETO_OPAQUE, &rect, szText + lasti, i - lasti, 0);
 
 			xpos += sz.cx;
 		}
@@ -318,12 +330,57 @@ int StripCRLF(TCHAR *szText, int nLength)
 //
 COLORREF TextView::GetColour(UINT idx)
 {
-	switch (idx)
+	if (idx >= TXC_MAX_COLOURS)
+		return 0;
+
+	return REALIZE_SYSCOL(m_rgbColourList[idx]);
+}
+
+COLORREF TextView::SetColour(UINT idx, COLORREF rgbColour)
+{
+	COLORREF rgbOld;
+
+	if (idx >= TXC_MAX_COLOURS)
+		return 0;
+
+	rgbOld = m_rgbColourList[idx];
+	m_rgbColourList[idx] = rgbColour;
+
+	return rgbOld;
+}
+
+//
+//	Paint a checkered rectangle, with each alternate
+//	pixel being assigned a different colour
+//
+void DrawCheckedRect(HDC hdc, RECT *rect, COLORREF fg, COLORREF bg)
+{
+	static WORD wCheckPat[8] =
 	{
-	case TXC_BACKGROUND:	return GetSysColor(COLOR_WINDOW);
-	case TXC_FOREGROUND:	return GetSysColor(COLOR_WINDOWTEXT);
-	case TXC_HIGHLIGHT:		return GetSysColor(COLOR_HIGHLIGHT);
-	case TXC_HIGHLIGHTTEXT:	return GetSysColor(COLOR_HIGHLIGHTTEXT);
-	default:				return 0;
-	}
+		0xaaaa, 0x5555, 0xaaaa, 0x5555, 0xaaaa, 0x5555, 0xaaaa, 0x5555
+	};
+
+	HBITMAP hbmp;
+	HBRUSH  hbr, hbrold;
+	COLORREF fgold, bgold;
+
+	hbmp = CreateBitmap(8, 8, 1, 1, wCheckPat);
+	hbr = CreatePatternBrush(hbmp);
+
+	hbrold = (HBRUSH)SelectObject(hdc, hbr);
+
+	fgold = SetTextColor(hdc, fg);
+	bgold = SetBkColor(hdc, bg);
+
+	PatBlt(hdc, rect->left, rect->top,
+		rect->right - rect->left,
+		rect->bottom - rect->top,
+		PATCOPY);
+
+	SetBkColor(hdc, bgold);
+	SetTextColor(hdc, fgold);
+
+	SelectObject(hdc, hbrold);
+	DeleteObject(hbr);
+	DeleteObject(hbmp);
 }

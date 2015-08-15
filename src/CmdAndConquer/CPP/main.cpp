@@ -1,11 +1,14 @@
 #include <Windows.h>
 #include "../Header/CmdAndConquer_MainWindow.h" 
+#include "../Header/CmdAndConquer_Globals.h"
 
 
 LPCTSTR CmdAndConquer_MainWindow::class_name = _T("CmdAndConquer");
 ATOM CmdAndConquer_MainWindow::class_atom = 0;
 
 HWND CmdAndConquer_MainWindow::hWnd_;
+HWND CmdAndConquer_MainWindow::g_hwndTextView;
+HWND g_hwndTextView;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
@@ -15,6 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 
 		CmdAndConquer_MainWindow::registerWindowClass(hInstance);
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
+		g_hwndTextView = CmdAndConquer_MainWindow::getTextHWND();
 
 		TCHAR szFileName[MAX_PATH];
 		TCHAR szFileTitle[MAX_PATH];
