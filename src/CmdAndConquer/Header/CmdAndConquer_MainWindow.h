@@ -51,6 +51,7 @@ public:
 	static LPCTSTR getClassName(void);
 	static HWND getMainHWND();
 	static HWND getTextHWND();
+	static void setImageList();
 	BOOL DoOpenFile(HWND hWnd, TCHAR * szFileName, TCHAR * szFileTitle);
 	void HandleDropFiles(HWND hWnd, HDROP hDrop);
 private:

@@ -1,6 +1,6 @@
 #include "../Header/CmdAndConquer_MainWindow.h"
 #include "../Header/CmdAndConquer_Globals.h"
-
+HDC ShowPrintDlg(HWND hwndParent);
 
 DWORD g_BytesTransferred = 0;
 
@@ -76,6 +76,26 @@ HWND CmdAndConquer_MainWindow::getTextHWND()
 	return g_hwndTextView;
 }
 
+void CmdAndConquer_MainWindow::setImageList()
+{
+	HIMAGELIST hImgList = ImageList_LoadImage(
+		GetModuleHandle(0),
+		MAKEINTRESOURCE(IDB_BITMAP1),
+		16, 0,
+		RGB(255, 0, 255),
+		IMAGE_BITMAP,
+		LR_LOADTRANSPARENT | LR_CREATEDIBSECTION
+		);
+
+	TextView_SetImageList(g_hwndTextView, hImgList);
+
+	// highlight specific lines with image-index "1"
+	TextView_SetLineImage(g_hwndTextView, 16, 1);
+	TextView_SetLineImage(g_hwndTextView, 5, 1);
+	TextView_SetLineImage(g_hwndTextView, 36, 1);
+	TextView_SetLineImage(g_hwndTextView, 11, 1);
+}
+
 BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
 {
 	if (TextView_OpenFile(g_hwndTextView, szFileName))
@@ -112,6 +132,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 {
 	
 	static int width, height;
+	HIMAGELIST hImgList;
 
 	switch (Msg)
 	{
@@ -136,6 +157,13 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 
 		case WM_DESTROY:
 			PostQuitMessage(0);
+			DeleteObject(g_hFont);
+			return 0;
+
+		case WM_INITMENU:
+			CheckMenuCommand((HMENU)wParam, IDM_VIEW_LINENUMBERS, g_fLineNumbers);
+			CheckMenuCommand((HMENU)wParam, IDM_VIEW_LONGLINES, g_fLongLines);
+			CheckMenuCommand((HMENU)wParam, IDM_VIEW_SAVEEXIT, g_fSaveOnExit);
 			return 0;
 
 		case WM_COMMAND:
@@ -146,17 +174,38 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 					SetWindowFileName(hWnd, _T("Untitled"));
 					TextView_Clear(g_hwndTextView);
 					return 0;
+
 				case IDM_FILE_OPEN:
 					if (ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
-					{
 						DoOpenFile(hWnd, szFileName, szFileTitle);
-					}
 					return 0;
 
+				case IDM_FILE_PRINT:
+					DeleteDC(ShowPrintDlg(hWnd));
+					return 0;
+				
 				case IDM_VIEW_FONT:
 					ShowProperties(hWnd);
 					return 0;
 
+				case IDM_VIEW_LINENUMBERS:
+					g_fLineNumbers = !g_fLineNumbers;
+					TextView_SetStyleBool(g_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
+					return 0;
+
+				case IDM_VIEW_LONGLINES:
+					g_fLongLines = !g_fLongLines;
+					TextView_SetStyleBool(g_hwndTextView, TXS_LONGLINES, g_fLongLines);
+					return 0;
+
+				case IDM_VIEW_SAVEEXIT:
+					g_fSaveOnExit = !g_fSaveOnExit;
+					return 0;
+
+				case IDM_VIEW_SAVENOW:
+					SaveRegSettings();
+					return 0;
+				
 				case IDM_HELP_ABOUT:
 					ShowAboutDlg(hWnd);
 					return 0;

@@ -82,8 +82,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Options\CPP\Options.c" />
+    <ClCompile Include="..\Options\CPP\OptionsDisplay.cpp" />
     <ClCompile Include="..\Options\CPP\OptionsFont.c" />
     <ClCompile Include="..\Options\CPP\OptionsMisc.c" />
+    <ClCompile Include="..\Printing\CmdAndConquer_Printing.cpp" />
     <ClCompile Include="..\TextView\CPP\TextDocument.cpp" />
     <ClCompile Include="..\TextView\CPP\TextView.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewFile.cpp" />
@@ -91,6 +93,7 @@
     <ClCompile Include="..\TextView\CPP\TextViewMouse.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
+    <ClCompile Include="..\Utilities\CmdAndConquer_Utilities.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_Globals.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
@@ -102,13 +105,17 @@
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />
     <ClInclude Include="..\TextView\Header\TextViewInternal.h" />
+    <ClInclude Include="..\Utilities\racursor.h" />
     <ClInclude Include="Header\CmdAndConquer_Globals.h" />
     <ClInclude Include="Header\CmdAndConquer_MainWindow.h" />
     <ClInclude Include="resource\resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resource\bitmap1.bmp" />
     <Image Include="resource\bitmap3.bmp" />
     <Image Include="resource\bitmap4.bmp" />
+    <Image Include="resource\icon1.ico" />
+    <Image Include="resource\icon2.ico" />
     <Image Include="resource\toolbar1.bmp" />
     <Image Include="resource\toolbar2.bmp" />
     <Image Include="resource\toolbar3.bmp" />

@@ -15,13 +15,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 	try
 	{
 		InitTextView();
-
+		
 		CmdAndConquer_MainWindow::registerWindowClass(hInstance);
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
 		g_hwndTextView = CmdAndConquer_MainWindow::getTextHWND();
+		CmdAndConquer_MainWindow::setImageList();
 
-		TCHAR szFileName[MAX_PATH];
-		TCHAR szFileTitle[MAX_PATH];
+		LoadRegSettings();
+		ApplyRegSettings();
 
 		HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR1));
 
@@ -63,6 +64,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 		MessageBox(NULL, _T("Unknown unhandled exception thrown"), _T("Abnormal termination"), MB_OK);
 	}
 
-	return -1;
+	if (g_fSaveOnExit)
+		SaveRegSettings();
+
+	return 0;
 }
 

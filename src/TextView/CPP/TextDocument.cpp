@@ -1,10 +1,3 @@
-//
-//	MODULE:		TextDocument.cpp
-//
-//	PURPOSE:	Basic implementation of a text data-sequence class
-//
-//	NOTES:		www.catch22.net
-//
 #include <windows.h>
 #include "../Header/TextDocument.h"
 
