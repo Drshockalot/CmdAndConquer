@@ -29,6 +29,8 @@ BOOL  g_fSelMargin;
 BOOL  g_fSaveOnExit;
 int	  g_nLongLineLimit;
 
+HFONT g_hFont;
+
 COLORREF g_rgbColourList[TXC_MAX_COLOURS];
 COLORREF g_rgbCustColours[16];
 extern COLORREF g_rgbAutoColourList[];

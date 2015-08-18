@@ -13,7 +13,7 @@ extern "C" {
 //	TextView API declared here
 //
 BOOL InitTextView();
-HWND CreateTextView(HWND hwndParent, HINSTANCE hInst, RECT rc);
+HWND CreateTextView(HWND hwndParent);
 COLORREF RealizeColour(COLORREF col);
 
 //

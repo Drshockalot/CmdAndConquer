@@ -63,17 +63,11 @@
     <ClCompile Include="..\Options\CPP\OptionsMisc.c">
       <Filter>Source Files\Options</Filter>
     </ClCompile>
-    <ClCompile Include="CPP\CmdAndConquer_Globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Utilities\CmdAndConquer_Utilities.cpp">
-      <Filter>Source Files\Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Printing\CmdAndConquer_Printing.cpp">
+    <ClCompile Include="..\Printing\Printing.cpp">
       <Filter>Source Files\Printing</Filter>
     </ClCompile>
-    <ClCompile Include="..\Options\CPP\OptionsDisplay.cpp">
-      <Filter>Source Files\Options</Filter>
+    <ClCompile Include="..\Utilities\Utilities.cpp">
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

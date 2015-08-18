@@ -4,9 +4,11 @@ HDC ShowPrintDlg(HWND hwndParent);
 
 DWORD g_BytesTransferred = 0;
 
-CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE)
+CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE), hWnd_(NULL)
 {
-	hWnd_ = NULL;
+	//	Register the window class before creation
+	registerWindowClass(hInstance);
+
 	assert(HIWORD(class_atom) == 0);
 	assert(class_atom);
 	if (!class_atom)
@@ -36,21 +38,22 @@ void CmdAndConquer_MainWindow::registerWindowClass(HINSTANCE hInstance)
 	if (class_atom)
 		throw std::runtime_error("registerWindowClass() called multiple times");
 
-	WNDCLASS wc = {
-		CS_HREDRAW | CS_VREDRAW,
-		&CmdAndConquer_MainWindow::InitialWndProc,
-		0,
-		sizeof(CmdAndConquer_MainWindow *),
-		hInstance,
-		NULL,
-		NULL,
-		reinterpret_cast<HBRUSH>(COLOR_BACKGROUND),
-		NULL,
-		CmdAndConquer_MainWindow::class_name
-	};
-	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
+	WNDCLASSEX wcx;
+	
+	wcx.cbSize = sizeof(wcx);
+	wcx.style = CS_HREDRAW | CS_VREDRAW;
+	wcx.lpfnWndProc = &CmdAndConquer_MainWindow::InitialWndProc;
+	wcx.cbClsExtra = 0;
+	wcx.cbWndExtra = 0;
+	wcx.hInstance = hInstance;
+	wcx.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcx.hbrBackground = (HBRUSH)0;
+	wcx.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
+	wcx.lpszClassName = CmdAndConquer_MainWindow::class_name;
+	wcx.hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, LR_CREATEDIBSECTION);
+	wcx.hIconSm = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 16, 16, LR_CREATEDIBSECTION);
 
-	class_atom = RegisterClass(&wc);
+	class_atom = RegisterClassEx(&wcx);
 	if (class_atom == 0) throw std::runtime_error("Unable to register window class");
 }
 
@@ -71,11 +74,6 @@ HWND CmdAndConquer_MainWindow::getMainHWND()
 	return hWnd_;
 }
 
-HWND CmdAndConquer_MainWindow::getTextHWND()
-{
-	return g_hwndTextView;
-}
-
 void CmdAndConquer_MainWindow::setImageList()
 {
 	HIMAGELIST hImgList = ImageList_LoadImage(
@@ -87,18 +85,18 @@ void CmdAndConquer_MainWindow::setImageList()
 		LR_LOADTRANSPARENT | LR_CREATEDIBSECTION
 		);
 
-	TextView_SetImageList(g_hwndTextView, hImgList);
+	TextView_SetImageList(CC_hwndTextView, hImgList);
 
 	// highlight specific lines with image-index "1"
-	TextView_SetLineImage(g_hwndTextView, 16, 1);
-	TextView_SetLineImage(g_hwndTextView, 5, 1);
-	TextView_SetLineImage(g_hwndTextView, 36, 1);
-	TextView_SetLineImage(g_hwndTextView, 11, 1);
+	TextView_SetLineImage(CC_hwndTextView, 16, 1);
+	TextView_SetLineImage(CC_hwndTextView, 5, 1);
+	TextView_SetLineImage(CC_hwndTextView, 36, 1);
+	TextView_SetLineImage(CC_hwndTextView, 11, 1);
 }
 
 BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
 {
-	if (TextView_OpenFile(g_hwndTextView, szFileName))
+	if (TextView_OpenFile(this->CC_hwndTextView, szFileName))
 	{
 		SetWindowFileName(hWnd, szFileTitle);
 		return TRUE;
@@ -128,11 +126,9 @@ void CmdAndConquer_MainWindow::HandleDropFiles(HWND hWnd, HDROP hDrop)
 	DragFinish(hDrop);
 }
 
-LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	
 	static int width, height;
-	HIMAGELIST hImgList;
 
 	switch (Msg)
 	{
@@ -143,16 +139,13 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(lpCreateParam);
 			assert(this_window == this);
 
-			PostMessage(hWnd, WM_COMMAND, IDM_FILE_NEW, 0);
+			this->onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
 
-			DragAcceptFiles(hWnd, TRUE);
-
-			onCreate(hWnd_, reinterpret_cast<CREATESTRUCT*>(lParam));
 			return 0;
 		}
 
 		case WM_DROPFILES:
-			HandleDropFiles(hWnd, (HDROP)wParam);
+			this->HandleDropFiles(hWnd, (HDROP)wParam);
 			return 0;
 
 		case WM_DESTROY:
@@ -171,13 +164,13 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			switch (LOWORD(wParam))
 			{
 				case IDM_FILE_NEW:
-					SetWindowFileName(hWnd, _T("Untitled"));
-					TextView_Clear(g_hwndTextView);
+					this->SetWindowFileName(hWnd, _T("Untitled"));
+					TextView_Clear(this->CC_hwndTextView);
 					return 0;
 
 				case IDM_FILE_OPEN:
-					if (ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
-						DoOpenFile(hWnd, szFileName, szFileTitle);
+					if (this->ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
+						this->DoOpenFile(hWnd, szFileName, szFileTitle);
 					return 0;
 
 				case IDM_FILE_PRINT:
@@ -190,12 +183,12 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 
 				case IDM_VIEW_LINENUMBERS:
 					g_fLineNumbers = !g_fLineNumbers;
-					TextView_SetStyleBool(g_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
+					TextView_SetStyleBool(this->CC_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
 					return 0;
 
 				case IDM_VIEW_LONGLINES:
 					g_fLongLines = !g_fLongLines;
-					TextView_SetStyleBool(g_hwndTextView, TXS_LONGLINES, g_fLongLines);
+					TextView_SetStyleBool(this->CC_hwndTextView, TXS_LONGLINES, g_fLongLines);
 					return 0;
 
 				case IDM_VIEW_SAVEEXIT:
@@ -207,14 +200,14 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 					return 0;
 				
 				case IDM_HELP_ABOUT:
-					ShowAboutDlg(hWnd);
+					this->ShowAboutDlg(hWnd);
 					return 0;
 			}
 			return 0;
 		}
 
 		case WM_SETFOCUS:
-			SetFocus(g_hwndTextView);
+			SetFocus(this->CC_hwndTextView);
 			return 0;
 
 		case WM_CLOSE:
@@ -225,8 +218,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::actualWndProc(HWND hWnd, UINT Msg, WP
 			width = (short)LOWORD(lParam);
 			height = (short)HIWORD(lParam);
 
-			MoveWindow(g_hwndTextView, 0, 0 /*29 for toolbar*/, width, height /*- 30 for toolbar*/, TRUE);
-			//MoveWindow(hwndLineNo, 0, 0 /*29 for toolbar*/, 15, height /*- 30 for toolbar*/, TRUE);
+			MoveWindow(this->CC_hwndTextView, 0, 0 /*29 for toolbar*/, width, height /*- 30 for toolbar*/, TRUE);
 			return 0;
 		
 		default:
@@ -252,7 +244,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::InitialWndProc(HWND hWnd, UINT Msg, W
 		SetWindowLongPtr(hWnd,
 			GWLP_WNDPROC,
 			reinterpret_cast<LONG_PTR>(&CmdAndConquer_MainWindow::StaticWndProc)); 
-		return this_window->actualWndProc(hWnd, Msg, wParam, lParam);
+		return this_window->WndProc(hWnd, Msg, wParam, lParam);
 	}
 
 	return DefWindowProc(hWnd, Msg, wParam, lParam);
@@ -264,25 +256,19 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::StaticWndProc(HWND hWnd, UINT Msg, WP
 	CmdAndConquer_MainWindow * this_window = reinterpret_cast<CmdAndConquer_MainWindow *>(user_data);
 	assert(this_window);
 	assert(hWnd == this_window->hWnd_);
-	return this_window->actualWndProc(hWnd, Msg, wParam, lParam);
+	return this_window->WndProc(hWnd, Msg, wParam, lParam);
 }
 
 int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 {	
-	int width, height;
-	RECT wndRECT;
-	if (GetClientRect(hWnd, &wndRECT))
-	{
-		width = wndRECT.right - wndRECT.left;
-		height = wndRECT.bottom - wndRECT.top;
-	}
+	PostMessage(hWnd, WM_COMMAND, IDM_FILE_NEW, 0);
 
-	//RECT lineNorc = { 0, 29, 15, height };
-	RECT mainBoxrc = { 0, 0, width, height };
-	
-	//hwndLineNo = CreateTextView(hWnd_, cs->hInstance, lineNorc);
-	g_hwndTextView = CreateTextView(hWnd_, cs->hInstance, mainBoxrc);
+	DragAcceptFiles(hWnd, TRUE);
 
+	this->CC_hwndTextView = CreateTextView(hWnd_);
+	g_hwndTextView = this->CC_hwndTextView;
+
+	this->setImageList();
 	//initToolbar(hWnd, cs);
 
 	return 0;
@@ -403,22 +389,4 @@ void CmdAndConquer_MainWindow::ShowAboutDlg(HWND hwndParent)
 		APP_TITLE,
 		MB_OK | MB_ICONINFORMATION
 		);
-}
-
-int CmdAndConquer_MainWindow::PointsToLogical(int nPointSize)
-{
-	HDC hdc = GetDC(0);
-	int nLogSize = -MulDiv(nPointSize, GetDeviceCaps(hdc, LOGPIXELSY), 72);
-	ReleaseDC(0, hdc);
-
-	return nLogSize;
-}
-
-HFONT CmdAndConquer_MainWindow::EasyCreateFont(int nPointSize, BOOL fBold, TCHAR *szFace)
-{
-	return CreateFont(PointsToLogical(nPointSize),
-						0, 0, 0,
-						fBold ? FW_BOLD : 0,
-						0, 0, 0, 0, 0, 0, 0, 0,
-						szFace);
 }

@@ -34,6 +34,7 @@ extern "C" {
 	extern HWND		g_hwndTextView;
 	extern HWND		g_hwndMain;
 	extern HFONT	g_hFont;
+	
 
 #define REGLOC _T("SOFTWARE\\Catch22\\Neatpad")
 

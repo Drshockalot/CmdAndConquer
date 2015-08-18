@@ -82,10 +82,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Options\CPP\Options.c" />
-    <ClCompile Include="..\Options\CPP\OptionsDisplay.cpp" />
     <ClCompile Include="..\Options\CPP\OptionsFont.c" />
     <ClCompile Include="..\Options\CPP\OptionsMisc.c" />
-    <ClCompile Include="..\Printing\CmdAndConquer_Printing.cpp" />
+    <ClCompile Include="..\Printing\Printing.cpp" />
     <ClCompile Include="..\TextView\CPP\TextDocument.cpp" />
     <ClCompile Include="..\TextView\CPP\TextView.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewFile.cpp" />
@@ -93,8 +92,7 @@
     <ClCompile Include="..\TextView\CPP\TextViewMouse.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
-    <ClCompile Include="..\Utilities\CmdAndConquer_Utilities.cpp" />
-    <ClCompile Include="CPP\CmdAndConquer_Globals.cpp" />
+    <ClCompile Include="..\Utilities\Utilities.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
   </ItemGroup>
