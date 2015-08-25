@@ -77,7 +77,6 @@ LONG TextView::OnSize(UINT nFlags, int width, int height)
 		RepositionCaret();
 	}
 
-	UpdateMarginWidth();
 	SetupScrollbars();
 
 	return 0;

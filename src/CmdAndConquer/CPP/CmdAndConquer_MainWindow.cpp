@@ -2,6 +2,12 @@
 #include "../Header/CmdAndConquer_Globals.h"
 HDC ShowPrintDlg(HWND hwndParent);
 
+TCHAR		g_szAppName[] = APP_TITLE;
+HWND		g_hwndMain;
+
+TCHAR g_szFileName[MAX_PATH];
+TCHAR g_szFileTitle[MAX_PATH];
+
 CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE), hWnd_(NULL)
 {
 	//	Register the window class before creation
@@ -94,9 +100,19 @@ void CmdAndConquer_MainWindow::setImageList()
 
 BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
 {
+	int fmt, fmtlook[] =
+	{
+		IDM_VIEW_ASCII, IDM_VIEW_UTF8, IDM_VIEW_UTF16, IDM_VIEW_UTF16BE
+	};
+
 	if (TextView_OpenFile(this->CC_hwndTextView, szFileName))
 	{
 		SetWindowFileName(hWnd, szFileTitle);
+
+		fmt = TextView_GetFormat(g_hwndTextView);
+
+		CheckMenuRadioItem(GetMenu(hWnd), IDM_VIEW_ASCII, IDM_VIEW_UTF16BE, fmtlook[fmt], MF_BYCOMMAND);
+
 		return TRUE;
 	}
 	else
@@ -106,19 +122,28 @@ BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *s
 	}
 }
 
+void CmdAndConquer_MainWindow::OpenUnicodeFile(HWND hWnd, TCHAR *szFile)
+{
+	TCHAR *name;
+
+	//	save current file's position
+	SaveFileData(g_szFileName, hWnd);
+
+	_tcscpy_s(g_szFileName, szFile);
+
+	name = _tcsrchr(g_szFileName, '\\');
+	_tcscpy_s(g_szFileTitle, name ? name + 1 : szFile);
+
+	DoOpenFile(hWnd, g_szFileName, g_szFileTitle);
+}
+
 void CmdAndConquer_MainWindow::HandleDropFiles(HWND hWnd, HDROP hDrop)
 {
 	TCHAR buf[MAX_PATH];
-	TCHAR *name;
 
 	if (DragQueryFile(hDrop, 0, buf, MAX_PATH))
 	{
-		strcpy_s(szFileName, buf);
-
-		name = strrchr(szFileName, '\\');
-		strcpy_s(szFileTitle, name ? name + 1 : buf);
-
-		DoOpenFile(hWnd, szFileName, szFileTitle);
+		OpenUnicodeFile(hWnd, buf);
 	}
 
 	DragFinish(hDrop);
@@ -147,6 +172,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			return 0;
 
 		case WM_DESTROY:
+			SaveFileData(g_szFileName, hWnd);
 			PostQuitMessage(0);
 			DeleteObject(g_hFont);
 			return 0;

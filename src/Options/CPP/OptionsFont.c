@@ -53,27 +53,27 @@ COLORREF g_rgbAutoColourList[TXC_MAX_COLOURS] =
 struct _CUSTCOL
 {
 	COLORREF cr;
-	char *szName;
+	TCHAR *szName;
 
 } CUSTCOL[NUM_DEFAULT_COLOURS] =
 {
-	{ RGB(255,255,255),	"Automatic" },
-	{ RGB(0,0,0),		"Black" },
-	{ RGB(255,255,255),	"White" },
-	{ RGB(128, 0, 0),	"Maroon" },
-	{ RGB(0, 128,0),	"Dark Green" },
-	{ RGB(128,128,0),	"Olive" },
-	{ RGB(0,0,128),		"Dark Blue" },
-	{ RGB(128,0,128),	"Purple" },
-	{ RGB(0,128,128),	"Aquamarine" },
-	{ RGB(196,196,196),	"Light Grey" },
-	{ RGB(128,128,128),	"Dark Grey" },
-	{ RGB(255,0,0),		"Red" },
-	{ RGB(0,255,0),		"Green" },
-	{ RGB(255,255,0),	"Yellow" },
-	{ RGB(0,0,255),		"Blue" },
-	{ RGB(255,0,255),	"Magenta" },
-	{ RGB(0,255,255),	"Cyan" },
+	{ RGB(255,255,255),	_T("Automatic") },
+	{ RGB(0,0,0),		_T("Black") },
+	{ RGB(255,255,255),	_T("White") },
+	{ RGB(128, 0, 0),	_T("Maroon") },
+	{ RGB(0, 128,0),	_T("Dark Green") },
+	{ RGB(128,128,0),	_T("Olive") },
+	{ RGB(0,0,128),		_T("Dark Blue") },
+	{ RGB(128,0,128),	_T("Purple") },
+	{ RGB(0,128,128),	_T("Aquamarine") },
+	{ RGB(196,196,196),	_T("Light Grey") },
+	{ RGB(128,128,128),	_T("Dark Grey") },
+	{ RGB(255,0,0),		_T("Red") },
+	{ RGB(0,255,0),		_T("Green") },
+	{ RGB(255,255,0),	_T("Yellow") },
+	{ RGB(0,0,255),		_T("Blue") },
+	{ RGB(255,0,255),	_T("Magenta") },
+	{ RGB(0,255,255),	_T("Cyan") },
 	//	{ RGB(255,255,255),	"Custom..." },
 };
 
@@ -114,7 +114,7 @@ DWORD AddComboStringWithData(HWND hwnd, UINT uCtrl, TCHAR *szText, DWORD data)
 int CALLBACK EnumFontNames(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD FontType, LPARAM lParam)
 {
 	HWND hwndCombo = (HWND)lParam;
-	char *pszName = lpelfe->elfLogFont.lfFaceName;
+	TCHAR *pszName = lpelfe->elfLogFont.lfFaceName;
 
 	//	if(pszName[0] == '@')
 	//		return 1;
@@ -257,7 +257,7 @@ void DrawItem_DefaultColours(DRAWITEMSTRUCT *dis)
 //
 BOOL FontCombo_DrawItem(HWND hwnd, DRAWITEMSTRUCT *dis)
 {
-	char		szText[100];
+	TCHAR		szText[100];
 
 	BOOL		fFixed = LOWORD(dis->itemData);
 	BOOL		fTrueType = HIWORD(dis->itemData);
@@ -294,7 +294,7 @@ BOOL FontCombo_DrawItem(HWND hwnd, DRAWITEMSTRUCT *dis)
 
 	// draw the text
 	ExtTextOut(dis->hDC, xpos, ypos,
-		ETO_CLIPPED | ETO_OPAQUE, &dis->rcItem, szText, strlen(szText), 0);
+		ETO_CLIPPED | ETO_OPAQUE, &dis->rcItem, szText, _tcslen(szText), 0);
 
 	// draw a 'TT' icon if the font is TRUETYPE
 	if (fTrueType)
@@ -393,7 +393,7 @@ int CALLBACK EnumFontSizes(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 	{
 		for (i = 0; i < (sizeof(ttsizes) / sizeof(ttsizes[0])); i++)
 		{
-			wsprintf(ach, "%d", ttsizes[i]);
+			_stprintf_s(ach, ttsizes[i], _T("%d"));
 			idx = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)ach);
 			SendMessage(hwndCombo, CB_SETITEMDATA, idx, ttsizes[i]);
 			//nFontSizes[i] = ttsizes[i];
@@ -404,7 +404,7 @@ int CALLBACK EnumFontSizes(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 	else
 	{
 		int size = LogicalToPoints(lpntme->ntmTm.tmHeight);
-		wsprintf(ach, "%d", size);
+		_stprintf_s(ach, size, _T("%d"));
 
 		count = SendMessage(hwndCombo, CB_GETCOUNT, 0, 0);
 
@@ -492,7 +492,7 @@ LONG CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		ExtTextOut(ps.hdc, 0, 0, ETO_OPAQUE, &rect, 0, 0, 0);
 		hold = SelectObject(ps.hdc, g_hPreviewFont);
 
-		DrawText(ps.hdc, "Sample Text", -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+		DrawText(ps.hdc, _T("Sample Text"), -1, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 
 		SelectObject(ps.hdc, hold);
 		EndPaint(hwnd, &ps);
@@ -502,14 +502,14 @@ LONG CALLBACK PreviewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return CallWindowProc(oldPreviewProc, hwnd, msg, wParam, lParam);
 }
 
-void AddColourListItem(HWND hwnd, UINT uItem, int fgIdx, int bgIdx, char *szName)
+void AddColourListItem(HWND hwnd, UINT uItem, int fgIdx, int bgIdx, TCHAR *szName)
 {
 	HWND hwndCtrl = GetDlgItem(hwnd, uItem);
 	int idx = SendMessage(hwndCtrl, LB_ADDSTRING, 0, (LONG)szName);
 	SendMessage(hwndCtrl, LB_SETITEMDATA, idx, MAKELONG(fgIdx, bgIdx));
 }
 
-void AddColourComboItem(HWND hwnd, UINT uItem, COLORREF col, char *szName)
+void AddColourComboItem(HWND hwnd, UINT uItem, COLORREF col, TCHAR *szName)
 {
 	HWND hwndCtrl = GetDlgItem(hwnd, uItem);
 	int idx = SendMessage(hwndCtrl, CB_ADDSTRING, 0, (LONG)szName);
@@ -538,17 +538,11 @@ void UpdatePreviewPane(HWND hwnd)
 	idx = SendDlgItemMessage(hwnd, IDC_ITEMLIST, LB_GETCURSEL, 0, 0);
 	data = SendDlgItemMessage(hwnd, IDC_ITEMLIST, LB_GETITEMDATA, idx, 0);
 
-	auto data1 = LOWORD(data);
-	auto data2 = HIWORD(data);
-
 	//idx = SendDlgItemMessage(hwnd, IDC_FGCOLCOMBO, CB_GETCURSEL, 0, 0);
 	//g_crPreviewFG = SendDlgItemMessage(hwnd, IDC_FGCOLCOMBO, CB_GETITEMDATA, idx, 0);
-	if (LOWORD(data) < TXC_MAX_COLOURS && HIWORD(data) < TXC_MAX_COLOURS)
-	{
-		g_crPreviewFG = REALIZE_SYSCOL(g_rgbTempColourList[LOWORD(data)]);
-		g_crPreviewBG = REALIZE_SYSCOL(g_rgbTempColourList[HIWORD(data)]);
-	}
-	
+
+	g_crPreviewFG = REALIZE_SYSCOL(g_rgbTempColourList[LOWORD(data)]);
+	g_crPreviewBG = REALIZE_SYSCOL(g_rgbTempColourList[HIWORD(data)]);
 
 
 	//idx = SendDlgItemMessage(hwnd, IDC_BGCOLCOMBO, CB_GETCURSEL, 0, 0);
@@ -694,12 +688,13 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	//g_rgbAutoColourList[TXC_LINENUMBER]	= MixRGB(GetSysColor(COLOR_3DFACE), GetSysColor(COLOR_WINDOW));
 	//g_rgbAutoColourList[TXC_LINENUMBER] = MixRGB(g_rgbAutoColourList[TXC_LINENUMBER], GetSysColor(COLOR_WINDOW));
 
-	AddColourListItem(hwnd, IDC_LIST1, TXC_FOREGROUND, TXC_BACKGROUND, "Text");
-	AddColourListItem(hwnd, IDC_LIST1, TXC_HIGHLIGHTTEXT, TXC_HIGHLIGHT, "Selected Text");
-	AddColourListItem(hwnd, IDC_LIST1, TXC_HIGHLIGHTTEXT2, TXC_HIGHLIGHT2, "Inactive Selection");
-	AddColourListItem(hwnd, IDC_LIST1, TXC_SELMARGIN1, TXC_SELMARGIN2, "Left Margin");
-	AddColourListItem(hwnd, IDC_LIST1, TXC_LINENUMBERTEXT, TXC_LINENUMBER, "Line Numbers");
-	AddColourListItem(hwnd, IDC_LIST1, TXC_LONGLINETEXT, TXC_LONGLINE, "Long Lines");
+	AddColourListItem(hwnd, IDC_LIST1, TXC_FOREGROUND, TXC_BACKGROUND, _T("Text"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_HIGHLIGHTTEXT, TXC_HIGHLIGHT, _T("Selected Text"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_HIGHLIGHTTEXT2, TXC_HIGHLIGHT2, _T("Inactive Selection"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_SELMARGIN1, TXC_SELMARGIN2, _T("Left Margin"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_LINENUMBERTEXT, TXC_LINENUMBER, _T("Line Numbers"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_LONGLINETEXT, TXC_LONGLINE, _T("Long Lines"));
+	AddColourListItem(hwnd, IDC_LIST1, TXC_CURRENTLINETEXT, TXC_CURRENTLINE, _T("Current Line"));
 
 	SendDlgItemMessage(hwnd, IDC_ITEMLIST, LB_SETCURSEL, 0, 0);
 	PostMessage(hwnd, WM_COMMAND, MAKEWPARAM(IDC_ITEMLIST, LBN_SELCHANGE), (LPARAM)GetDlgItem(hwnd, IDC_ITEMLIST));
@@ -719,7 +714,8 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	//
 	//	Select
 	//
-	wsprintf(ach, "%d", g_nFontSize);
+	g_nFontSize = 32;
+	_stprintf_s(ach, g_nFontSize, _T("%d"));
 
 	SendDlgItemMessage(hwnd, IDC_SIZELIST, CB_SELECTSTRING, -1, (LONG)ach);
 	SendDlgItemMessage(hwnd, IDC_FONTLIST, CB_SELECTSTRING, -1, (LONG)g_szFontName);

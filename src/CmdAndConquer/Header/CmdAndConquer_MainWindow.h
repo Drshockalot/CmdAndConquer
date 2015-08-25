@@ -30,6 +30,9 @@ typedef std::basic_stringstream<TCHAR> tstringstream;
 #define APP_TITLE   _T("CmdAndConquer")
 #define WEBSITE_STR _T("www.drshockalot.com")
 
+BOOL SaveFileData(TCHAR *szPath, HWND hwnd);
+BOOL LoadFileData(TCHAR *szPath, HWND hwnd);
+
 class CmdAndConquer_MainWindow
 {
 public:
@@ -44,6 +47,9 @@ public:
 	static ATOM getClassATOM(void);		//	Necessary?
 	static LPCTSTR getClassName(void);	//	Necessary?
 	HWND getMainHWND();
+
+	//	Public Functions
+	void OpenUnicodeFile(HWND hWnd, TCHAR * szFile);
 
 private:
 	
@@ -70,7 +76,6 @@ private:
 	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-	//	Private Functions
 	int onCreate(const HWND hWnd, CREATESTRUCT *cs);
 	void setImageList();
 	void HandleDropFiles(HWND hWnd, HDROP hDrop);

@@ -266,49 +266,39 @@ void TextView::PaintText(HDC hdc, ULONG nLineNo, RECT *rect)
 	TCHAR		buff[TEXTBUFSIZE];
 	ATTR		attr[TEXTBUFSIZE];
 
-	ULONG		charoff = 0;
-	ULONG		colno = 0;
-	int			len;
+	ULONG		off_chars;
 
 	int			xpos = rect->left;
 	int			ypos = rect->top;
 	int			xtab = rect->left;
 
+	ULONG		colno = 0;
+	int			len;
+
 	//
 	//	TODO: Clip text to left side of window
 	//
 
+	TextIterator itor = m_pTextDoc->iterate_line(nLineNo, &off_chars);
 
 	//
 	//	Keep drawing until we reach the edge of the window
 	//
-	while (xpos < rect->right)
+	while ((len = itor.gettext(buff, TEXTBUFSIZE)) > 0)
 	{
-		ULONG fileoff;
-		int	  lasti = 0;
-		int   i;
-
-		//
-		//	Get a block of text for drawing
-		//
-		if ((len = m_pTextDoc->getline(nLineNo, charoff, buff, TEXTBUFSIZE, &fileoff)) == 0)
-			break;
-
-		// ready for the next block of characters (do this before stripping CR/LF)
-		fileoff += charoff;
-		charoff += len;
-
-
 		//
 		//	Apply text attributes - 
 		//	i.e. syntax highlighting, mouse selection colours etc.
 		//
-		len = ApplyTextAttributes(nLineNo, fileoff, colno, buff, len, attr);
+		len = ApplyTextAttributes(nLineNo, off_chars, colno, buff, len, attr);
+
+		if (len == 0)
+			Sleep(0);
 
 		//
 		//	Display the text by breaking it into spans of colour/style
 		//
-		for (i = 0; i <= len; i++)
+		for (int i = 0, lasti = 0; i <= len; i++)
 		{
 			// if the colour or font changes, then need to output 
 			if (i == len ||
@@ -321,6 +311,8 @@ void TextView::PaintText(HDC hdc, ULONG nLineNo, RECT *rect)
 				lasti = i;
 			}
 		}
+
+		off_chars += len;
 	}
 
 	//
@@ -410,7 +402,7 @@ int TextView::ApplyTextAttributes(ULONG nLineNo, ULONG nOffset, ULONG &nColumn, 
 	//
 	//	Turn any CR/LF at the end of a line into a single 'space' character
 	//
-	return StripCRLF(szText, nTextLen);
+	return StripCRLF(szText, nTextLen, false);
 }
 
 //
@@ -450,7 +442,7 @@ int TextView::NeatTextOut(HDC hdc, int xpos, int ypos, TCHAR *szText, int nLen, 
 	}
 
 	// loop over each character
-	for (i = 0; i <= nLen; i++)
+	for (i = 0; i <= nLen; )
 	{
 		int  yoff = NeatTextYOffset(font);
 
@@ -492,6 +484,11 @@ int TextView::NeatTextOut(HDC hdc, int xpos, int ypos, TCHAR *szText, int nLen, 
 				lasti = i + 1;
 			}
 		}
+
+		/*	if(szText[i] >= 0xD800 && szText[i] <= 0xDBFF)
+		i+=2;
+		else*/
+		i++;
 	}
 
 	// return the width of text drawn
@@ -511,32 +508,39 @@ void PaintRect(HDC hdc, int x, int y, int width, int height, COLORREF fill)
 //	Strip CR/LF combinations from the end of a line and
 //  replace with a single space character (for drawing purposes)
 //
-int StripCRLF(TCHAR *szText, int nLength)
+int TextView::StripCRLF(TCHAR *szText, int nLength, bool fAllow)
 {
 	if (nLength >= 2)
 	{
 		if (szText[nLength - 2] == '\r' && szText[nLength - 1] == '\n')
 		{
-			szText[nLength - 2] = ' ';
-			return --nLength;
+			if (m_nCRLFMode & TXL_CRLF)
+			{
+				// convert CRLF to a single space
+				szText[nLength - 2] = ' ';
+				return nLength - 1 - (int)fAllow;
+			}
+			else
+			{
+				return nLength;
+			}
 		}
 	}
 
-	/*	if(nLength >= 1)
+	if (nLength >= 1)
 	{
-	if(szText[nLength-1] == '\r' || szText[nLength-1] == '\n')
-	{
-	szText[nLength-1] = ' ';
-	nLength--;
+		if (szText[nLength - 1] == '\r' && (m_nCRLFMode & TXL_CR) ||
+			szText[nLength - 1] == '\n' && (m_nCRLFMode & TXL_LF))
+		{
+			// convert CR or LF to a single space
+			szText[nLength - 1] = ' ';
+			return nLength - (int)fAllow;
+		}
 	}
-	}*/
 
 	return nLength;
 }
 
-//
-//
-//
 COLORREF TextView::LineColour(ULONG nLineNo)
 {
 	if (m_nCurrentLine == nLineNo && CheckStyle(TXS_HIGHLIGHTCURLINE))
@@ -600,6 +604,9 @@ COLORREF TextView::SetColour(UINT idx, COLORREF rgbColour)
 
 	if (idx >= TXC_MAX_COLOURS)
 		return 0;
+
+	//if(idx == 13)
+	//	__asm int 3;
 
 	rgbOld = m_rgbColourList[idx];
 	m_rgbColourList[idx] = rgbColour;

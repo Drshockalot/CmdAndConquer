@@ -25,6 +25,9 @@
     <Filter Include="Header Files\Utilities">
       <UniqueIdentifier>{aa9a35f7-76da-4bb6-a727-2ea062dca90f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Unicode">
+      <UniqueIdentifier>{069b48e7-3dff-4df9-aa23-5de39cd812d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp">
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="..\Utilities\Utilities.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Unicode\Unicode.cpp">
+      <Filter>Source Files\Unicode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

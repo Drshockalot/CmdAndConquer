@@ -14,6 +14,10 @@
 #include "../Header/TextViewInternal.h"
 #include "../../Utilities/racursor.h"
 
+#ifndef SPI_GETCARETWIDTH
+#define SPI_GETCARETWIDTH 0x2006
+#endif
+
 //
 //	Constructor for TextView class
 //
@@ -43,9 +47,8 @@ TextView::TextView(HWND hwnd)
 	m_nCaretWidth = 0;
 	m_nLongLineLimit = 80;
 	m_nLineInfoCount = 0;
-#ifndef SPI_GETCARETWIDTH
-#define SPI_GETCARETWIDTH 0x2006
-#endif
+	m_nCRLFMode = TXL_ALL;
+
 	SystemParametersInfo(SPI_GETCARETWIDTH, 0, &m_nCaretWidth, 0);
 
 	if (m_nCaretWidth == 0)
@@ -302,6 +305,7 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		else
 			break;
 
+
 	case WM_TIMER:
 		return OnTimer(wParam);
 
@@ -335,6 +339,9 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case TXM_SETLINEIMAGE:
 		return SetLineImage(wParam, lParam);
+
+	case TXM_GETFORMAT:
+		return m_pTextDoc->getformat();
 
 	default:
 		break;

@@ -17,6 +17,16 @@ HWND CreateTextView(HWND hwndParent);
 COLORREF RealizeColour(COLORREF col);
 
 //
+// currently supported CmdAndConquer Codepages
+//
+#define NCP_ASCII		0
+#define NCP_UTF8		1
+#define NCP_UTF16		2
+#define NCP_UTF16BE		3
+#define NCP_UTF32		4
+#define NCP_UTF32BE		5
+
+//
 //	TextView Window Messages defined here
 //
 
@@ -33,6 +43,7 @@ COLORREF RealizeColour(COLORREF col);
 #define TXM_SETIMAGELIST		 (TXM_BASE + 9)
 #define TXM_SETLONGLINE			 (TXM_BASE + 10)
 #define TXM_SETLINEIMAGE		 (TXM_BASE + 11)
+#define TXM_GETFORMAT			 (TXM_BASE + 12)
 
 //
 //	TextView Window Styles defined here
@@ -45,13 +56,21 @@ COLORREF RealizeColour(COLORREF col);
 #define TXS_HIGHLIGHTCURLINE	16
 
 //
+//	End-of-line mode
+//
+#define TXL_LF				1		// line-feed
+#define TXL_CR				2		// carriage-return
+#define TXL_CRLF			4		// carriage-return, line-feed (default)
+#define TXL_ALL				7		// allow all forms regardless
+
+//
 //	TextView Message Macros defined here
 //
 
-#define TextView_OpenFile(hwndTV, szFile)	SendMessage((hwndTV), TXM_OPENFILE, 0, (LPARAM)(szFile))
-#define TextView_Clear(hwndTV)				SendMessage((hwndTV), TXM_CLEAR, 0, 0)
+#define TextView_OpenFile(hwndTV, szFile) SendMessage((hwndTV), TXM_OPENFILE, 0, (LPARAM)(szFile))
+#define TextView_Clear(hwndTV) SendMessage((hwndTV), TXM_CLEAR, 0, 0)
 #define TextView_SetLineSpacing(hwndTV, nAbove, nBelow) SendMessage((hwndTV), TXM_SETLINESPACING, (int)(nAbove), (int)(nBelow))
-#define TextView_AddFont(hwndTV, hFont)		SendMessage((hwndTV), TXM_ADDFONT, (WPARAM)(HFONT)(hFont), 0)
+#define TextView_AddFont(hwndTV, hFont) SendMessage((hwndTV), TXM_ADDFONT, (WPARAM)(HFONT)(hFont), 0)
 #define TextView_SetColor(hwndTV, nIdx, rgbColor) SendMessage((hwndTV), TXM_SETCOLOR, (WPARAM)(nIdx), (LPARAM)(rgbColor))
 #define TextView_SetStyle(hwndTV, uMask, uStyles) SendMessage((hwndTV), TXM_SETSTYLE, (WPARAM)(uMask), (LPARAM)(uStyles))
 #define TextView_SetStyleBool(hwndTV, uStyle, fBoolean) SendMessage((hwndTV), TXM_SETSTYLE, (WPARAM)(uStyle), (LPARAM)(fBoolean ? uStyle : 0))
@@ -59,6 +78,7 @@ COLORREF RealizeColour(COLORREF col);
 #define TextView_SetImageList(hwndTV, hImgList) SendMessage((hwndTV), TXM_SETIMAGELIST, (WPARAM)(HIMAGELIST)(hImgList), 0)
 #define TextView_SetLongLine(hwndTV, nLength) SendMessage((hwndTV), TXM_SETLONGLINE, (WPARAM)(0), (LPARAM)(nLength))
 #define TextView_SetLineImage(hwndTV, nLineNo, nImageIdx) SendMessage((hwndTV), TXM_SETLINEIMAGE, (WPARAM)(ULONG)(nLineNo), (LPARAM)(ULONG)nImageIdx)
+#define TextView_GetFormat(hwndTV) SendMessage((hwndTV), TXM_GETFORMAT, 0, 0)
 
 //
 //	TextView Macros defined here

@@ -11,9 +11,12 @@ BOOL CALLBACK MiscOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 {
 	PSHNOTIFY *pshn;
 
-	switch(msg)
+	switch (msg)
 	{
 	case WM_INITDIALOG:
+		//CheckRadioButton(hwnd, IDC_MEMWINPOS, IDC_MEMWINPOSFILE, g_f
+		//	g_fAddToExplorerContextMenu ? IDC_RADIO
+		CheckDlgButton(hwnd, IDC_ADDCONTEXT, g_fAddToExplorerContextMenu);
 		return TRUE;
 
 	case WM_CLOSE:
@@ -22,9 +25,10 @@ BOOL CALLBACK MiscOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_NOTIFY:
 
 		pshn = (PSHNOTIFY *)lParam;
-		
-		if(pshn->hdr.code == PSN_APPLY)
+
+		if (pshn->hdr.code == PSN_APPLY)
 		{
+			g_fAddToExplorerContextMenu = IsDlgButtonChecked(hwnd, IDC_ADDCONTEXT);
 			return TRUE;
 		}
 
@@ -32,7 +36,7 @@ BOOL CALLBACK MiscOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 	case WM_COMMAND:
 
-		switch(LOWORD(wParam))
+		switch (LOWORD(wParam))
 		{
 		case IDCANCEL:
 			return TRUE;

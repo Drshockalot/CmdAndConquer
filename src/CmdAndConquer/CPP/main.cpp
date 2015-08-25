@@ -8,17 +8,47 @@ ATOM CmdAndConquer_MainWindow::class_atom = 0;
 
 HWND g_hwndTextView;
 
+TCHAR **GetArgvCommandLine(int *argc)
+{
+#ifdef UNICODE
+	return CommandLineToArgvW(GetCommandLineW(), argc);
+#else
+	*argc = __argc;
+	return __argv;
+#endif
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, int cmdShow)
 {
 	try
 	{
 		InitTextView();
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
+		g_hwndMain = cAndC.getMainHWND();
 
 		LoadRegSettings();
-		ApplyRegSettings();
+		
 
 		HACCEL hAccel = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDR_ACCELERATOR1));
+
+		TCHAR **argv;
+		int	argc;
+
+		argv = GetArgvCommandLine(&argc);
+
+		if (argv && argc >= 2)
+		{
+			//	Open specified file from the command line
+			cAndC.OpenUnicodeFile(g_hwndMain, argv[1]);
+			LoadFileData(argv[1], g_hwndMain);
+		}
+		else
+		{
+			// Automatically create new document when we start
+			PostMessage(g_hwndMain, WM_COMMAND, IDM_FILE_NEW, 0);
+		}
+
+		ApplyRegSettings();
 
 		for (;;)
 		{

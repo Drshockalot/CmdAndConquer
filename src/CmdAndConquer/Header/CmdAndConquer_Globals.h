@@ -19,6 +19,8 @@ extern "C" {
 	extern BOOL		g_fSelMargin;
 	extern BOOL		g_fSaveOnExit;
 	extern int		g_nLongLineLimit;
+	extern BOOL		g_nHLCurLine;
+	extern BOOL		g_fAddToExplorerContextMenu;
 
 	extern LONG		g_nPaddingAbove;
 	extern LONG		g_nPaddingBelow;
@@ -48,8 +50,6 @@ extern "C" {
 	void SaveRegSettings();
 
 	void ShowProperties(HWND hwndParent);
-
-	
 
 	BOOL CheckMenuCommand(HMENU hMenu, int nCommandId, BOOL fChecked);
 	BOOL EnableMenuCommand(HMENU hmenu, int nCommandId, BOOL fEnable);

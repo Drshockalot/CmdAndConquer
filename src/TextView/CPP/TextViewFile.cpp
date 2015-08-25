@@ -18,11 +18,15 @@ LONG TextView::OpenFile(TCHAR *szFileName)
 		m_nVScrollPos = 0;
 		m_nHScrollPos = 0;
 
+		m_nSelectionStart = 0;
+		m_nSelectionEnd = 0;
+		m_nCursorOffset = 0;
+
 		UpdateMetrics();
-		
+		UpdateMarginWidth();
 		return TRUE;
 	}
-	
+
 	return FALSE;
 }
 
@@ -31,7 +35,7 @@ LONG TextView::OpenFile(TCHAR *szFileName)
 //
 LONG TextView::ClearFile()
 {
-	if(m_pTextDoc)
+	if (m_pTextDoc)
 		m_pTextDoc->clear();
 
 	m_nLineCount = m_pTextDoc->linecount();
@@ -41,5 +45,6 @@ LONG TextView::ClearFile()
 	m_nHScrollPos = 0;
 
 	UpdateMetrics();
+
 	return TRUE;
 }
