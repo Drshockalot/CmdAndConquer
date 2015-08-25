@@ -2,8 +2,6 @@
 #include "../Header/CmdAndConquer_Globals.h"
 HDC ShowPrintDlg(HWND hwndParent);
 
-DWORD g_BytesTransferred = 0;
-
 CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE), hWnd_(NULL)
 {
 	//	Register the window class before creation
