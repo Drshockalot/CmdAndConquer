@@ -1,37 +1,8 @@
-﻿Build started 25/08/2015 12:35:43.
+﻿Build started 26/08/2015 21:20:04.
      1>Project "C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\src\CmdAndConquer\CmdAndConquer.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:prompt ..\Options\CPP\Options.c ..\Options\CPP\OptionsFont.c ..\Options\CPP\OptionsMisc.c
-         OptionsMisc.c
-         OptionsFont.c
-     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(396): warning C4473: 'swprintf_s' : not enough arguments passed for format string
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(396): note: placeholders and their parameters expect 1 variadic arguments, but 0 were provided
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(396): note: the missing variadic argument 1 is required by format string '%d'
-     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(407): warning C4473: 'swprintf_s' : not enough arguments passed for format string
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(407): note: placeholders and their parameters expect 1 variadic arguments, but 0 were provided
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(407): note: the missing variadic argument 1 is required by format string '%d'
-     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(718): warning C4473: 'swprintf_s' : not enough arguments passed for format string
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(718): note: placeholders and their parameters expect 1 variadic arguments, but 0 were provided
-         c:\users\drsho\desktop\gitrepos\cmdandconquer\src\options\cpp\optionsfont.c(718): note: the missing variadic argument 1 is required by format string '%d'
-         Options.c
-         Generating Code...
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ..\Printing\Printing.cpp ..\TextView\CPP\TextDocument.cpp ..\TextView\CPP\TextView.cpp ..\TextView\CPP\TextViewFile.cpp ..\TextView\CPP\TextViewFont.cpp ..\TextView\CPP\TextViewMouse.cpp ..\TextView\CPP\TextViewPaint.cpp ..\TextView\CPP\TextViewScroll.cpp ..\Unicode\Unicode.cpp ..\Utilities\Utilities.cpp CPP\CmdAndConquer_MainWindow.cpp CPP\main.cpp
-         main.cpp
-         CmdAndConquer_MainWindow.cpp
-         Utilities.cpp
-         Unicode.cpp
-         TextViewScroll.cpp
-         TextViewPaint.cpp
-         TextViewMouse.cpp
-     1>c:\users\drsho\desktop\gitrepos\cmdandconquer\src\textview\cpp\textviewmouse.cpp(633): warning C4018: '<': signed/unsigned mismatch
-         TextViewFont.cpp
-         TextViewFile.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt ..\TextView\CPP\TextView.cpp
          TextView.cpp
-         TextDocument.cpp
-         Printing.cpp
-         Generating Code...
-       ResourceCompile:
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\CmdAndConquer.res" resource\CmdAndConquer.rc 
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.lib" /MACHINE:X86 Debug\CmdAndConquer.res
          Debug\Options.obj
@@ -46,13 +17,17 @@
          Debug\TextViewPaint.obj
          Debug\TextViewScroll.obj
          Debug\Unicode.obj
+         Debug\Uniscribe.obj
+         Debug\UspCtrl.obj
+         Debug\UspLib.obj
+         Debug\UspMouse.obj
+         Debug\UspPaint.obj
          Debug\Utilities.obj
          Debug\CmdAndConquer_MainWindow.obj
          Debug\main.obj
-         LINK : C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe not found or not built by the last incremental link; performing full link
          CmdAndConquer.vcxproj -> C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\Debug\CmdAndConquer.exe
      1>Done Building Project "C:\Users\drsho\Desktop\GitRepos\CmdAndConquer\src\CmdAndConquer\CmdAndConquer.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:09.31
+Time Elapsed 00:00:02.12

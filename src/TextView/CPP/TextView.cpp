@@ -47,7 +47,17 @@ TextView::TextView(HWND hwnd)
 	m_nCaretWidth = 0;
 	m_nLongLineLimit = 80;
 	m_nLineInfoCount = 0;
-	m_nCRLFMode = TXL_ALL;
+	m_nCRLFMode = TXL_CRLF;//ALL;
+
+						   // allocate the USPDATA cache
+	m_uspCache = new USP_CACHE[USP_CACHE_SIZE];
+
+	for (int i = 0; i < USP_CACHE_SIZE; i++)
+	{
+		m_uspCache[i].usage = 0;
+		m_uspCache[i].lineno = 0;
+		m_uspCache[i].uspData = UspAllocate();
+	}
 
 	SystemParametersInfo(SPI_GETCARETWIDTH, 0, &m_nCaretWidth, 0);
 
@@ -95,6 +105,8 @@ TextView::TextView(HWND hwnd)
 	//	start calling member-functions
 	//
 
+	memset(m_uspFontList, 0, sizeof(m_uspFontList));
+
 	// Set the default font
 	OnSetFont((HFONT)GetStockObject(ANSI_FIXED_FONT));
 
@@ -111,6 +123,9 @@ TextView::~TextView()
 		delete m_pTextDoc;
 
 	DestroyCursor(m_hMarginCursor);
+
+	for (int i = 0; i < USP_CACHE_SIZE; i++)
+		UspFree(m_uspCache[i].uspData);
 }
 
 VOID TextView::UpdateMetrics()
@@ -126,7 +141,7 @@ VOID TextView::UpdateMetrics()
 
 LONG TextView::OnSetFocus(HWND hwndOld)
 {
-	CreateCaret(m_hWnd, (HBITMAP)NULL, 2, m_nLineHeight);
+	CreateCaret(m_hWnd, (HBITMAP)NULL, m_nCaretWidth, m_nLineHeight);
 	RepositionCaret();
 
 	ShowCaret(m_hWnd);
@@ -154,6 +169,8 @@ ULONG TextView::SetStyle(ULONG uMask, ULONG uStyles)
 	ULONG oldstyle = m_uStyleFlags;
 
 	m_uStyleFlags = (m_uStyleFlags & ~uMask) | uStyles;
+
+	ResetLineCache();
 
 	// update display here
 	UpdateMetrics();
@@ -254,8 +271,9 @@ LINEINFO* TextView::GetLineInfo(ULONG nLineNo)
 		);
 }
 
+
 //
-//	Public member function
+//	Public memberfunction 
 //
 LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -392,18 +410,18 @@ BOOL InitTextView()
 	WNDCLASSEX	wcx;
 
 	//Window class for the main application parent window
-	wcx.cbSize			= sizeof(wcx);
-	wcx.style			= 0;
-	wcx.lpfnWndProc		= TextViewWndProc;
-	wcx.cbClsExtra		= 0;
-	wcx.cbWndExtra		= sizeof(TextView *);
-	wcx.hInstance		= GetModuleHandle(0);
-	wcx.hIcon			= 0;
-	wcx.hCursor			= LoadCursor (NULL, IDC_IBEAM);
-	wcx.hbrBackground	= (HBRUSH)0;		//NO FLICKERING FOR US!!
-	wcx.lpszMenuName	= 0;
-	wcx.lpszClassName	= TEXTVIEW_CLASS;	
-	wcx.hIconSm			= 0;
+	wcx.cbSize = sizeof(wcx);
+	wcx.style = 0;
+	wcx.lpfnWndProc = TextViewWndProc;
+	wcx.cbClsExtra = 0;
+	wcx.cbWndExtra = sizeof(TextView *);
+	wcx.hInstance = GetModuleHandle(0);
+	wcx.hIcon = 0;
+	wcx.hCursor = LoadCursor(NULL, IDC_IBEAM);
+	wcx.hbrBackground = (HBRUSH)0;		//NO FLICKERING FOR US!!
+	wcx.lpszMenuName = 0;
+	wcx.lpszClassName = TEXTVIEW_CLASS;
+	wcx.hIconSm = 0;
 
 	return RegisterClassEx(&wcx) ? TRUE : FALSE;
 }
@@ -422,3 +440,4 @@ HWND CreateTextView(HWND hwndParent)
 		GetModuleHandle(0),
 		0);
 }
+

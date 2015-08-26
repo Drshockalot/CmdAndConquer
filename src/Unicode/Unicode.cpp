@@ -1,8 +1,3 @@
-//
-//	Unicode conversion routines
-//
-//	www.catch22.net
-//	
 #include <windows.h>
 
 typedef unsigned long	UTF32;	// at least 32 bits

@@ -1,54 +1,80 @@
 #ifndef TEXTVIEW_INTERNAL_INCLUDED
 #define TEXTVIEW_INTERNAL_INCLUDED
 
-#define TEXTBUFSIZE 32
+#define TEXTBUFSIZE 256
 #define LINENO_FMT	_T(" %d ")
 #define LINENO_PAD	8
 
 #include <CommCtrl.h>
 #include "TextDocument.h"
 
-typedef struct
-{
-	COLORREF	fg;			// foreground colour
-	COLORREF	bg;			// background colour
-	ULONG		style;		// possible font-styling information
-} ATTR;
+#include "../../UspLib/usplib.h"
 
 typedef struct
 {
-	// Windows font information
-	HFONT hFont;
-	TEXTMETRIC tm;
+	USPDATA *uspData;
+	ULONG	 lineno;
+	ULONG	 offset;
+	ULONG	 usage;
 
-	// dimensions needed for control-character 'bitmaps'
-	int nInternalLeading;
-	int nDescent;
-} FONT;
+} USP_CACHE;
 
+#define USP_CACHE_SIZE 200
+
+//
+//	ATTR - text character attribute
+//	
+/*
 typedef struct
 {
-	ULONG nLineNo;
-	int nImageIdx;
+COLORREF	fg;			// foreground colour
+COLORREF	bg;			// background colour
+ULONG		font;		// possible font-styling information
 
-	//more for the future?
+int			len;		// not used should be "1"
+
+} ATTR;*/
+
+/*//
+//	FONT - font attributes
+//
+typedef struct
+{
+// Windows font information
+HFONT		hFont;
+TEXTMETRIC	tm;
+
+// dimensions needed for control-character 'bitmaps'
+int			nInternalLeading;
+int			nDescent;
+
+} FONT;*/
+
+//
+//	LINEINFO - information about a specific line
+//
+typedef struct
+{
+	ULONG	nLineNo;
+	int		nImageIdx;
+
+	// more here in the future?
+
 } LINEINFO;
 
 typedef int(__cdecl * COMPAREPROC) (const void *, const void *);
 
 // maximum number of lines that we can hold info for at one time
-#define MAX_LINE_INFO 128
+#define MAX_LINE_INFO 128	
 
 // maximum fonts that a TextView can hold
 #define MAX_FONTS 32
 
-enum SELMODE
-{
-	SELMODE_NONE,
-	SELMODE_NORMAL,
-	SELMODE_MARGIN
-};
+enum SELMODE { SELMODE_NONE, SELMODE_NORMAL, SELMODE_MARGIN };
 
+//
+//	TextView - internal window implementation
+//
 class TextView
 {
 public:
@@ -96,25 +122,20 @@ private:
 	//
 	//	Private Helper functions
 	//
-	void PaintLine(HDC hdc, ULONG line);
-	void PaintText(HDC hdc, ULONG nLineNo, RECT *rect);
-	int  PaintMargin(HDC hdc, ULONG line, RECT *margin);
+	void PaintLine(HDC hdc, ULONG line, int x, int y, HRGN hrgnUpdate);
+	void PaintText(HDC hdc, ULONG nLineNo, int x, int y, RECT *bounds);
+	int  PaintMargin(HDC hdc, ULONG line, int x, int y);
 
 	int   ApplyTextAttributes(ULONG nLineNo, ULONG offset, ULONG &nColumn, TCHAR *szText, int nTextLen, ATTR *attr);
-	int   NeatTextOut(HDC hdc, int xpos, int ypos, TCHAR *szText, int nLen, int nTabOrigin, ATTR *attr);
-
-	int  PaintCtrlChar(HDC hdc, int xpos, int ypos, ULONG chValue, FONT *fa);
-	void InitCtrlCharFontAttr(HDC hdc, FONT *fa);
-
 	void RefreshWindow();
 	LONG InvalidateRange(ULONG nStart, ULONG nFinish);
-	LONG InvalidateLine(ULONG nLineNo);
+	LONG InvalidateLine(ULONG nLineNo, bool forceAnalysis);
 	VOID UpdateLine(ULONG nLineNo);
+	int SyntaxColour(TCHAR *szText, ULONG nTextLen, ATTR *attr);
 
-	int  CtrlCharWidth(HDC hdc, ULONG chValue, FONT *fa);
-	int  NeatTextYOffset(FONT *font);
-	int  NeatTextWidth(HDC hdc, TCHAR *buf, int len, int nTabOrigin);
-	int	 TabWidth();
+	int  NeatTextYOffset(USPFONT *font);
+	int  TextWidth(HDC hdc, TCHAR *buf, int len);
+	//int	 TabWidth();
 	int  LeftMarginWidth();
 	void UpdateMarginWidth();
 	int	 SetCaretWidth(int nWidth);
@@ -138,7 +159,7 @@ private:
 
 	int		SetLineImage(ULONG nLineNo, ULONG nImageIdx);
 	LINEINFO *GetLineInfo(ULONG nLineNo);
-	int		StripCRLF(TCHAR *szText, int nLength, bool fAllow);
+	int		StripCRLF(TCHAR *szText, ATTR *attrList, int nLength, bool fAllow);
 
 	VOID	SetupScrollbars();
 	VOID	UpdateMetrics();
@@ -148,11 +169,13 @@ private:
 	void	Scroll(int dx, int dy);
 	HRGN	ScrollRgn(int dx, int dy, bool fReturnUpdateRgn);
 
+	void	ResetLineCache();
+
 	HWND	m_hWnd;
 	ULONG	m_uStyleFlags;
 
 	// Font-related data	
-	FONT	m_FontAttr[MAX_FONTS];
+	USPFONT m_uspFontList[MAX_FONTS];
 	int		m_nNumFonts;
 	int		m_nFontWidth;
 	int		m_nMaxAscent;
@@ -201,6 +224,10 @@ private:
 
 	// File-related data
 	ULONG		m_nLineCount;
+
+	// Cache for USPDATA objects
+	USP_CACHE   *m_uspCache;
+	USPDATA		*GetUspData(HDC hdc, ULONG nLineNo, ULONG *off_chars = 0);
 
 	TextDocument *m_pTextDoc;
 };

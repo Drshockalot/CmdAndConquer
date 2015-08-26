@@ -25,6 +25,7 @@ public:
 	TextIterator iterate_line_offset(ULONG offset_chars, ULONG *lineno, ULONG *linestart = 0);
 
 	ULONG getdata(ULONG offset, BYTE *buf, size_t len);
+	int   getline(ULONG nLineNo, TCHAR *buf, int buflen, ULONG *off_chars);
 
 	int   getformat();
 	ULONG linecount();
@@ -32,7 +33,7 @@ public:
 	ULONG size();
 
 private:
-	
+
 	bool init_linebuffer();
 
 	int   detect_file_format(int *headersize);
@@ -54,15 +55,23 @@ private:
 class TextIterator
 {
 public:
-	//	Default constructor sets all members to zero
-	TextIterator() 
-		: text_doc(0), off_bytes(0), len_bytes(0) {}
+	// default constructor sets all members to zero
+	TextIterator()
+		: text_doc(0), off_bytes(0), len_bytes(0)
+	{
+	}
+
 	TextIterator(ULONG off, ULONG len, TextDocument *td)
-		: text_doc(td), off_bytes(off), len_bytes(len) {}
+		: text_doc(td), off_bytes(off), len_bytes(len)
+	{
+
+	}
 
 	// default copy-constructor
 	TextIterator(const TextIterator &ti)
-		: text_doc(ti.text_doc), off_bytes(ti.off_bytes), len_bytes(ti.len_bytes) {}
+		: text_doc(ti.text_doc), off_bytes(ti.off_bytes), len_bytes(ti.len_bytes)
+	{
+	}
 
 	// assignment operator
 	TextIterator & operator= (TextIterator &ti)
@@ -104,5 +113,6 @@ private:
 	ULONG off_bytes;
 	ULONG len_bytes;
 };
+
 
 #endif

@@ -33,6 +33,8 @@ typedef std::basic_stringstream<TCHAR> tstringstream;
 BOOL SaveFileData(TCHAR *szPath, HWND hwnd);
 BOOL LoadFileData(TCHAR *szPath, HWND hwnd);
 
+BOOL ResolveShortcut(TCHAR *pszShortcut, TCHAR *pszFilePath, int nPathLen);
+
 class CmdAndConquer_MainWindow
 {
 public:

@@ -15,6 +15,8 @@ COLORREF LightenRGB(COLORREF rgbColor, int amt);
 static HFONT g_hBoldFont;
 static HFONT g_hNormalFont;
 static HICON g_hIcon1;
+static HICON g_hIcon2;			// TrueType icon
+static HICON g_hIcon3;			// OpenType icon
 static int	 g_nFontHeight;
 
 static COLORREF g_crPreviewFG;
@@ -116,22 +118,23 @@ int CALLBACK EnumFontNames(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 	HWND hwndCombo = (HWND)lParam;
 	TCHAR *pszName = lpelfe->elfLogFont.lfFaceName;
 
-	//	if(pszName[0] == '@')
-	//		return 1;
+	if (pszName[0] == '@')
+		return 1;
 
 	// make sure font doesn't already exist in our list
 	if (SendMessage(hwndCombo, CB_FINDSTRING, 0, (LPARAM)pszName) == CB_ERR)
 	{
 		int		idx;
 		BOOL	fFixed;
-		BOOL	fTrueType;
+		int		fTrueType;		// 0 = normal, 1 = TrueType, 2 = OpenType
 
-		// add the font
+								// add the font
 		idx = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)pszName);
 
 		// record the font's attributes (Fixedwidth and Truetype)
 		fFixed = (lpelfe->elfLogFont.lfPitchAndFamily & FIXED_PITCH) ? TRUE : FALSE;
 		fTrueType = (lpelfe->elfLogFont.lfOutPrecision == OUT_STROKE_PRECIS) ? TRUE : FALSE;
+		fTrueType = (lpntme->ntmTm.ntmFlags & NTM_TT_OPENTYPE) ? 2 : fTrueType;
 
 		// store this information in the list-item's userdata area
 		SendMessage(hwndCombo, CB_SETITEMDATA, idx, MAKEWPARAM(fFixed, fTrueType));
@@ -147,6 +150,7 @@ void FillFontComboList(HWND hwndCombo)
 {
 	HDC		hdc = GetDC(hwndCombo);
 	LOGFONT lf;
+	int		idx;
 
 	SendMessage(hwndCombo, WM_SETFONT, (WPARAM)g_hNormalFont, 0);
 
@@ -159,7 +163,9 @@ void FillFontComboList(HWND hwndCombo)
 
 	ReleaseDC(hwndCombo, hdc);
 
-	SendMessage(hwndCombo, CB_SETCURSEL, 0, 0);
+	// select current font in list
+	idx = SendMessage(hwndCombo, CB_FINDSTRING, 0, (LPARAM)g_szFontName);
+	SendMessage(hwndCombo, CB_SETCURSEL, idx, 0);
 }
 
 /*
@@ -298,7 +304,9 @@ BOOL FontCombo_DrawItem(HWND hwnd, DRAWITEMSTRUCT *dis)
 
 	// draw a 'TT' icon if the font is TRUETYPE
 	if (fTrueType)
-		DrawIconEx(dis->hDC, dis->rcItem.left + 2, dis->rcItem.top, g_hIcon1, 16, 16, 0, 0, DI_NORMAL);
+		DrawIconEx(dis->hDC, dis->rcItem.left + 2, dis->rcItem.top, g_hIcon2, 16, 16, 0, 0, DI_NORMAL);
+	//else if(fTrueType == 2)
+	//	DrawIconEx(dis->hDC, dis->rcItem.left+2, dis->rcItem.top, g_hIcon3,16, 16, 0, 0, DI_NORMAL);
 
 	SelectObject(dis->hDC, hOldFont);
 
@@ -383,7 +391,7 @@ int CALLBACK EnumFontSizes(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 {
 	static int ttsizes[] = { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72 };
 	TCHAR ach[100];
-
+	size_t buffsize = 100;
 	BOOL fTrueType = (lpelfe->elfLogFont.lfOutPrecision == OUT_STROKE_PRECIS) ? TRUE : FALSE;
 
 	HWND hwndCombo = (HWND)lParam;
@@ -393,7 +401,7 @@ int CALLBACK EnumFontSizes(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 	{
 		for (i = 0; i < (sizeof(ttsizes) / sizeof(ttsizes[0])); i++)
 		{
-			_stprintf_s(ach, ttsizes[i], _T("%d"));
+			_stprintf_s(ach, buffsize, _T("%d"), ttsizes[i]);
 			idx = SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)ach);
 			SendMessage(hwndCombo, CB_SETITEMDATA, idx, ttsizes[i]);
 			//nFontSizes[i] = ttsizes[i];
@@ -404,7 +412,7 @@ int CALLBACK EnumFontSizes(ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, DWORD
 	else
 	{
 		int size = LogicalToPoints(lpntme->ntmTm.tmHeight);
-		_stprintf_s(ach, size, _T("%d"));
+		_stprintf_s(ach, buffsize, _T("%d"), size);
 
 		count = SendMessage(hwndCombo, CB_GETCOUNT, 0, 0);
 
@@ -645,7 +653,8 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	//
 	//	Load the TrueType icon for the font-list
 	//
-	g_hIcon1 = LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
+	g_hIcon2 = LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
+	g_hIcon3 = LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON3), IMAGE_ICON, 16, 16, 0);
 
 	//
 	//	Create two fonts (normal+bold) based on current dialog's font settings
@@ -714,8 +723,8 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	//
 	//	Select
 	//
-	g_nFontSize = 32;
-	_stprintf_s(ach, g_nFontSize, _T("%d"));
+	size_t buffsize = 32;
+	_stprintf_s(ach, buffsize, _T("%d"), g_nFontSize);
 
 	SendDlgItemMessage(hwnd, IDC_SIZELIST, CB_SELECTSTRING, -1, (LONG)ach);
 	SendDlgItemMessage(hwnd, IDC_FONTLIST, CB_SELECTSTRING, -1, (LONG)g_szFontName);

@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Unicode">
       <UniqueIdentifier>{069b48e7-3dff-4df9-aa23-5de39cd812d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\UspLib">
+      <UniqueIdentifier>{b0517c71-5337-491b-8839-75dd3b9be983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UspLib">
+      <UniqueIdentifier>{28b44f63-6060-4efd-9c32-06148638ff45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp">
@@ -75,6 +81,21 @@
     <ClCompile Include="..\Unicode\Unicode.cpp">
       <Filter>Source Files\Unicode</Filter>
     </ClCompile>
+    <ClCompile Include="..\UspLib\UspCtrl.c">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspLib.c">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspMouse.c">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspPaint.c">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Unicode\Uniscribe.cpp">
+      <Filter>Source Files\Unicode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">
@@ -102,6 +123,12 @@
     </ClInclude>
     <ClInclude Include="..\Utilities\racursor.h">
       <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UspLib\usplibp.h">
+      <Filter>Header Files\UspLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UspLib\usplib.h">
+      <Filter>Header Files\UspLib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

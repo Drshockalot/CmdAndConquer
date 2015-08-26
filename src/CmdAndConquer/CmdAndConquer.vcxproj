@@ -93,6 +93,11 @@
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
     <ClCompile Include="..\Unicode\Unicode.cpp" />
+    <ClCompile Include="..\Unicode\Uniscribe.cpp" />
+    <ClCompile Include="..\UspLib\UspCtrl.c" />
+    <ClCompile Include="..\UspLib\UspLib.c" />
+    <ClCompile Include="..\UspLib\UspMouse.c" />
+    <ClCompile Include="..\UspLib\UspPaint.c" />
     <ClCompile Include="..\Utilities\Utilities.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
@@ -104,6 +109,8 @@
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />
     <ClInclude Include="..\TextView\Header\TextViewInternal.h" />
+    <ClInclude Include="..\UspLib\usplib.h" />
+    <ClInclude Include="..\UspLib\usplibp.h" />
     <ClInclude Include="..\Utilities\racursor.h" />
     <ClInclude Include="Header\CmdAndConquer_Globals.h" />
     <ClInclude Include="Header\CmdAndConquer_MainWindow.h" />

@@ -5,6 +5,9 @@
 //
 #include <windows.h>
 #include <tchar.h>
+#include <ShObjIdl.h>
+#include <shlguid.h>
+#include <shellapi.h>
 #include "../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
 BOOL CheckMenuCommand(HMENU hMenu, int nCommandId, BOOL fChecked)
@@ -133,4 +136,48 @@ BOOL LoadFileData(TCHAR *szPath, HWND hwnd)
 
 	CloseHandle(hFile);
 	return TRUE;
+}
+
+BOOL ResolveShortcut(TCHAR *pszShortcut, TCHAR *pszFilePath, int nPathLen)
+{
+	IShellLink * psl;
+	SHFILEINFO   info;
+	IPersistFile *ppf;
+
+	*pszFilePath = 0;   // assume failure
+
+	if ((SHGetFileInfo(pszShortcut, 0, &info, sizeof(info), SHGFI_ATTRIBUTES) == 0))
+	{
+		return FALSE;
+	}
+
+	// not a shortcut?
+	if (!(info.dwAttributes & SFGAO_LINK))
+	{
+		lstrcpyn(pszFilePath, pszShortcut, nPathLen);
+		return TRUE;
+	}
+	
+	if (FAILED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl)))
+		return FALSE;
+
+	if (SUCCEEDED(psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf)))
+	{
+		if (SUCCEEDED(ppf->Load(pszShortcut, STGM_READ)))
+		{
+			// Resolve the link, this may post UI to find the link
+			if (SUCCEEDED(psl->Resolve(0, SLR_NO_UI)))
+			{
+				psl->GetPath(pszFilePath, nPathLen, NULL, 0);
+				ppf->Release();
+				psl->Release();
+				return TRUE;
+			}
+		}
+
+		ppf->Release();
+	}
+
+	psl->Release();
+	return FALSE;
 }

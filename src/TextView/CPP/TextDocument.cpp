@@ -19,15 +19,17 @@ int    utf16_to_utf32(WCHAR *utf16str, size_t utf16len, ULONG *utf32str, size_t 
 int    utf16be_to_utf32(WCHAR *utf16str, size_t utf16len, ULONG *utf32str, size_t *utf32len);
 
 
+
 struct _BOM_LOOKUP
 {
-	DWORD bom;
-	ULONG len;
-	int type;
+	DWORD  bom;
+	ULONG  len;
+	int    type;
+
 } BOMLOOK[] =
 {
-	//	Define longest headers first
-	{ 0x0000FEFF, 4, NCP_UTF32},
+	// define longest headers first
+	{ 0x0000FEFF, 4, NCP_UTF32 },
 	{ 0xFFFE0000, 4, NCP_UTF32BE },
 	{ 0xBFBBEF,	  3, NCP_UTF8 },
 	{ 0xFFFE,	  2, NCP_UTF16BE },
@@ -69,10 +71,10 @@ TextDocument::~TextDocument()
 bool TextDocument::init(TCHAR *filename)
 {
 	HANDLE hFile;
-	
+
 	hFile = CreateFile(filename, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
 
-	if(hFile == INVALID_HANDLE_VALUE)
+	if (hFile == INVALID_HANDLE_VALUE)
 		return false;
 
 	return init(hFile);
@@ -85,26 +87,27 @@ bool TextDocument::init(HANDLE hFile)
 {
 	ULONG numread;
 
-	if((length_bytes = GetFileSize(hFile, 0)) == 0)
+	if ((length_bytes = GetFileSize(hFile, 0)) == 0)
 		return false;
 
 	// allocate new file-buffer
-	if((buffer = new char[length_bytes]) == 0)
+	if ((buffer = new char[length_bytes]) == 0)
 		return false;
 
 	// read entire file into memory
 	ReadFile(hFile, buffer, length_bytes, &numread, 0);
 
-	//	Try to detect if this is an ascii/unicode/utf8 file
+	// try to detect if this is an ascii/unicode/utf8 file
 	fileformat = detect_file_format(&headersize);
 
 	// work out where each line of text starts
-	if(!init_linebuffer())
+	if (!init_linebuffer())
 		clear();
 
 	CloseHandle(hFile);
 	return true;
 }
+
 
 //
 //	Parse the file lo
@@ -136,6 +139,7 @@ int TextDocument::detect_file_format(int *headersize)
 	*headersize = 0;
 	return NCP_ASCII;	// default to ASCII
 }
+
 
 //
 //	Empty the data-TextDocument
@@ -171,32 +175,24 @@ bool TextDocument::clear()
 int TextDocument::getchar(ULONG offset, ULONG lenbytes, ULONG *pch32)
 {
 	BYTE	*rawdata = (BYTE *)(buffer + offset + headersize);
-	WORD    *rawdata_w = (WORD *)(buffer + offset + headersize);
-	WORD     ch16;
-	size_t   ch32len = 1;
 
 #ifdef UNICODE
+	WCHAR   *rawdata_w = (WCHAR*)(buffer + offset + headersize);
+	WCHAR     ch16;
+	size_t   ch32len = 1;
 
 	switch (fileformat)
 	{
-		// convert from ANSI->UNICODE
 	case NCP_ASCII:
-		MultiByteToWideChar(CP_ACP, 0, (CCHAR*)rawdata, 1, (WCHAR*)&ch16, 1);
+		MultiByteToWideChar(CP_ACP, 0, (CCHAR*)rawdata, 1, &ch16, 1);
 		*pch32 = ch16;
 		return 1;
 
 	case NCP_UTF16:
-		//*pch32 = (ULONG)(WORD)rawdata_w[0];
-		//return 2;
-
-		return utf16_to_utf32((WCHAR*)rawdata_w, lenbytes / 2, pch32, &ch32len) * 2;
+		return utf16_to_utf32(rawdata_w, lenbytes / 2, pch32, &ch32len) * 2;
 
 	case NCP_UTF16BE:
-		//*pch32 = (ULONG)(WORD)SWAPWORD((WORD)rawdata_w[0]);
-		//return 2;
-
-		return utf16be_to_utf32((WCHAR*)rawdata_w, lenbytes / 2, pch32, &ch32len) * 2;
-
+		return utf16be_to_utf32(rawdata_w, lenbytes / 2, pch32, &ch32len) * 2;
 
 	case NCP_UTF8:
 		return utf8_to_utf32(rawdata, lenbytes, pch32);
@@ -236,7 +232,7 @@ int TextDocument::getchar(ULONG offset, ULONG lenbytes, ULONG *pch32)
 int	 TextDocument::gettext(ULONG offset, ULONG lenbytes, TCHAR *buf, int *buflen)
 {
 	BYTE	*rawdata = (BYTE *)(buffer + offset + headersize);
-	
+
 	if (offset >= length_bytes)
 	{
 		*buflen = 0;
@@ -270,12 +266,12 @@ int	 TextDocument::gettext(ULONG offset, ULONG lenbytes, TCHAR *buf, int *buflen
 
 #else
 
-	int		 len;
-
 	switch (fileformat)
 	{
 		// we are already an ASCII app, so do a straight memory copy
 	case NCP_ASCII:
+
+		int len;
 
 		len = min(*buflen, lenbytes);
 		memcpy(buf, rawdata, len);
@@ -296,13 +292,12 @@ int	 TextDocument::gettext(ULONG offset, ULONG lenbytes, TCHAR *buf, int *buflen
 
 ULONG TextDocument::getdata(ULONG offset, BYTE *buf, size_t len)
 {
-	memcpy(buf, buffer + offset, len);
+	memcpy(buf, buffer + offset + headersize, len);
 	return len;
 }
 
 //
-//	Initialize the line-buffer, so we know where every
-//  line starts within the file
+//	Initialize the line-buffer
 //
 bool TextDocument::init_linebuffer()
 {
@@ -381,6 +376,7 @@ bool TextDocument::init_linebuffer()
 
 	return true;
 }
+
 
 //
 //	Return the number of lines
@@ -507,6 +503,9 @@ ULONG TextDocument::size()
 	return length_bytes;
 }
 
+//
+//
+//
 TextIterator TextDocument::iterate_line(ULONG lineno, ULONG *linestart, ULONG *linelen)
 {
 	ULONG offset_bytes;
@@ -534,4 +533,23 @@ ULONG TextDocument::lineno_from_offset(ULONG offset)
 	ULONG lineno = 0;
 	lineinfo_from_offset(offset, &lineno, 0, 0, 0, 0);
 	return lineno;
+}
+
+//
+//	Retrieve an entire line of text
+//	
+int  TextDocument::getline(ULONG nLineNo, TCHAR *buf, int buflen, ULONG *off_chars)
+{
+	ULONG offset_bytes;
+	ULONG length_bytes;
+	ULONG offset_chars;
+	ULONG length_chars;
+
+	if (!lineinfo_from_lineno(nLineNo, &offset_chars, &length_chars, &offset_bytes, &length_bytes))
+		return 0;
+
+	gettext(offset_bytes, length_bytes, buf, &buflen);
+
+	*off_chars = offset_chars;
+	return buflen;
 }

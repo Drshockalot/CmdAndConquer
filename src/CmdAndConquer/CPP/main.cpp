@@ -22,6 +22,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 {
 	try
 	{
+		OleInitialize(0);
+
 		InitTextView();
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
 		g_hwndMain = cAndC.getMainHWND();
@@ -91,6 +93,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 	if (g_fSaveOnExit)
 		SaveRegSettings();
 
+	OleUninitialize();
 	return 0;
 }
 

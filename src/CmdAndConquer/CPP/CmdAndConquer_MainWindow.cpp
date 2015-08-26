@@ -92,10 +92,10 @@ void CmdAndConquer_MainWindow::setImageList()
 	TextView_SetImageList(CC_hwndTextView, hImgList);
 
 	// highlight specific lines with image-index "1"
-	TextView_SetLineImage(CC_hwndTextView, 16, 1);
+	/*TextView_SetLineImage(CC_hwndTextView, 16, 1);
 	TextView_SetLineImage(CC_hwndTextView, 5, 1);
 	TextView_SetLineImage(CC_hwndTextView, 36, 1);
-	TextView_SetLineImage(CC_hwndTextView, 11, 1);
+	TextView_SetLineImage(CC_hwndTextView, 11, 1);*/
 }
 
 BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
@@ -143,6 +143,13 @@ void CmdAndConquer_MainWindow::HandleDropFiles(HWND hWnd, HDROP hDrop)
 
 	if (DragQueryFile(hDrop, 0, buf, MAX_PATH))
 	{
+		TCHAR tmp[MAX_PATH];
+
+		if (ResolveShortcut(buf, tmp, MAX_PATH))
+			lstrcpy(buf, tmp);
+
+		OutputDebugString(_T("Done dropfiles"));
+
 		OpenUnicodeFile(hWnd, buf);
 	}
 
