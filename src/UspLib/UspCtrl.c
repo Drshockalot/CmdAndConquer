@@ -27,7 +27,7 @@
 #endif
 
 // 'ASCII' control characters U+0000 - U+001F
-static const WCHAR *asciireps[] = 
+static const WCHAR *asciireps[] =
 {
 	L"NUL", L"SOH", L"STX", L"ETX", L"EOT", L"ENQ", L"ACK", L"BEL",
 	L"BS",  L"HT",  L"LF",  L"VT",  L"FF",  L"CR",  L"SO",  L"SI",
@@ -36,43 +36,43 @@ static const WCHAR *asciireps[] =
 };
 
 // C1 control characters U+0080 - U+00A0
-static const WCHAR *c1controls[] =	
+static const WCHAR *c1controls[] =
 {
 	L"80",  L"81",  L"BPH", L"NBH", L"IND", L"NEL", L"SSA", L"ESA",
 	L"HTS", L"HTJ", L"VTS", L"PLD", L"PLU", L"RI",  L"SS2", L"SS3",
 	L"DCS", L"PU1", L"PU2", L"STS", L"CCH", L"MW",  L"SPA", L"EPA",
 	L"SOS", L"99",  L"SCI", L"CSI", L"ST",  L"OSC", L"PM",  L"APC",
-	L"NBSP",  
+	L"NBSP",
 	L"SHY",	// 0xAD
 };
 
 static
 const WCHAR * CtrlStrRep(DWORD ch)
 {
-	if(ch < 0x20)
+	if (ch < 0x20)
 		return asciireps[ch];
 
-	if(ch >= 0x80 && ch < 0xA0)
-		return c1controls[ch-0x80];
+	if (ch >= 0x80 && ch < 0xA0)
+		return c1controls[ch - 0x80];
 
-	switch(ch)
+	switch (ch)
 	{
-	// Arabic control-characters
+		// Arabic control-characters
 	case 0x0600:  return L"ANS";		// Arabic Number Sign
 	case 0x0601:  return L"ASS";		// Arabic Sign Sanah
 	case 0x0602:  return L"ANSN";		// Arabic Number Sign
 	case 0x0603:  return L"ASNS";		// Arabic Sign Safha
 	case 0x06DD:  return L"AEY";		// Arabic End Of Ayah
 
-	// tag characters
+										// tag characters
 	case 0xE0001: return L"LTAG";		// Language Tag
 	case 0xE007F: return L"CTAG";		// Cancel Tag
-		
+
 	case 0x0085:  return L"NEL";		// Next Line (EBCDIC)
 	case 0x00A0:  return L"NBSP";		// No Break Space
 	case 0x034F:  return L"CGJ";		// Combining Grapheme Joiner
 
-	// general punc
+										// general punc
 	case 0x2000:  return L"NQSP";		// EnQuad
 	case 0x2001:  return L"MQSP";		// EmQuad
 	case 0x2002:  return L"ENSP";		// EnSpace
@@ -146,7 +146,7 @@ const WCHAR * CtrlStrRep(DWORD ch)
 	}
 
 	// control-pictures (2400+)
-	
+
 	// 3000 Ideographic-Space (IDSP)
 
 	// 3164 Hangul-filler(HF)
@@ -164,20 +164,20 @@ WCHAR * CtrlStr(DWORD ch, int mode, WCHAR *buf, size_t len)
 {
 	const WCHAR *ctrlstr;
 
-	switch(mode)
+	switch (mode)
 	{
-	case USP_CTLCHR_ASC: 
+	case USP_CTLCHR_ASC:
 		ctrlstr = CtrlStrRep(ch);
-		
-		if(ctrlstr)	swprintf(buf, len, L"%s", ctrlstr);
+
+		if (ctrlstr)	swprintf(buf, len, L"%s", ctrlstr);
 		else		swprintf(buf, len, L"%02X", ch);
 		break;
 
-	case USP_CTLCHR_DEC: 
+	case USP_CTLCHR_DEC:
 		swprintf(buf, len, L"%02d", ch);
 		break;
 
-	case USP_CTLCHR_HEX: 
+	case USP_CTLCHR_HEX:
 		swprintf(buf, len, L"%02X", ch);
 		break;
 	}
@@ -190,11 +190,11 @@ int CtrlCharWidth(USPFONT *uspFont, HDC hdc, ULONG chValue)
 	SIZE  size;
 	WCHAR str[16];
 	int	  mode = USP_CTLCHR_HEX;//ASC;
-	
+
 	CtrlStr(chValue, mode, str, 16);
 	GetTextExtentPoint32(hdc, str, wcslen(str), &size);
 
-	return size.cx+uspFont->xborder*2 + uspFont->yborder;
+	return size.cx + uspFont->xborder * 2 + uspFont->yborder;
 }
 
 
@@ -205,13 +205,13 @@ void InitCtrlChar(HDC hdc, USPFONT *uspFont)
 	// create a temporary off-screen bitmap
 	HDC		hdcTemp = CreateCompatibleDC(hdc);
 	HBITMAP hbmTemp = CreateBitmap(uspFont->tm.tmAveCharWidth, uspFont->tm.tmHeight, 1, 1, 0);
-	HANDLE  hbmOld  = SelectObject(hdcTemp, hbmTemp);
-	HANDLE  hfnOld	= SelectObject(hdcTemp, uspFont->hFont);
+	HANDLE  hbmOld = SelectObject(hdcTemp, hbmTemp);
+	HANDLE  hfnOld = SelectObject(hdcTemp, uspFont->hFont);
 
 	// black-on-white text
-	SetTextColor(hdcTemp,	RGB(0,0,0));
-	SetBkColor(hdcTemp,		RGB(255,255,255));
-	SetBkMode(hdcTemp,		OPAQUE);
+	SetTextColor(hdcTemp, RGB(0, 0, 0));
+	SetBkColor(hdcTemp, RGB(255, 255, 255));
+	SetBkMode(hdcTemp, OPAQUE);
 
 	// give default values just in case the scan fails
 	uspFont->capheight = uspFont->tm.tmAscent - uspFont->tm.tmInternalLeading;
@@ -219,13 +219,13 @@ void InitCtrlChar(HDC hdc, USPFONT *uspFont)
 	TextOut(hdcTemp, 0, 0, _T("E"), 1);
 
 	// scan downwards looking for the top of the letter 'E'
-	for(y = 0; y < uspFont->tm.tmHeight; y++)
+	for (y = 0; y < uspFont->tm.tmHeight; y++)
 	{
-		for(x = 0; x < uspFont->tm.tmAveCharWidth; x++)
+		for (x = 0; x < uspFont->tm.tmAveCharWidth; x++)
 		{
 			COLORREF col;
 
-			if((col = GetPixel(hdcTemp, x, y)) == RGB(0,0,0))
+			if ((col = GetPixel(hdcTemp, x, y)) == RGB(0, 0, 0))
 			{
 				uspFont->capheight = uspFont->tm.tmAscent - y;
 				y = uspFont->tm.tmHeight;
@@ -237,13 +237,13 @@ void InitCtrlChar(HDC hdc, USPFONT *uspFont)
 	TextOut(hdcTemp, 0, 0, _T("0"), 1);
 
 	// do the same for numbers (0) in case they are taller/shorter
-	for(y = 0; y < uspFont->tm.tmHeight; y++)
+	for (y = 0; y < uspFont->tm.tmHeight; y++)
 	{
-		for(x = 0; x < uspFont->tm.tmAveCharWidth; x++)
+		for (x = 0; x < uspFont->tm.tmAveCharWidth; x++)
 		{
 			COLORREF col;
 
-			if((col = GetPixel(hdcTemp, x, y)) == RGB(0,0,0))
+			if ((col = GetPixel(hdcTemp, x, y)) == RGB(0, 0, 0))
 			{
 				uspFont->numheight = uspFont->tm.tmAscent - y;
 				y = uspFont->tm.tmHeight;
@@ -257,7 +257,7 @@ void InitCtrlChar(HDC hdc, USPFONT *uspFont)
 	uspFont->yborder = max(1, uspFont->yborder);		// minimum of 1-pixel
 	uspFont->xborder = max(2, uspFont->yborder);		// same as yborder, but min 2-pixel
 
-	// cleanup
+														// cleanup
 	SelectObject(hdcTemp, hbmOld);
 	SelectObject(hdcTemp, hfnOld);
 	DeleteDC(hdcTemp);
@@ -268,7 +268,7 @@ static
 void PaintRect(HDC hdc, RECT *rect, COLORREF fill)
 {
 	fill = SetBkColor(hdc, fill);
-	ExtTextOut(hdc, 0, 0, ETO_OPAQUE, rect, 0, 0, 0);	
+	ExtTextOut(hdc, 0, 0, ETO_OPAQUE, rect, 0, 0, 0);
 	SetBkColor(hdc, fill);
 }
 
@@ -288,27 +288,27 @@ int PaintCtrlChar(USPFONT *uspFont, HDC hdc, int xpos, int ypos, ULONG chValue, 
 	GetTextExtentPoint32(hdc, str, wcslen(str), &size);
 
 	// center the control-character "glyph" 
-	xpos += uspFont->yborder/2 + 1;
+	xpos += uspFont->yborder / 2 + 1;
 
-	if(mode == USP_CTLCHR_ASC || mode == USP_CTLCHR_HEX)
+	if (mode == USP_CTLCHR_ASC || mode == USP_CTLCHR_HEX)
 		height = max(uspFont->capheight, uspFont->numheight);
 	else
 		height = uspFont->numheight;
 
 	SetRect(
-		&rect, 
-		xpos + 1, 
+		&rect,
+		xpos + 1,
 		ypos + uspFont->tm.tmAscent - height - uspFont->yborder,
-		xpos + size.cx + uspFont->xborder * 2 - 2, 
+		xpos + size.cx + uspFont->xborder * 2 - 2,
 		ypos + uspFont->tm.tmAscent + uspFont->yborder
-	  );
+		);
 
 	//if(rect.top < ypos+1)
 	//	rect.top = ypos+1;
-	
+
 	// prepare the background 'round' rectangle
 	PaintRect(hdc, &rect, bg);
-	InflateRect(&rect, 1,-1);
+	InflateRect(&rect, 1, -1);
 	PaintRect(hdc, &rect, bg);
 
 	// finally paint the text
@@ -325,15 +325,15 @@ void PaintCtrlCharRun(USPDATA *uspData, USPFONT *uspFont, ITEM_RUN *itemRun, HDC
 {
 	int i;
 
-	for(i = 0; i < itemRun->glyphCount; i++)
+	for (i = 0; i < itemRun->glyphCount; i++)
 	{
-		ATTR attr = uspData->attrList[itemRun->charPos+i];
-		
-		if(attr.sel)
+		ATTR attr = uspData->attrList[itemRun->charPos + i];
+
+		if (attr.sel)
 			PaintCtrlChar(uspFont, hdc, xpos, ypos, itemRun->chcode, uspData->selBG, uspData->selFG);
 		else
 			PaintCtrlChar(uspFont, hdc, xpos, ypos, itemRun->chcode, attr.bg, attr.fg);
 
-		xpos += uspData->widthList[itemRun->glyphPos+i];
+		xpos += uspData->widthList[itemRun->glyphPos + i];
 	}
 }

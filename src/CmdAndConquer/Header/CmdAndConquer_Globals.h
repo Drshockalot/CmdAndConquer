@@ -21,6 +21,7 @@ extern "C" {
 	extern int		g_nLongLineLimit;
 	extern BOOL		g_nHLCurLine;
 	extern BOOL		g_fAddToExplorerContextMenu;
+	extern BOOL		g_fReplaceNotepad;
 
 	extern LONG		g_nPaddingAbove;
 	extern LONG		g_nPaddingBelow;

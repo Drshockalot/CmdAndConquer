@@ -10,6 +10,9 @@
 #include <shellapi.h>
 #include "../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
+typedef HMONITOR(WINAPI * MFR_PROC)(LPCRECT, DWORD);
+static	MFR_PROC pMonitorFromRect = 0;
+
 BOOL CheckMenuCommand(HMENU hMenu, int nCommandId, BOOL fChecked)
 {
 	if (fChecked)
@@ -80,8 +83,9 @@ BOOL SaveFileData(TCHAR *szPath, HWND hwnd)
 	//
 	if ((hFile = CreateFile(szStream, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0)) != INVALID_HANDLE_VALUE)
 	{
-		GetFileTime(hFile, &ctm, &atm, &wtm);
-		restoretime = TRUE;
+		if (GetFileTime(hFile, &ctm, &atm, &wtm))
+			restoretime = TRUE;
+
 		CloseHandle(hFile);
 	}
 
@@ -102,6 +106,33 @@ BOOL SaveFileData(TCHAR *szPath, HWND hwnd)
 	CloseHandle(hFile);
 
 	return TRUE;
+}
+
+//
+//	Ensure that the specified window is on a visible monitor
+//
+void ForceVisibleDisplay(HWND hwnd)
+{
+	RECT		rect;
+	HMODULE		hUser32;
+
+	GetWindowRect(hwnd, &rect);
+
+	hUser32 = GetModuleHandle(_T("USER32.DLL"));
+
+	pMonitorFromRect = (MFR_PROC)GetProcAddress(hUser32, "MonitorFromRect");
+
+	if (pMonitorFromRect != 0)
+	{
+		if (NULL == pMonitorFromRect(&rect, MONITOR_DEFAULTTONULL))
+		{
+			// force window onto primary display if it is not visible
+			rect.left %= GetSystemMetrics(SM_CXSCREEN);
+			rect.top %= GetSystemMetrics(SM_CYSCREEN);
+
+			SetWindowPos(hwnd, 0, rect.left, rect.top, 0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
+		}
+	}
 }
 
 BOOL LoadFileData(TCHAR *szPath, HWND hwnd)
@@ -132,6 +163,7 @@ BOOL LoadFileData(TCHAR *szPath, HWND hwnd)
 	{
 		wp.flags = SW_HIDE;
 		SetWindowPlacement(hwnd, &wp);
+		ForceVisibleDisplay(hwnd);
 	}
 
 	CloseHandle(hFile);

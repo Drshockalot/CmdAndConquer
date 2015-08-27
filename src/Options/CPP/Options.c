@@ -33,6 +33,7 @@ BOOL  g_fSaveOnExit;
 int	  g_nLongLineLimit;
 BOOL  g_nHLCurLine;
 BOOL  g_fAddToExplorerContextMenu;
+BOOL  g_fReplaceNotepad;
 
 HFONT g_hFont;
 
@@ -85,6 +86,9 @@ BOOL WriteSettingStr(HKEY hkey, TCHAR szKeyName[], TCHAR szString[])
 	return !RegSetValueEx(hkey, szKeyName, 0, REG_SZ, (BYTE *)szString, (lstrlen(szString) + 1) * sizeof(TCHAR));
 }
 
+//
+//	Add or remove Neatpad from the Explorer context-menu
+//
 void SetExplorerContextMenu(BOOL fAddToMenu)
 {
 	if (fAddToMenu)
@@ -102,6 +106,36 @@ void SetExplorerContextMenu(BOOL fAddToMenu)
 	{
 		RegDeleteKey(HKEY_CLASSES_ROOT, CONTEXT_CMD_LOC);
 		RegDeleteKey(HKEY_CLASSES_ROOT, CONTEXT_APP_LOC);
+	}
+}
+
+//
+//	Replace/Restore Notepad (with Neatpad) as the default text editor, by
+//  manipulating the Image-File-Execution-Options debugger setting for NOTEPAD.EXE
+//
+void SetImageFileExecutionOptions(BOOL fReplaceWithCurrentApp)
+{
+	HKEY hKey;
+	const TCHAR* szIFEO = _T("Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\Notepad.exe");
+
+	// create an 'ImageFileExecutionOptions' entry for the standard Notepad app
+	if (S_OK == RegCreateKeyEx(HKEY_LOCAL_MACHINE, szIFEO, 0, 0, 0, KEY_WRITE, 0, &hKey, 0))
+	{
+		// get path of current exe
+		TCHAR szPath[MAX_PATH];
+		GetModuleFileName(0, szPath + 1, MAX_PATH);
+
+		// enclose it in double-quotes
+		szPath[0] = '\"';
+		lstrcat(szPath, _T("\""));
+
+		// set the 'debugger' key so that whenever notepad.exe is executed, neatpad runs instead
+		if (fReplaceWithCurrentApp)
+			WriteSettingStr(hKey, _T("Debugger"), szPath);
+		else
+			RegDeleteValue(hKey, _T("Debugger"));
+
+		RegCloseKey(hKey);
 	}
 }
 
@@ -129,6 +163,7 @@ void LoadRegSettings()
 	GetSettingInt(hKey, _T("HLCurLine"), &g_nHLCurLine, FALSE);
 
 	GetSettingInt(hKey, _T("AddExplorer"), &g_fAddToExplorerContextMenu, FALSE);
+	GetSettingInt(hKey, _T("ReplaceNotepad"), &g_fReplaceNotepad, FALSE);
 
 	// read the display colours
 	RegCreateKeyEx(hKey, _T("Colours"), 0, 0, 0, KEY_READ, 0, &hColKey, 0);
@@ -178,6 +213,8 @@ void SaveRegSettings()
 	WriteSettingInt(hKey, _T("HLCurLine"), g_nHLCurLine);
 
 	WriteSettingInt(hKey, _T("AddExplorer"), g_fAddToExplorerContextMenu);
+	WriteSettingInt(hKey, _T("ReplaceNotepad"), g_fReplaceNotepad);
+
 
 	// write the display colours
 	RegCreateKeyEx(hKey, _T("Colours"), 0, 0, 0, KEY_WRITE, 0, &hColKey, 0);
@@ -237,6 +274,8 @@ void ApplyRegSettings()
 	//	Add
 	//
 	SetExplorerContextMenu(g_fAddToExplorerContextMenu);
+
+	SetImageFileExecutionOptions(g_fReplaceNotepad);
 }
 
 void ShowProperties(HWND hwndParent)
@@ -366,6 +405,55 @@ BOOL CALLBACK DisplayOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 
 			return TRUE;
 
+		case IDCANCEL:
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	return FALSE;
+}
+
+//
+//	Dialogbox procedure for the FONT pane
+//
+BOOL CALLBACK MiscOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	PSHNOTIFY *pshn;
+
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+
+		CheckDlgButton(hwnd, IDC_ADDCONTEXT, g_fAddToExplorerContextMenu);
+		CheckDlgButton(hwnd, IDC_REPLACENOTEPAD, g_fReplaceNotepad);
+
+		// disable 'replace notepad' option for Win9x GetVersion() doesn't work
+		//EnableDlgItem(hwnd, IDC_REPLACENOTEPAD, GetVersion() & 0x80000000 ? FALSE : TRUE);
+		EnableDlgItem(hwnd, IDC_REPLACENOTEPAD, g_fReplaceNotepad);
+		return TRUE;
+
+	case WM_CLOSE:
+		return TRUE;
+
+	case WM_NOTIFY:
+
+		pshn = (PSHNOTIFY *)lParam;
+
+		if (pshn->hdr.code == PSN_APPLY)
+		{
+			g_fAddToExplorerContextMenu = IsDlgButtonChecked(hwnd, IDC_ADDCONTEXT);
+			g_fReplaceNotepad = IsDlgButtonChecked(hwnd, IDC_REPLACENOTEPAD);
+			return TRUE;
+		}
+
+		return FALSE;
+
+	case WM_COMMAND:
+
+		switch (LOWORD(wParam))
+		{
 		case IDCANCEL:
 			return TRUE;
 		}

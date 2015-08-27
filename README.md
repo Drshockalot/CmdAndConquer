@@ -40,4 +40,21 @@ VERSION LIST:
 					#unicode support
 					#unicode text rendering
 					
-0.0008 - 
+0.0008 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality

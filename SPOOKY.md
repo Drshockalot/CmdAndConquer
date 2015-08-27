@@ -24,10 +24,3 @@ Problem sources: InitFontOptionsDlg(), EnumFontSizes()
 RESOLUTION: The arguments were mixed around, the third argument was the buffer size, which is incorrect. The correct order of parameters is as follows - _stprintf_s(buffer, buffersize, text)
 -------------------------------------------------------------
 
--------------------------------------------------------------
-25/08/2015 (v0.0006)
-
-g_nFontSize is being reset somehow during any InitFontOptionsDlg() call after the first one.
-
-RESOLUTION: Setting g_nFontSize = 32 manually seems to do the trick, but seems pretty hacky. 
--------------------------------------------------------------

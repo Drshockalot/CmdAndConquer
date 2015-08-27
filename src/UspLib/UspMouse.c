@@ -40,68 +40,81 @@ ITEM_RUN *GetItemRun(USPDATA *uspData, int visualIdx);
 //
 //	The script direction is returned (right/left) in *fRTL
 //
-BOOL WINAPI UspSnapXToOffset (	
-		USPDATA	  * uspData,		
-		int			xpos,			
-		int       * snappedX,		// out, optional
-		int       * charPos,		// out
-		BOOL	  * fRTL			// out, optional
+BOOL WINAPI UspSnapXToOffset(
+	USPDATA	  * uspData,
+	int			xpos,
+	int       * snappedX,		// out, optional
+	int       * charPos,		// out
+	BOOL	  * fRTL			// out, optional
 	)
 {
 	int i, cp, trailing, runx = 0;
 	int runCount = uspData->itemRunCount;
 
-	*charPos	= 0;
-	*snappedX	= 0;
+	if (charPos)		*charPos = 0;
+	if (snappedX)	*snappedX = 0;
+	if (fRTL)		*fRTL = 0;
 
-	if(xpos < 0)
+	if (xpos < 0)
 		xpos = 0;
 
 	// don't allow mouse to move into the CR-LF sequence. This is incorrect
 	// for RTL and mixed LTR/RTL runs!!!
-	if(runCount > 0 && uspData->itemRunList[runCount-1].eol)
-		runCount--;
+	for (i = runCount - 1; i >= 0; i--)
+	{
+		if (uspData->itemRunList[i].eol)
+			runCount--;
+	}
+
+	//if(runCount > 0 && uspData->itemRunList[runCount-1].eol)
+	//	runCount--;
 
 	//
 	// process each "run" or span of text in visual order
 	//
-	for(i = 0; i < runCount; i++)
+	for (i = 0; i < runCount; i++)
 	{
 		ITEM_RUN *itemRun;
 
 		// get width of this span of text
-		if((itemRun = GetItemRun(uspData, i)) == 0)
+		if ((itemRun = GetItemRun(uspData, i)) == 0)
 			break;
 
+		if (itemRun->eol)
+		{
+			runx += itemRun->width;
+			continue;
+		}
+
 		// does the mouse fall within this run of text?
-		if((i == runCount - 1) || xpos >= runx && xpos < runx + itemRun->width)
+		if ((i == runCount - 1) || xpos >= runx && xpos < runx + itemRun->width)
 		{
 			// get the character position
-			ScriptXtoCP(xpos - runx, 
+			ScriptXtoCP(xpos - runx,
 				itemRun->len,
 				itemRun->glyphCount,
-				uspData->clusterList	+ itemRun->charPos,
-				uspData->svaList		+ itemRun->glyphPos,
-				uspData->widthList		+ itemRun->glyphPos,
+				uspData->clusterList + itemRun->charPos,
+				uspData->svaList + itemRun->glyphPos,
+				uspData->widthList + itemRun->glyphPos,
 				&itemRun->analysis,
 				&cp,
 				&trailing
 				);
-				
+
 			// convert this character position back to a x-coord
-			if(snappedX)
+			if (snappedX)
 			{
-				ScriptCPtoX(cp+trailing,
+				ScriptCPtoX(cp + trailing,
 					FALSE,
 					itemRun->len,
 					itemRun->glyphCount,
-					uspData->clusterList	+ itemRun->charPos,
-					uspData->svaList		+ itemRun->glyphPos,
-					uspData->widthList		+ itemRun->glyphPos,
+					uspData->clusterList + itemRun->charPos,
+					uspData->svaList + itemRun->glyphPos,
+					uspData->widthList + itemRun->glyphPos,
 					&itemRun->analysis,
 					snappedX
 					);
-					
+
 				// return the adjusted x-coordinate
 				*snappedX += runx;
 			}
@@ -110,7 +123,7 @@ BOOL WINAPI UspSnapXToOffset (
 			*charPos = cp + trailing + itemRun->charPos;
 
 			// return script-direction for this run
-			if(fRTL)
+			if (fRTL)
 				*fRTL = itemRun->analysis.fRTL;
 
 			return TRUE;
@@ -130,53 +143,53 @@ BOOL WINAPI UspSnapXToOffset (
 //
 //	The script direction is also returned (right/left) in *fRTL
 //
-BOOL WINAPI UspXToOffset (
-		USPDATA	  * uspData,		
-		int			xpos,			
-		int       * charPos,		// out
-		BOOL	  * trailing,		// out
-		BOOL	  * fRTL			// out, optional
+BOOL WINAPI UspXToOffset(
+	USPDATA	  * uspData,
+	int			xpos,
+	int       * charPos,		// out
+	BOOL	  * trailing,		// out
+	BOOL	  * fRTL			// out, optional
 	)
 {
 	int i, runx = 0;
 	int runCount = uspData->itemRunCount;
 
-	if(xpos < 0)
+	if (xpos < 0)
 		xpos = 0;
 
-	if(runCount > 0 && uspData->itemRunList[runCount-1].eol)
+	if (runCount > 0 && uspData->itemRunList[runCount - 1].eol)
 		runCount--;
 
 	//
 	// process each "run" or span of text 
 	//
-	for(i = 0; i < runCount; i++)
+	for (i = 0; i < runCount; i++)
 	{
 		ITEM_RUN *itemRun;
 
 		// get width of this span of text
-		if((itemRun = GetItemRun(uspData, i)) == 0)
+		if ((itemRun = GetItemRun(uspData, i)) == 0)
 			break;
 
 		// does the mouse fall within this run of text?
-		if((i == runCount - 1) || xpos >= runx && xpos < runx + itemRun->width)
+		if ((i == runCount - 1) || xpos >= runx && xpos < runx + itemRun->width)
 		{
 			// get the character position
-			ScriptXtoCP(xpos - runx, 
+			ScriptXtoCP(xpos - runx,
 				itemRun->len,
 				itemRun->glyphCount,
-				uspData->clusterList	+ itemRun->charPos,
-				uspData->svaList		+ itemRun->glyphPos,
-				uspData->widthList		+ itemRun->glyphPos,
+				uspData->clusterList + itemRun->charPos,
+				uspData->svaList + itemRun->glyphPos,
+				uspData->widthList + itemRun->glyphPos,
 				&itemRun->analysis,
 				charPos,
 				trailing
 				);
-				
+
 			*charPos += itemRun->charPos;
 
 			// return script-direction for this run
-			if(fRTL)
+			if (fRTL)
 				*fRTL = itemRun->analysis.fRTL;
 
 			return TRUE;
@@ -186,7 +199,9 @@ BOOL WINAPI UspXToOffset (
 		runx += itemRun->width;
 	}
 
+	*trailing = 0;
 	*charPos = 0;
+	if (fRTL) *fRTL = 0;
 	return FALSE;
 }
 
@@ -195,11 +210,11 @@ BOOL WINAPI UspXToOffset (
 //	coordinate, relative to the start of the string
 //	Duplicates the behaviour of ScriptStringCPToX
 //
-BOOL WINAPI UspOffsetToX (
-		USPDATA		* uspData, 
-		int			  charPos, 
-		BOOL		  trailing,		// out
-		int			* px			// out
+BOOL WINAPI UspOffsetToX(
+	USPDATA		* uspData,
+	int			  charPos,
+	BOOL		  trailing,		// out
+	int			* px			// out
 	)
 {
 	int i;
@@ -211,26 +226,26 @@ BOOL WINAPI UspOffsetToX (
 	//
 	// process each "run" or span of text in visual order
 	//
-	for(i = 0; i < uspData->itemRunCount; i++)
+	for (i = 0; i < uspData->itemRunCount; i++)
 	{
 		// get width of this span of text
-		if((itemRun = GetItemRun(uspData, i)) == 0)
+		if ((itemRun = GetItemRun(uspData, i)) == 0)
 			break;
 
 		// does the mouse fall within this run of text?
-		if((i == uspData->itemRunCount - 1) || 
+		if ((i == uspData->itemRunCount - 1) ||
 			charPos >= itemRun->charPos && charPos < itemRun->charPos + itemRun->len)
 		{
 			ScriptCPtoX(charPos - itemRun->charPos,
 				trailing,
 				itemRun->len,
 				itemRun->glyphCount,
-				uspData->clusterList	+ itemRun->charPos,
-				uspData->svaList		+ itemRun->glyphPos,
-				uspData->widthList		+ itemRun->glyphPos,
+				uspData->clusterList + itemRun->charPos,
+				uspData->svaList + itemRun->glyphPos,
+				uspData->widthList + itemRun->glyphPos,
 				&itemRun->analysis,
 				px
-			  );
+				);
 
 			*px += xpos;
 			return TRUE;

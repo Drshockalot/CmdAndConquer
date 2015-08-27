@@ -96,6 +96,15 @@
     <ClCompile Include="..\Unicode\Uniscribe.cpp">
       <Filter>Source Files\Unicode</Filter>
     </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextViewClipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextViewKeyNav.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\TextView\CPP\TextViewParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">
