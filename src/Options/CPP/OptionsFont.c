@@ -278,6 +278,28 @@ BOOL FontCombo_DrawItem(HWND hwnd, DRAWITEMSTRUCT *dis)
 		return TRUE;
 	}
 
+	/*{
+	HTHEME hTheme = 	OpenThemeData(hwnd, L"combobox");
+	RECT rc;
+	HDC hdc=GetDC(GetParent(hwnd));
+	CopyRect(&rc, &dis->rcItem);
+	InflateRect(&rc, 3, 3);
+	//GetClientRect(hwnd, &rc);
+	//rc.bottom = rc.top + 22;
+
+	//DrawThemeBackground(
+	//	hTheme,
+	//	dis->hDC,
+	//	4,//CP_DROPDOWNBUTTON,
+	//	CBXS_HOT,//CBXS_NORMAL,
+	//	&rc,
+	//	&rc);
+
+	CloseThemeData(hTheme);
+	ReleaseDC(GetParent(hwnd),hdc);
+	return TRUE;
+	}*/
+
 	//
 	//	Get the item text
 	//
@@ -548,7 +570,7 @@ void UpdatePreviewPane(HWND hwnd)
 
 
 	if ((short)LOWORD(data) >= 0)
-		g_crPreviewFG = REALIZE_SYSCOL(g_rgbTempColourList[idx]);
+		g_crPreviewFG = REALIZE_SYSCOL(g_rgbTempColourList[LOWORD(data)]);
 	else
 		g_crPreviewFG = GetSysColor(COLOR_WINDOWTEXT);
 
@@ -706,7 +728,7 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	AddColourListItem(hwnd, IDC_LIST1, TXC_HIGHLIGHTTEXT2, TXC_HIGHLIGHT2, _T("Inactive Selection"));
 	AddColourListItem(hwnd, IDC_LIST1, TXC_SELMARGIN1, TXC_SELMARGIN2, _T("Left Margin"));
 	AddColourListItem(hwnd, IDC_LIST1, TXC_LINENUMBERTEXT, TXC_LINENUMBER, _T("Line Numbers"));
-	AddColourListItem(hwnd, IDC_LIST1, TXC_LONGLINETEXT, TXC_LONGLINE, _T("Long Lines"));
+	AddColourListItem(hwnd, IDC_LIST1, -1, TXC_LONGLINE, _T("Long Lines"));
 	AddColourListItem(hwnd, IDC_LIST1, TXC_CURRENTLINETEXT, TXC_CURRENTLINE, _T("Current Line"));
 
 	SendDlgItemMessage(hwnd, IDC_ITEMLIST, LB_SETCURSEL, 0, 0);
@@ -815,6 +837,7 @@ BOOL CALLBACK FontOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	switch (msg)
 	{
 	case WM_INITDIALOG:
+		CenterWindow(GetParent(hwnd));
 		return InitFontOptionsDlg(hwnd);
 
 	case MSG_UPDATE_PREVIEW:
@@ -846,7 +869,15 @@ BOOL CALLBACK FontOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 		pshn = (PSHNOTIFY *)lParam;
 
-		if (pshn->hdr.code == PSN_APPLY)
+		if (pshn->hdr.code == NM_CUSTOMDRAW)
+		{
+			if (pshn->hdr.idFrom == IDC_FONTLIST)
+			{
+				return FALSE;
+			}
+			return FALSE;
+		}
+		else if (pshn->hdr.code == PSN_APPLY)
 		{
 			g_nFontSize = GetDlgItemInt(hwnd, IDC_SIZELIST, 0, 0);
 			g_fFontBold = IsDlgButtonChecked(hwnd, IDC_BOLD);
@@ -871,7 +902,7 @@ BOOL CALLBACK FontOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		{
 		case IDC_ADVANCED:
 
-			if (DialogBoxParam(GetModuleHandle(0), MAKEINTRESOURCE(IDD_FONTEXTRA), hwnd, AdvancedDlgProc, 0))
+			if (DialogBoxParam(g_hResourceModule, MAKEINTRESOURCE(IDD_FONTEXTRA), hwnd, AdvancedDlgProc, 0))
 			{
 				UpdatePreviewPane(hwnd);
 			}

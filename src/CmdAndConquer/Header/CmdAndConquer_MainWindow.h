@@ -27,14 +27,6 @@
 
 typedef std::basic_stringstream<TCHAR> tstringstream;
 
-#define APP_TITLE   _T("CmdAndConquer")
-#define WEBSITE_STR _T("www.drshockalot.com")
-
-BOOL SaveFileData(TCHAR *szPath, HWND hwnd);
-BOOL LoadFileData(TCHAR *szPath, HWND hwnd);
-
-BOOL ResolveShortcut(TCHAR *pszShortcut, TCHAR *pszFilePath, int nPathLen);
-
 class CmdAndConquer_MainWindow
 {
 public:
@@ -49,9 +41,6 @@ public:
 	static ATOM getClassATOM(void);		//	Necessary?
 	static LPCTSTR getClassName(void);	//	Necessary?
 	HWND getMainHWND();
-
-	//	Public Functions
-	void OpenUnicodeFile(HWND hWnd, TCHAR * szFile);
 
 private:
 	
@@ -78,14 +67,16 @@ private:
 	static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
+	static INT_PTR CALLBACK AboutDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 	int onCreate(const HWND hWnd, CREATESTRUCT *cs);
 	void setImageList();
-	void HandleDropFiles(HWND hWnd, HDROP hDrop);
-	BOOL DoOpenFile(HWND hWnd, TCHAR * szFileName, TCHAR * szFileTitle);
 	BOOL ShowOpenFileDlg(HWND hwnd, TCHAR * pstrFileName, TCHAR * pstrTitleName);
-	void SetWindowFileName(HWND hwnd, TCHAR * szFileName);
-	void ShowAboutDlg(HWND hwndParent);
-
+	
+	void ShowAboutDlg(HWND hwndParent);	
+	UINT TextViewNotifyHandler(HWND hwnd, NMHDR *nmhdr);
+	UINT NotifyHandler(HWND hwnd, NMHDR *nmhdr);
+	UINT CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtrlCode, HWND hwndFrom);
 	//	Toolbar Initialisation
 	//void initToolbar(HWND hWnd, CREATESTRUCT *cs);
 };

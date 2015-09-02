@@ -15,7 +15,7 @@ RESOLUTION: When calling the AddColourListItem() batch, the Long Line Text param
 -------------------------------------------------------------
 
 -------------------------------------------------------------
-25/08/2015 (v0.0006)
+25/08/2015 (v0.0006) 
 
 When updating the _stprintf calls to the updated version of _stprintf_s, it was throwing out of bounds errors. 
 
@@ -24,3 +24,8 @@ Problem sources: InitFontOptionsDlg(), EnumFontSizes()
 RESOLUTION: The arguments were mixed around, the third argument was the buffer size, which is incorrect. The correct order of parameters is as follows - _stprintf_s(buffer, buffersize, text)
 -------------------------------------------------------------
 
+-------------------------------------------------------------
+02/09/2015 (v0.0009)
+
+Inside of the init_linebuffer() function, it had a hard line break at 128 characters, I changed it to 256 for now until I find some way to have an (infinite?) line.
+-------------------------------------------------------------

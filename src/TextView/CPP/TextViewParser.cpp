@@ -6,6 +6,9 @@
 //	NOTES:		www.catch22.net
 //
 
+#define STRICT
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 #include <tchar.h>
 #include "../Header/TextView.h"
@@ -35,7 +38,7 @@ bool Init(TCHAR *buf, int len)
 
 void Machine(TCHAR *str, int len, int initialState)
 {
-	State machine[] = 
+	State machine[] =
 	{
 		{ 'a', 0, testEqual },
 		{ 'b', 0, testEqual }
@@ -44,37 +47,37 @@ void Machine(TCHAR *str, int len, int initialState)
 	int state = initialState;
 
 	// match string character-by-character
-	for(int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++)
 	{
 		TEST status = testNone;
 
-		switch(machine[state].test)
+		switch (machine[state].test)
 		{
-		case testEqual: 
-			if(str[i] == machine[state].arg1)	
+		case testEqual:
+			if (str[i] == machine[state].arg1)
 				status = testEqual;
 
 			break;
 
-		case testNotEqual: 
-			if(str[i] != machine[state].arg1)	
+		case testNotEqual:
+			if (str[i] != machine[state].arg1)
 				status = testNotEqual;
 			break;
-			
-		case testInRange: 
-			if(str[i] >= machine[state].arg1 && str[i] <= machine[state].arg2)	
+
+		case testInRange:
+			if (str[i] >= machine[state].arg1 && str[i] <= machine[state].arg2)
 				status = testInRange;
 
 			break;
-			
-		case testOutRange: 
-			if(str[i] < machine[state].arg1 || str[i] > machine[state].arg2)	
+
+		case testOutRange:
+			if (str[i] < machine[state].arg1 || str[i] > machine[state].arg2)
 				status = testOutRange;
 
 			break;
 		}
 
-		if(status == testNone)
+		if (status == testNone)
 			state++;
 		else
 			state = machine[state].test;

@@ -1,12 +1,19 @@
 #include "../Header/CmdAndConquer_MainWindow.h"
 #include "../Header/CmdAndConquer_Globals.h"
-HDC ShowPrintDlg(HWND hwndParent);
-
+HDC	ShowPrintDlg(HWND hwndParent);
 TCHAR		g_szAppName[] = APP_TITLE;
 HWND		g_hwndMain;
 
-TCHAR g_szFileName[MAX_PATH];
-TCHAR g_szFileTitle[MAX_PATH];
+HWND		g_hwndTextView;
+HWND		g_hwndStatusbar;
+HWND		g_hwndSearchDlg;
+HFONT		g_hFont;
+
+TCHAR		g_szFileName[MAX_PATH];
+TCHAR		g_szFileTitle[MAX_PATH];
+BOOL		g_fFileChanged = FALSE;
+
+TCHAR		*g_szEditMode[] = { _T("READ"), _T("INS"), _T("OVR") };
 
 CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdShow, LPCTSTR windowText) : szAppName(APP_TITLE), hWnd_(NULL)
 {
@@ -98,67 +105,13 @@ void CmdAndConquer_MainWindow::setImageList()
 	TextView_SetLineImage(CC_hwndTextView, 11, 1);*/
 }
 
-BOOL CmdAndConquer_MainWindow::DoOpenFile(HWND hWnd, TCHAR *szFileName, TCHAR *szFileTitle)
-{
-	int fmt, fmtlook[] =
-	{
-		IDM_VIEW_ASCII, IDM_VIEW_UTF8, IDM_VIEW_UTF16, IDM_VIEW_UTF16BE
-	};
-
-	if (TextView_OpenFile(this->CC_hwndTextView, szFileName))
-	{
-		SetWindowFileName(hWnd, szFileTitle);
-
-		fmt = TextView_GetFormat(g_hwndTextView);
-
-		CheckMenuRadioItem(GetMenu(hWnd), IDM_VIEW_ASCII, IDM_VIEW_UTF16BE, fmtlook[fmt], MF_BYCOMMAND);
-
-		return TRUE;
-	}
-	else
-	{
-		MessageBox(hWnd, _T("Error opening file"), APP_TITLE, MB_ICONEXCLAMATION);
-		return FALSE;
-	}
-}
-
-void CmdAndConquer_MainWindow::OpenUnicodeFile(HWND hWnd, TCHAR *szFile)
-{
-	TCHAR *name;
-
-	//	save current file's position
-	SaveFileData(g_szFileName, hWnd);
-
-	_tcscpy_s(g_szFileName, szFile);
-
-	name = _tcsrchr(g_szFileName, '\\');
-	_tcscpy_s(g_szFileTitle, name ? name + 1 : szFile);
-
-	DoOpenFile(hWnd, g_szFileName, g_szFileTitle);
-}
-
-void CmdAndConquer_MainWindow::HandleDropFiles(HWND hWnd, HDROP hDrop)
-{
-	TCHAR buf[MAX_PATH];
-
-	if (DragQueryFile(hDrop, 0, buf, MAX_PATH))
-	{
-		TCHAR tmp[MAX_PATH];
-
-		if (ResolveShortcut(buf, tmp, MAX_PATH))
-			lstrcpy(buf, tmp);
-
-		OutputDebugString(_T("Done dropfiles"));
-
-		OpenUnicodeFile(hWnd, buf);
-	}
-
-	DragFinish(hDrop);
-}
-
 LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	static int width, height;
+	static int width, height, heightsb;
+	RECT rect;
+	HDWP hdwp;
+	NMHDR *nmhdr;
+	TCHAR msgstr[MAX_PATH + 200];
 
 	switch (Msg)
 	{
@@ -175,7 +128,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 		}
 
 		case WM_DROPFILES:
-			this->HandleDropFiles(hWnd, (HDROP)wParam);
+			HandleDropFiles(hWnd, (HDROP)wParam);
 			return 0;
 
 		case WM_DESTROY:
@@ -184,79 +137,102 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			DeleteObject(g_hFont);
 			return 0;
 
+			//case WM_NCCALCSIZE:
+			//	return NcCalcSize(hwnd, wParam, lParam);
+
 		case WM_INITMENU:
 			CheckMenuCommand((HMENU)wParam, IDM_VIEW_LINENUMBERS, g_fLineNumbers);
 			CheckMenuCommand((HMENU)wParam, IDM_VIEW_LONGLINES, g_fLongLines);
 			CheckMenuCommand((HMENU)wParam, IDM_VIEW_SAVEEXIT, g_fSaveOnExit);
+			CheckMenuCommand((HMENU)wParam, IDM_VIEW_STATUSBAR, g_fShowStatusbar);
+			//CheckMenuCommand((HMENU)wParam, IDM_VIEW_SEARCHBAR,		g_hwndSearchBar ? TRUE : FALSE);
+
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_UNDO, TextView_CanUndo(g_hwndTextView));
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_REDO, TextView_CanRedo(g_hwndTextView));
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_PASTE, IsClipboardFormatAvailable(CF_TEXT));
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_COPY, TextView_GetSelSize(g_hwndTextView));
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_CUT, TextView_GetSelSize(g_hwndTextView));
+			EnableMenuCommand((HMENU)wParam, IDM_EDIT_DELETE, TextView_GetSelSize(g_hwndTextView));
+
 			return 0;
+
+			//case WM_USER:
+			//	wsprintf(msgstr, _T("%s\n\nThis file has been modified outside of Neatpad.")
+			//					 _T("Do you wish to reload it?"), g_szFileName);
+			//	MessageBox(hwnd, msgstr, _T("Neatpad"), MB_ICONQUESTION|MB_YESNO);
+			//
+			//	return 0;
+
+		case WM_ENABLE:
+
+			// keep the modeless find/replace dialog in the same enabled state as the main window
+			EnableWindow(g_hwndSearchDlg, (BOOL)wParam);
+			return 0;
+
+		case WM_MENUSELECT:
+			StatusBarMenuSelect(hWnd, g_hwndStatusbar, wParam, lParam);
+			return 0;
+
+		case WM_NOTIFY:
+			nmhdr = (NMHDR *)lParam;
+
+			if (nmhdr->hwndFrom == g_hwndTextView)
+				return TextViewNotifyHandler(hWnd, nmhdr);
+			else
+				return NotifyHandler(hWnd, nmhdr);
 
 		case WM_COMMAND:
-		{
-			switch (LOWORD(wParam))
-			{
-				case IDM_FILE_NEW:
-					this->SetWindowFileName(hWnd, _T("Untitled"));
-					TextView_Clear(this->CC_hwndTextView);
-					return 0;
-
-				case IDM_FILE_OPEN:
-					if (this->ShowOpenFileDlg(hWnd, szFileName, szFileTitle))
-						this->DoOpenFile(hWnd, szFileName, szFileTitle);
-					return 0;
-
-				case IDM_FILE_PRINT:
-					DeleteDC(ShowPrintDlg(hWnd));
-					return 0;
-				
-				case IDM_VIEW_FONT:
-					ShowProperties(hWnd);
-					return 0;
-
-				case IDM_VIEW_LINENUMBERS:
-					g_fLineNumbers = !g_fLineNumbers;
-					TextView_SetStyleBool(this->CC_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
-					return 0;
-
-				case IDM_VIEW_LONGLINES:
-					g_fLongLines = !g_fLongLines;
-					TextView_SetStyleBool(this->CC_hwndTextView, TXS_LONGLINES, g_fLongLines);
-					return 0;
-
-				case IDM_VIEW_SAVEEXIT:
-					g_fSaveOnExit = !g_fSaveOnExit;
-					return 0;
-
-				case IDM_VIEW_SAVENOW:
-					SaveRegSettings();
-					return 0;
-				
-				case IDM_HELP_ABOUT:
-					this->ShowAboutDlg(hWnd);
-					return 0;
-			}
-			return 0;
-		}
+			return CommandHandler(hWnd, LOWORD(wParam), HIWORD(wParam), (HWND)lParam);
 
 		case WM_SETFOCUS:
-			SetFocus(this->CC_hwndTextView);
+			SetFocus(g_hwndTextView);
 			return 0;
 
 		case WM_CLOSE:
+
+			// does the file need saving?
+			if (TextView_CanUndo(g_hwndTextView))
+			{
+				UINT r;
+				wsprintf(msgstr, _T("Do you want to save changes to\r\n%s?"), g_szFileName);
+				r = MessageBox(hWnd, msgstr, APP_TITLE, MB_YESNOCANCEL | MB_ICONQUESTION);
+
+				if (r == IDCANCEL)
+					return 0;
+			}
+
 			DestroyWindow(hWnd);
 			return 0;
 
 		case WM_SIZE:
+
+			// resize the TextView and StatusBar to fit within the main window's client area
 			width = (short)LOWORD(lParam);
 			height = (short)HIWORD(lParam);
 
-			MoveWindow(this->CC_hwndTextView, 0, 0 /*29 for toolbar*/, width, height /*- 30 for toolbar*/, TRUE);
-			return 0;
-		
-		default:
-			return DefWindowProc(hWnd_, Msg, wParam, lParam);
-	}
+			GetWindowRect(g_hwndStatusbar, &rect);
+			heightsb = rect.bottom - rect.top;
 
-	return 0;
+			hdwp = BeginDeferWindowPos(3);
+
+			if (g_fShowStatusbar)
+			{
+				DeferWindowPos(hdwp, g_hwndStatusbar, 0, 0, height - heightsb, width, heightsb, SWP_SHOWWINDOW);
+				//	MoveWindow(g_hwndStatusbar, 0, height - heightsb, width, heightsb, TRUE);
+				height -= heightsb;
+			}
+
+			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 0, width, height, SWP_SHOWWINDOW);
+			//MoveWindow(g_hwndTextView, 0, 0, width, height, TRUE);
+
+			EndDeferWindowPos(hdwp);
+
+			SetStatusBarParts(g_hwndStatusbar);
+
+			return 0;
+
+	}
+	return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
 LRESULT CALLBACK CmdAndConquer_MainWindow::InitialWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -405,19 +381,321 @@ BOOL CmdAndConquer_MainWindow::ShowOpenFileDlg(HWND hwnd, TCHAR *pstrFileName, T
 	return GetOpenFileName(&ofn);
 }
 
-void CmdAndConquer_MainWindow::SetWindowFileName(HWND hwnd, TCHAR *szFileName)
+//
+//	Set the main window filename
+//
+void SetWindowFileName(HWND hwnd, TCHAR *szFileName, BOOL fModified)
 {
-	TCHAR ach[MAX_PATH + sizeof(szAppName) + 4];
+	TCHAR ach[MAX_PATH + sizeof(g_szAppName) + 4];
+	TCHAR mod[4] = _T("");
 
-	wsprintf(ach, _T("%s - %s"), szFileName, szAppName);
+	if (fModified)
+		lstrcpy(mod, _T(" *"));
+
+	wsprintf(ach, _T("%s - %s%s"), szFileName, g_szAppName, mod);
 	SetWindowText(hwnd, ach);
 }
 
 void CmdAndConquer_MainWindow::ShowAboutDlg(HWND hwndParent)
 {
-	MessageBox(hwndParent,
-		APP_TITLE _T("\r\n\r\n")  WEBSITE_STR,
-		APP_TITLE,
-		MB_OK | MB_ICONINFORMATION
-		);
+	DialogBoxParam(0, MAKEINTRESOURCE(IDD_ABOUT), hwndParent, &AboutDlgProc, 0);
+}
+
+//
+//	About dialog-proc
+//
+INT_PTR CALLBACK CmdAndConquer_MainWindow::AboutDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	HICON	hIcon;
+	HFONT	hFont;
+	RECT	rect;
+	HWND	hwndUrl;
+	HWND	hwndStatic;
+
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+
+		SendMessage(hwnd, WM_SETFONT, (WPARAM)g_hFont, 0);
+
+		CenterWindow(hwnd);
+
+		//
+		//	Set the dialog-icon 
+		//
+		hIcon = (HICON)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 48, 48, 0);
+		SendDlgItemMessage(hwnd, IDC_HEADER2, STM_SETIMAGE, IMAGE_ICON, (WPARAM)hIcon);
+
+		//
+		//	Get the current font for the dialog and create a BOLD version,
+		//	set this as the AppName static-label's font
+		//
+		hFont = CreateBoldFontFromHwnd(hwnd);
+		SendDlgItemMessage(hwnd, IDC_ABOUT_APPNAME, WM_SETFONT, (WPARAM)hFont, 0);
+
+		//
+		//	Locate the existing static-control which displays our homepage
+		//	Create a SysLink control right over the top of it (assuming current
+		//	version of Windows supports it)
+		//
+		hwndStatic = GetDlgItem(hwnd, IDC_ABOUT_URL);
+		GetClientRect(hwndStatic, &rect);
+		MapWindowPoints(hwndStatic, hwnd, (POINT *)&rect, 2);
+
+		hwndUrl = CreateWindow(WC_LINK, SYSLINK_STR,
+			WS_TABSTOP | WS_CHILD | WS_VISIBLE,
+			rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top,
+			hwnd, 0, 0, 0
+			);
+
+		if (hwndUrl)
+		{
+			SendMessage(hwndUrl, WM_SETFONT, (WPARAM)hFont, 0);
+			ShowWindow(hwndStatic, SW_HIDE);
+		}
+
+		return TRUE;
+
+	case WM_NOTIFY:
+
+		// Spawn the default web-browser when the SysLink control is clicked
+		switch (((NMHDR *)lParam)->code)
+		{
+		case NM_CLICK: case NM_RETURN:
+			ShellExecute(hwnd, _T("open"), WEBSITE_URL, 0, 0, SW_SHOWNORMAL);
+			return 0;
+		}
+
+		break;
+
+	case WM_CLOSE:
+
+		EndDialog(hwnd, TRUE);
+		return TRUE;
+
+	case WM_COMMAND:
+
+		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+			EndDialog(hwnd, TRUE);
+
+		break;
+	}
+
+	return FALSE;
+}
+
+//
+//	WM_NOTIFY handler for the TextView notification messages
+//
+UINT CmdAndConquer_MainWindow::TextViewNotifyHandler(HWND hwnd, NMHDR *nmhdr)
+{
+	switch (nmhdr->code)
+	{
+		// document has changed due to text input / undo / redo, update
+		// the main window-title to show an asterisk next to the filename
+	case TVN_CHANGED:
+
+		if (g_szFileTitle[0])
+		{
+			BOOL fModified = TextView_CanUndo(g_hwndTextView);
+
+			if (fModified != g_fFileChanged)
+			{
+				SetWindowFileName(hwnd, g_szFileTitle, fModified);
+				g_fFileChanged = fModified;
+			}
+		}
+		break;
+
+		// cursor position has changed, update the statusbar info
+	case TVN_CURSOR_CHANGE:
+
+		SetStatusBarText(g_hwndStatusbar, 1, 0, _T(" Ln %d, Col %d"),
+			TextView_GetCurLine(g_hwndTextView) + 1,
+			TextView_GetCurCol(g_hwndTextView) + 1);
+
+		break;
+
+		// edit/insert mode changed, update statusbar info
+	case TVN_EDITMODE_CHANGE:
+
+		SetStatusBarText(g_hwndStatusbar, 2, 0,
+			g_szEditMode[TextView_GetEditMode(g_hwndTextView)]);
+
+		break;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+//
+//	Generic WM_NOTIFY handler for all other messages
+//
+UINT CmdAndConquer_MainWindow::NotifyHandler(HWND hwnd, NMHDR *nmhdr)
+{
+	NMMOUSE *nmmouse;
+	UINT	 nMode;
+
+	switch (nmhdr->code)
+	{
+	case NM_DBLCLK:
+
+		// statusbar is the only window at present which sends double-clicks
+		nmmouse = (NMMOUSE *)nmhdr;
+
+		// toggle the Readonly/Insert/Overwrite mode
+		if (nmmouse->dwItemSpec == 2)
+		{
+			nMode = TextView_GetEditMode(g_hwndTextView);
+			nMode = (nMode + 1) % 3;
+
+			TextView_SetEditMode(g_hwndTextView, nMode);
+
+			SetStatusBarText(g_hwndStatusbar, 2, 0, g_szEditMode[nMode]);
+		}
+
+		break;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+//
+//	WM_COMMAND message handler for main window
+//
+UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtrlCode, HWND hwndFrom)
+{
+	RECT rect;
+
+	switch (nCtrlId)
+	{
+	case IDM_FILE_NEW:
+
+		// reset to an empty file
+		SetWindowFileName(hwnd, _T("Untitled"), FALSE);
+		TextView_Clear(g_hwndTextView);
+
+		g_szFileTitle[0] = '\0';
+		g_fFileChanged = FALSE;
+		return 0;
+
+	case IDM_FILE_OPEN:
+
+		// get a filename to open
+		if (ShowOpenFileDlg(hwnd, g_szFileName, g_szFileTitle))
+		{
+			DoOpenFile(hwnd, g_szFileName, g_szFileTitle);
+		}
+
+		return 0;
+
+	case IDM_FILE_SAVE:
+		TextView_Save(hwnd);
+		return 0;
+
+	case IDM_FILE_SAVEAS:
+
+		// does nothing yet
+		if (ShowSaveFileDlg(hwnd, g_szFileName, g_szFileTitle))
+		{
+			MessageBox(hwnd, _T("Not implemented"), APP_TITLE, MB_ICONINFORMATION);
+		}
+
+		return 0;
+
+	case IDM_FILE_PRINT:
+
+		DeleteDC(
+			ShowPrintDlg(hwnd)
+			);
+
+		return 0;
+
+	case IDM_FILE_EXIT:
+		PostMessage(hwnd, WM_CLOSE, 0, 0);
+		return 0;
+
+	case IDM_EDIT_UNDO:	case WM_UNDO:
+		SendMessage(g_hwndTextView, WM_UNDO, 0, 0);
+		return 0;
+
+	case IDM_EDIT_REDO:
+		SendMessage(g_hwndTextView, TXM_REDO, 0, 0);
+		return 0;
+
+	case IDM_EDIT_COPY: case WM_COPY:
+		SendMessage(g_hwndTextView, WM_COPY, 0, 0);
+		return 0;
+
+	case IDM_EDIT_CUT: case WM_CUT:
+		SendMessage(g_hwndTextView, WM_CUT, 0, 0);
+		return 0;
+
+	case IDM_EDIT_PASTE: case WM_PASTE:
+		SendMessage(g_hwndTextView, WM_PASTE, 0, 0);
+		return 0;
+
+	case IDM_EDIT_DELETE: case WM_CLEAR:
+		SendMessage(g_hwndTextView, WM_CLEAR, 0, 0);
+		return 0;
+
+	case IDM_EDIT_FIND:
+		ShowFindDlg(hwnd, FIND_PAGE);
+		return 0;
+
+	case IDM_EDIT_REPLACE:
+		ShowFindDlg(hwnd, REPLACE_PAGE);
+		return 0;
+
+	case IDM_EDIT_GOTO:
+		ShowFindDlg(hwnd, GOTO_PAGE);
+		return 0;
+
+
+	case IDM_EDIT_SELECTALL:
+		TextView_SelectAll(g_hwndTextView);
+		return 0;
+
+	case IDM_VIEW_OPTIONS:
+		ShowOptions(hwnd);
+		return 0;
+
+	case IDM_VIEW_LINENUMBERS:
+		g_fLineNumbers = !g_fLineNumbers;
+		TextView_SetStyleBool(g_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
+		return 0;
+
+	case IDM_VIEW_LONGLINES:
+		g_fLongLines = !g_fLongLines;
+		TextView_SetStyleBool(g_hwndTextView, TXS_LONGLINES, g_fLongLines);
+		return 0;
+
+	case IDM_VIEW_STATUSBAR:
+		g_fShowStatusbar = !g_fShowStatusbar;
+		ShowWindow(g_hwndStatusbar, SW_HIDE);
+		GetClientRect(hwnd, &rect);
+		PostMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+		return 0;
+
+	case IDM_VIEW_SAVEEXIT:
+		g_fSaveOnExit = !g_fSaveOnExit;
+		return 0;
+
+	case IDM_VIEW_SAVENOW:
+		SaveRegSettings();
+		return 0;
+
+	case IDM_HELP_ABOUT:
+		ShowAboutDlg(hwnd);
+		return 0;
+
+	default:
+		return 0;
+	}
 }

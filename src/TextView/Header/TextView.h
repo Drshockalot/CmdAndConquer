@@ -27,23 +27,61 @@ COLORREF RealizeColour(COLORREF col);
 #define NCP_UTF32BE		5
 
 //
+//	TextView edit modes
+//
+#define MODE_READONLY	0
+#define MODE_INSERT		1
+#define MODE_OVERWRITE	2
+
+//
 //	TextView Window Messages defined here
 //
 
-#define TXM_BASE				 (WM_USER)
-#define TXM_OPENFILE			 (TXM_BASE + 0)
-#define TXM_CLEAR				 (TXM_BASE + 1)
-#define TXM_SETLINESPACING		 (TXM_BASE + 2)
-#define TXM_ADDFONT				 (TXM_BASE + 3)
-#define TXM_SETCOLOR			 (TXM_BASE + 4)
-#define TXM_GETCOLOR			 (TXM_BASE + 5)
-#define TXM_SETSTYLE			 (TXM_BASE + 6)
-#define TXM_GETSTYLE			 (TXM_BASE + 7)
-#define TXM_SETCARETWIDTH		 (TXM_BASE + 8)
-#define TXM_SETIMAGELIST		 (TXM_BASE + 9)
-#define TXM_SETLONGLINE			 (TXM_BASE + 10)
-#define TXM_SETLINEIMAGE		 (TXM_BASE + 11)
-#define TXM_GETFORMAT			 (TXM_BASE + 12)
+#define TXM_BASE				(WM_USER)
+#define TXM_OPENFILE			(TXM_BASE + 0)
+#define TXM_CLEAR				(TXM_BASE + 1)
+#define TXM_SETLINESPACING		(TXM_BASE + 2)
+#define TXM_ADDFONT				(TXM_BASE + 3)
+#define TXM_SETCOLOR			(TXM_BASE + 4)
+#define TXM_GETCOLOR			(TXM_BASE + 5)
+#define TXM_SETSTYLE			(TXM_BASE + 6)
+#define TXM_GETSTYLE			(TXM_BASE + 7)
+#define TXM_SETCARETWIDTH		(TXM_BASE + 8)
+#define TXM_SETIMAGELIST		(TXM_BASE + 9)
+#define TXM_SETLONGLINE			(TXM_BASE + 10)
+#define TXM_SETLINEIMAGE		(TXM_BASE + 11)
+#define TXM_GETFORMAT			(TXM_BASE + 12)
+#define TXM_UNDO				(TXM_BASE + 13)
+#define TXM_REDO				(TXM_BASE + 14)
+#define TXM_CANUNDO				(TXM_BASE + 15)
+#define TXM_CANREDO				(TXM_BASE + 16)
+#define TXM_GETSELSIZE			(TXM_BASE + 17)
+#define TXM_SETSELALL			(TXM_BASE + 18)
+#define TXM_GETCURPOS			(TXM_BASE + 19)
+#define TXM_GETCURLINE			(TXM_BASE + 20)
+#define TXM_GETCURCOL			(TXM_BASE + 21)
+#define TXM_SETEDITMODE			(TXM_BASE + 22)
+#define TXM_GETEDITMODE			(TXM_BASE + 23)
+#define TXM_SETCONTEXTMENU		(TXM_BASE + 24)
+#define TXM_SAVE				(TXM_BASE + 25)
+
+//
+//	TextView Notification Messages defined here - 
+//	sent via the WM_NOTIFY message
+//
+#define TVN_BASE				(WM_USER)
+#define TVN_CURSOR_CHANGE		(TVN_BASE + 0)
+#define TVN_SELECTION_CHANGE	(TVN_BASE + 1)
+#define TVN_EDITMODE_CHANGE		(TVN_BASE + 2)
+#define TVN_CHANGED				(TVN_BASE + 3)
+
+typedef struct
+{
+	NMHDR	hdr;
+	ULONG	nLineNo;
+	ULONG	nColumnNo;
+	ULONG	nOffset;
+} TVNCURSORINFO;
 
 //
 //	TextView Window Styles defined here
@@ -79,6 +117,20 @@ COLORREF RealizeColour(COLORREF col);
 #define TextView_SetLongLine(hwndTV, nLength) SendMessage((hwndTV), TXM_SETLONGLINE, (WPARAM)(0), (LPARAM)(nLength))
 #define TextView_SetLineImage(hwndTV, nLineNo, nImageIdx) SendMessage((hwndTV), TXM_SETLINEIMAGE, (WPARAM)(ULONG)(nLineNo), (LPARAM)(ULONG)nImageIdx)
 #define TextView_GetFormat(hwndTV) SendMessage((hwndTV), TXM_GETFORMAT, 0, 0)
+#define TextView_Undo(hwndTV) SendMessage((hwndTV), TXM_UNDO, 0, 0)
+#define TextView_Redo(hwndTV) SendMessage((hwndTV), TXM_REDO, 0, 0)
+#define TextView_CanUndo(hwndTV) SendMessage((hwndTV), TXM_CANUNDO, 0, 0)
+#define TextView_CanRedo(hwndTV) SendMessage((hwndTV), TXM_CANREDO, 0, 0)
+#define TextView_GetSelSize(hwndTV) SendMessage((hwndTV), TXM_GETSELSIZE, 0, 0)
+#define TextView_SelectAll(hwndTV) SendMessage((hwndTV), TXM_SETSELALL, 0, 0)
+#define TextView_GetCurPos(hwndTV) SendMessage((hwndTV), TXM_GETCURPOS, 0, 0)
+#define TextView_GetCurLine(hwndTV) SendMessage((hwndTV), TXM_GETCURLINE, 0, 0)
+#define TextView_GetCurCol(hwndTV) SendMessage((hwndTV), TXM_GETCURCOL, 0, 0)
+#define TextView_SetEditMode(hwndTV, nEditMode) SendMessage((hwndTV), TXM_SETEDITMODE, (WPARAM)(nEditMode), 0)
+#define TextView_GetEditMode(hwndTV) SendMessage((hwndTV), TXM_GETEDITMODE, 0, 0)
+#define TextView_SetContextMenu(hwndTV, hPopupMenu) SendMessage((hwndTV), TXM_SETCONTEXTMENU, (WPARAM)(hPopupMenu), 0)
+#define TextView_SetFont(hwndTV, hFont) SendMessage((hwndTV), WM_SETFONT, (WPARAM)(HFONT)(hFont), 0)
+#define TextView_Save(hwndTV) SendMessage((hwndTV), TXM_SAVE, 0, 0)
 
 //
 //	TextView Macros defined here

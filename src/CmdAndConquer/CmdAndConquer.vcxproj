@@ -83,24 +83,29 @@
   <ItemGroup>
     <ClCompile Include="..\Options\CPP\Options.c" />
     <ClCompile Include="..\Options\CPP\OptionsFont.c" />
-    <ClCompile Include="..\Options\CPP\OptionsMisc.c" />
     <ClCompile Include="..\Printing\Printing.cpp" />
+    <ClCompile Include="..\Sequence\sequence.cpp" />
     <ClCompile Include="..\TextView\CPP\TextDocument.cpp" />
     <ClCompile Include="..\TextView\CPP\TextView.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewClipboard.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewFile.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewFont.cpp" />
+    <ClCompile Include="..\TextView\CPP\TextViewKeyInput.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewKeyNav.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewMouse.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewParser.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
-    <ClCompile Include="..\Unicode\Unicode.cpp" />
+    <ClCompile Include="..\Unicode\Unicode.c" />
     <ClCompile Include="..\Unicode\Uniscribe.cpp" />
     <ClCompile Include="..\UspLib\UspCtrl.c" />
     <ClCompile Include="..\UspLib\UspLib.c" />
+    <ClCompile Include="..\UspLib\UspMain.c" />
     <ClCompile Include="..\UspLib\UspMouse.c" />
     <ClCompile Include="..\UspLib\UspPaint.c" />
+    <ClCompile Include="..\Utilities\OpenSave.c" />
+    <ClCompile Include="..\Utilities\Search.c" />
+    <ClCompile Include="..\Utilities\Toolbars.c" />
     <ClCompile Include="..\Utilities\Utilities.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
@@ -109,9 +114,11 @@
     <ResourceCompile Include="resource\CmdAndConquer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Sequence\sequence.h" />
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />
     <ClInclude Include="..\TextView\Header\TextViewInternal.h" />
+    <ClInclude Include="..\Unicode\Unicode.h" />
     <ClInclude Include="..\UspLib\usplib.h" />
     <ClInclude Include="..\UspLib\usplibp.h" />
     <ClInclude Include="..\Utilities\racursor.h" />
