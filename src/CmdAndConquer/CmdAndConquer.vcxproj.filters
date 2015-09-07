@@ -186,5 +186,14 @@
     <Image Include="resource\bitmap1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="resource\icon3.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\icon4.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="resource\CmdAndConquer.exe.manifest" />
   </ItemGroup>
 </Project>

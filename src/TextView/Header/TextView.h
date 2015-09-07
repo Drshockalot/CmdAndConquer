@@ -63,7 +63,7 @@ COLORREF RealizeColour(COLORREF col);
 #define TXM_SETEDITMODE			(TXM_BASE + 22)
 #define TXM_GETEDITMODE			(TXM_BASE + 23)
 #define TXM_SETCONTEXTMENU		(TXM_BASE + 24)
-#define TXM_SAVE				(TXM_BASE + 25)
+#define TXM_SAVEFILE			(TXM_BASE + 25)
 
 //
 //	TextView Notification Messages defined here - 
@@ -130,7 +130,7 @@ typedef struct
 #define TextView_GetEditMode(hwndTV) SendMessage((hwndTV), TXM_GETEDITMODE, 0, 0)
 #define TextView_SetContextMenu(hwndTV, hPopupMenu) SendMessage((hwndTV), TXM_SETCONTEXTMENU, (WPARAM)(hPopupMenu), 0)
 #define TextView_SetFont(hwndTV, hFont) SendMessage((hwndTV), WM_SETFONT, (WPARAM)(HFONT)(hFont), 0)
-#define TextView_Save(hwndTV) SendMessage((hwndTV), TXM_SAVE, 0, 0)
+#define TextView_SaveFile(hwndTV) SendMessage((hwndTV), TXM_SAVEFILE, 0, (LPARAM)(szFileName))
 
 //
 //	TextView Macros defined here

@@ -132,9 +132,14 @@
     <Image Include="resource\bitmap4.bmp" />
     <Image Include="resource\icon1.ico" />
     <Image Include="resource\icon2.ico" />
+    <Image Include="resource\icon3.ico" />
+    <Image Include="resource\icon4.ico" />
     <Image Include="resource\toolbar1.bmp" />
     <Image Include="resource\toolbar2.bmp" />
     <Image Include="resource\toolbar3.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="resource\CmdAndConquer.exe.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

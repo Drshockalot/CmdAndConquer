@@ -18,6 +18,7 @@
 #include <Uxtheme.h>
 
 #include "../Header/TextView.h"
+#include "../../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 #include "../Header/TextViewInternal.h"
 #include "../../Utilities/racursor.h"
 
@@ -494,9 +495,8 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		m_hUserMenu = (HMENU)wParam;
 		return 0;
 
-	case TXM_SAVE:
-		
-		return 0;
+	case TXM_SAVEFILE:
+		return SaveFile((TCHAR *)lParam);
 
 	default:
 		break;
@@ -578,4 +578,3 @@ HWND CreateTextView(HWND hwndParent)
 		GetModuleHandle(0),
 		0);
 }
-

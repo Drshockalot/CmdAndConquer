@@ -191,14 +191,24 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 		case WM_CLOSE:
 
 			// does the file need saving?
-			if (TextView_CanUndo(g_hwndTextView))
+			if (g_fFileChanged)
 			{
-				UINT r;
 				wsprintf(msgstr, _T("Do you want to save changes to\r\n%s?"), g_szFileName);
-				r = MessageBox(hWnd, msgstr, APP_TITLE, MB_YESNOCANCEL | MB_ICONQUESTION);
 
-				if (r == IDCANCEL)
-					return 0;
+				switch (MessageBox(hWnd, msgstr, APP_TITLE, MB_YESNOCANCEL | MB_ICONQUESTION))
+				{
+					case IDYES:
+						DoSaveFile(hWnd, g_szFileName, g_szFileTitle);
+						break;
+
+					case IDCANCEL:
+						return 0;
+						break;
+
+					case IDNO:
+					default:
+						break;
+				}
 			}
 
 			DestroyWindow(hWnd);
@@ -272,6 +282,7 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 
 	DragAcceptFiles(hWnd, TRUE);
 
+	g_hwndStatusbar = CreateStatusBar(hWnd);
 	this->CC_hwndTextView = CreateTextView(hWnd_);
 	g_hwndTextView = this->CC_hwndTextView;
 
@@ -596,7 +607,10 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		return 0;
 
 	case IDM_FILE_SAVE:
-		TextView_Save(hwnd);
+		if(!DoSaveFile(hwnd, g_szFileName, g_szFileTitle))
+		{
+			MessageBox(hwnd, _T("Save Failed"), APP_TITLE, MB_ICONINFORMATION);
+		}
 		return 0;
 
 	case IDM_FILE_SAVEAS:
@@ -604,7 +618,10 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		// does nothing yet
 		if (ShowSaveFileDlg(hwnd, g_szFileName, g_szFileTitle))
 		{
-			MessageBox(hwnd, _T("Not implemented"), APP_TITLE, MB_ICONINFORMATION);
+			if (!DoSaveFile(hwnd, g_szFileName, g_szFileTitle))
+			{
+				MessageBox(hwnd, _T("Save Failed"), APP_TITLE, MB_ICONINFORMATION);
+			}
 		}
 
 		return 0;

@@ -329,3 +329,17 @@ void HandleDropFiles(HWND hwnd, HDROP hDrop)
 	
 	DragFinish(hDrop);
 }
+
+BOOL DoSaveFile(HWND hwndMain, TCHAR *szFileName, TCHAR *szFileTitle)
+{
+	if (TextView_SaveFile(g_hwndTextView, szFileName))
+	{
+		SetWindowFileName(hwndMain, szFileTitle, FALSE);
+		g_fFileChanged = FALSE;
+
+		NotifyFileChange(szFileName, hwndMain, 0);
+		return TRUE;
+	}
+
+	return FALSE;
+}

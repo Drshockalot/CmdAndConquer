@@ -114,6 +114,7 @@ private:
 	//	Internal private functions
 	//
 	LONG		OpenFile(TCHAR *szFileName);
+	LONG		SaveFile(TCHAR *szFileName);
 	LONG		ClearFile();
 	void		ResetLineCache();
 	ULONG		GetText(TCHAR *szDest, ULONG nStartOffset, ULONG nLength);
@@ -235,8 +236,6 @@ private:
 	//
 	HMENU		CreateContextMenu();
 	ULONG		NotifyParent(UINT nNotifyCode, NMHDR *optional = 0);
-
-
 
 	//
 	// ------ Internal TextView State ------

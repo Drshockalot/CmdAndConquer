@@ -2,6 +2,7 @@
 #define CMDANDCONQUER_GLOBALS_INCLUDED
 
 #include <Windows.h>
+#include <shellapi.h>
 
 #ifdef __cplusplus
 extern "C" {

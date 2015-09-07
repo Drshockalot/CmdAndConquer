@@ -1,7 +1,10 @@
 #include <windows.h>
 #include <tchar.h>
+#include <iostream>
+#include <fstream>
 #include "../Header/TextView.h"
 #include "../Header/TextViewInternal.h"
+#include "../../Unicode/Unicode.h"
 
 //
 //
@@ -29,6 +32,45 @@ LONG TextView::OpenFile(TCHAR *szFileName)
 	}
 
 	return FALSE;
+}
+
+LONG TextView::SaveFile(TCHAR *szFileName)
+{
+	ULONG docBeginning = 0;
+	ULONG docLength = m_pTextDoc->m_nDocLength_bytes;
+
+	HANDLE hMem;
+	TCHAR *ptrBuf = NULL;
+
+	if ((hMem = GlobalAlloc(GPTR, (docLength + 1) * sizeof(TCHAR))) != 0)
+	{
+		if ((ptrBuf = (TCHAR *)GlobalLock(hMem)) != 0)
+		{
+			GetText(ptrBuf, docBeginning, docLength + 1);
+
+			GlobalUnlock(hMem);
+		}
+	}
+
+	BYTE* buffer = new BYTE[m_pTextDoc->m_nDocLength_bytes];
+	HANDLE hFile;
+	DWORD bytesToWrite = lstrlenW(ptrBuf);
+	DWORD bytesWritten = 0;
+	CCHAR* asciichars = NULL;
+	size_t* aslen = (size_t *)&m_pTextDoc->m_nDocLength_bytes;
+
+	size_t len = utf16_to_ascii((UTF16 *)ptrBuf, (bytesToWrite + 1) * sizeof(TCHAR), buffer, aslen);
+
+	hFile = CreateFile(szFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (hFile == INVALID_HANDLE_VALUE)
+		return FALSE;
+
+	BOOL errorflag = WriteFile(hFile, buffer, bytesToWrite, &bytesWritten, NULL);
+		
+	CloseHandle(hFile);
+	delete[] buffer;
+	return TRUE;
 }
 
 //
