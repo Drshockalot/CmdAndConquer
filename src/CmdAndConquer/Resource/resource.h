@@ -127,13 +127,14 @@
 #define IDM_EDIT_GOTO                   40030
 #define IDM_SCHEME_NORMAL               40032
 #define IDM_SCHEME_SAVE                 40033
+#define IDM_BATCH_RUN                   40035
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
-#define _APS_NEXT_COMMAND_VALUE         40034
+#define _APS_NEXT_COMMAND_VALUE         40036
 #define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

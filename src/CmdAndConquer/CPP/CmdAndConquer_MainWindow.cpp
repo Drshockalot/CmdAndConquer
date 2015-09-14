@@ -590,7 +590,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 		// reset to an empty file
 		SetWindowFileName(hwnd, _T("Untitled"), FALSE);
-		TextView_Clear(g_hwndTextView);
+		TextView_Clear(this->CC_hwndTextView);
 
 		g_szFileTitle[0] = '\0';
 		g_fFileChanged = FALSE;
@@ -639,27 +639,27 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		return 0;
 
 	case IDM_EDIT_UNDO:	case WM_UNDO:
-		SendMessage(g_hwndTextView, WM_UNDO, 0, 0);
+		SendMessage(this->CC_hwndTextView, WM_UNDO, 0, 0);
 		return 0;
 
 	case IDM_EDIT_REDO:
-		SendMessage(g_hwndTextView, TXM_REDO, 0, 0);
+		SendMessage(this->CC_hwndTextView, TXM_REDO, 0, 0);
 		return 0;
 
 	case IDM_EDIT_COPY: case WM_COPY:
-		SendMessage(g_hwndTextView, WM_COPY, 0, 0);
+		SendMessage(this->CC_hwndTextView, WM_COPY, 0, 0);
 		return 0;
 
 	case IDM_EDIT_CUT: case WM_CUT:
-		SendMessage(g_hwndTextView, WM_CUT, 0, 0);
+		SendMessage(this->CC_hwndTextView, WM_CUT, 0, 0);
 		return 0;
 
 	case IDM_EDIT_PASTE: case WM_PASTE:
-		SendMessage(g_hwndTextView, WM_PASTE, 0, 0);
+		SendMessage(this->CC_hwndTextView, WM_PASTE, 0, 0);
 		return 0;
 
 	case IDM_EDIT_DELETE: case WM_CLEAR:
-		SendMessage(g_hwndTextView, WM_CLEAR, 0, 0);
+		SendMessage(this->CC_hwndTextView, WM_CLEAR, 0, 0);
 		return 0;
 
 	case IDM_EDIT_FIND:
@@ -676,7 +676,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 
 	case IDM_EDIT_SELECTALL:
-		TextView_SelectAll(g_hwndTextView);
+		TextView_SelectAll(this->CC_hwndTextView);
 		return 0;
 
 	case IDM_VIEW_OPTIONS:
@@ -685,12 +685,12 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 	case IDM_VIEW_LINENUMBERS:
 		g_fLineNumbers = !g_fLineNumbers;
-		TextView_SetStyleBool(g_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
+		TextView_SetStyleBool(this->CC_hwndTextView, TXS_LINENUMBERS, g_fLineNumbers);
 		return 0;
 
 	case IDM_VIEW_LONGLINES:
 		g_fLongLines = !g_fLongLines;
-		TextView_SetStyleBool(g_hwndTextView, TXS_LONGLINES, g_fLongLines);
+		TextView_SetStyleBool(this->CC_hwndTextView, TXS_LONGLINES, g_fLongLines);
 		return 0;
 
 	case IDM_VIEW_STATUSBAR:
@@ -710,6 +710,10 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 	case IDM_HELP_ABOUT:
 		ShowAboutDlg(hwnd);
+		return 0;
+
+	case IDM_BATCH_RUN:
+		TextView_RunFileAsBatch(this->CC_hwndTextView);
 		return 0;
 
 	default:

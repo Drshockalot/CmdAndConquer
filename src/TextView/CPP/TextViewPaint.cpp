@@ -412,18 +412,19 @@ int TextView::PaintMargin(HDC hdc, ULONG nLineNo, int xpos, int ypos)
 
 	if (m_hImageList && linfo && nLineNo < m_nLineCount)
 	{
-		ImageList_DrawEx(
-			m_hImageList,
-			linfo->nImageIdx,
-			hdc,
-			imgX,
-			imgY,
-			imgWidth,
-			imgHeight,
-			CLR_NONE,
-			CLR_NONE,
-			ILD_TRANSPARENT
-			);
+		if(linfo->nImageIdx > 0)
+			ImageList_DrawEx(
+				m_hImageList,
+				linfo->nImageIdx,
+				hdc,
+				imgX,
+				imgY,
+				imgWidth,
+				imgHeight,
+				CLR_NONE,
+				CLR_NONE,
+				ILD_TRANSPARENT
+				);
 	}
 
 	return rect.right - rect.left;

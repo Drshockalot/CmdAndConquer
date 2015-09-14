@@ -179,6 +179,9 @@ LONG TextView::OnLButtonDown(UINT nFlags, int mx, int my)
 		m_nSelectionMode = SEL_MARGIN;
 	}
 
+	SetLineImage(nLineNo, 1);
+	RefreshWindow();
+
 	UpdateLine(nLineNo);
 
 	SetCapture(m_hWnd);

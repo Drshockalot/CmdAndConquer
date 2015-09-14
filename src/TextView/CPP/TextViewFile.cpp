@@ -58,7 +58,7 @@ LONG TextView::SaveFile(TCHAR *szFileName)
 	DWORD bytesWritten = 0;
 	CCHAR* asciichars = NULL;
 	size_t* aslen = (size_t *)&m_pTextDoc->m_nDocLength_bytes;
-
+	
 	size_t len = utf16_to_ascii((UTF16 *)ptrBuf, (bytesToWrite + 1) * sizeof(TCHAR), buffer, aslen);
 
 	hFile = CreateFile(szFileName, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -104,4 +104,32 @@ LONG TextView::ClearFile()
 
 
 	return TRUE;
+}
+
+ULONG TextView::changeFileExt(TCHAR *fileName, TCHAR *extension)
+{
+	size_t fileLen = wcslen(fileName);
+	size_t extLen = wcslen(extension);
+	size_t oldExtPos;
+	size_t oldExtLen;
+
+	TCHAR newPath[MAX_PATH + 1];
+
+	for (int i = 0; i < fileLen; ++i)
+	{
+		if (fileName[i] == _T('.'))
+		{
+			oldExtPos = i;
+			oldExtLen = fileLen - i;
+		}
+	}
+
+	for (int i = 0; i < extLen; ++i)
+	{
+		fileName[oldExtPos + 1 + i] = extension[i];
+	}
+
+	fileName[oldExtPos + extLen + 1] = '\0';
+	
+	return 0;
 }

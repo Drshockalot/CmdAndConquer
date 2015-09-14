@@ -276,7 +276,10 @@ int TextView::SetLineImage(ULONG nLineNo, ULONG nImageIdx)
 	// if already a line with an image
 	if (linfo)
 	{
-		linfo->nImageIdx = nImageIdx;
+		if (linfo->nImageIdx != 0)
+			linfo->nImageIdx = 0;
+		else
+			linfo->nImageIdx = nImageIdx;
 	}
 	else
 	{
@@ -498,6 +501,8 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case TXM_SAVEFILE:
 		return SaveFile((TCHAR *)lParam);
 
+	case TXM_RUNFILEASBATCH:
+		return runFileAsBatch();
 	default:
 		break;
 	}

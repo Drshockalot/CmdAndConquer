@@ -118,6 +118,12 @@ private:
 	LONG		ClearFile();
 	void		ResetLineCache();
 	ULONG		GetText(TCHAR *szDest, ULONG nStartOffset, ULONG nLength);
+	ULONG		changeFileExt(TCHAR *fileName, TCHAR *extension);
+
+	//
+	//	Batch process functions
+	//
+	ULONG runFileAsBatch();
 
 	//
 	//	Cursor/Selection

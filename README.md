@@ -101,3 +101,29 @@ VERSION LIST:
 					#save file
 					#save as file
 					#status bar
+					
+0.0010.01 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					
+					IN DEVELOPMENT
+					#runs current file as batch script (very basic running), doesn't actually do anything with the response it gets back yet

@@ -83,6 +83,10 @@ BEGIN
     BEGIN
         MENUITEM "&About CmdAndConquer",        IDM_HELP_ABOUT
     END
+    POPUP "Batch"
+    BEGIN
+        MENUITEM "Run",                         IDM_BATCH_RUN
+    END
 END
 
 IDR_MENU2 MENU
