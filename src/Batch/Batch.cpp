@@ -16,12 +16,11 @@ HANDLE g_hChildStd_ERR_Rd = NULL;
 HANDLE g_hChildStd_ERR_Wr = NULL;
 
 PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine);
-void ReadFromPipe(PROCESS_INFORMATION);
+CHAR* ReadFromPipe(PROCESS_INFORMATION);
 
-void doStuff(TCHAR *cmdLine)
+CHAR* doStuff(TCHAR *cmdLine)
 {
 	SECURITY_ATTRIBUTES sa;
-	printf("\n->Start of parent execution.\n");
 	// Set the bInheritHandle flag so pipe handles are inherited. 
 	sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 	sa.bInheritHandle = TRUE;
@@ -45,14 +44,10 @@ void doStuff(TCHAR *cmdLine)
 	// Create the child process. 
 	PROCESS_INFORMATION piProcInfo = CreateChildProcess(cmdLine);
 
-	ReadFromPipe(piProcInfo);
-
-	printf("\n->End of parent execution.\n");
-
 	// The remaining open handles are cleaned up when this process terminates. 
 	// To avoid resource leaks in a larger application, 
 	//   close handles explicitly.
-	return;
+	return ReadFromPipe(piProcInfo);
 }
 
 PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine) 
@@ -95,27 +90,28 @@ PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine)
 // Read output from the child process's pipe for STDOUT
 // and write to the parent process's pipe for STDOUT. 
 // Stop when there is no more data. 
-void ReadFromPipe(PROCESS_INFORMATION piProcInfo) {
+CHAR* ReadFromPipe(PROCESS_INFORMATION piProcInfo) {
 	DWORD dwRead;
-	CHAR chBuf[BUFFERFORTHISSIZE];
+	CHAR chBufSuccess[BUFFERFORTHISSIZE];
+	CHAR chBufFailure[BUFFERFORTHISSIZE];
+	bool batchResult = FALSE;
 	bool bSuccess = FALSE;
 
 	for (;;) {
-		bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBuf, BUFFERFORTHISSIZE, &dwRead, NULL);
+		bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBufSuccess, BUFFERFORTHISSIZE, &dwRead, NULL);
+		if (dwRead > 0)
+			batchResult = TRUE;
 		if (!bSuccess || dwRead == 0) break;
 	}
 	dwRead = 0;
 	for (;;) {
-		bSuccess = ReadFile(g_hChildStd_ERR_Rd, chBuf, BUFFERFORTHISSIZE, &dwRead, NULL);
+		bSuccess = ReadFile(g_hChildStd_ERR_Rd, chBufFailure, BUFFERFORTHISSIZE, &dwRead, NULL);
+		if (dwRead > 0)
+			batchResult = FALSE;
 		if (!bSuccess || dwRead == 0) break;
 	}
 
-	//DWORD bytesToWrite = lstrlen(chBuf);
-	//DWORD bytesWritten = 0;
-	//CCHAR* asciichars = NULL;
-	//size_t* aslen = (size_t *)&m_pTextDoc->m_nDocLength_bytes;
-
-	//ascii_to_utf16(chBuf, )
+	return (batchResult ? chBufSuccess : chBufFailure);
 }
 
 ULONG TextView::runFileAsBatch()
@@ -151,7 +147,7 @@ ULONG TextView::runFileAsBatch()
 	std::wstring result(env, totallen);
 	FreeEnvironmentStrings(env);
 	
-	doStuff(cmdLine);
+	CHAR *batchResult = doStuff(cmdLine);
 
 	/*CRedirector redir;
 	redir.Open(cmdLine);

@@ -127,3 +127,30 @@ VERSION LIST:
 					
 					IN DEVELOPMENT
 					#runs current file as batch script (very basic running), doesn't actually do anything with the response it gets back yet
+					
+0.0010.02 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					
+					IN DEVELOPMENT
+					#runs current file as batch script (very basic running), doesn't actually do anything with the response it gets back yet
+					#Working on getting the window to hold the batch results up and running. Need to get a proper wndproc in order and might need to make a tweaked version of the TextView creation to fit the purpose of the window

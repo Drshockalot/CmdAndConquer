@@ -5,6 +5,7 @@ TCHAR		g_szAppName[] = APP_TITLE;
 HWND		g_hwndMain;
 
 HWND		g_hwndTextView;
+HWND		g_hwndBatchRunResults;
 HWND		g_hwndStatusbar;
 HWND		g_hwndSearchDlg;
 HFONT		g_hFont;

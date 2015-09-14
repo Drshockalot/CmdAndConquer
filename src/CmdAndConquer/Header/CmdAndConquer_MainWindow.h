@@ -46,6 +46,9 @@ private:
 	
 	//	Main edit control
 	HWND CC_hwndTextView;
+
+	//	Batch results text view
+	HWND CC_hwndBatchRunResults;
 	
 	//	Class Registration
 	void registerWindowClass(HINSTANCE hInstance);

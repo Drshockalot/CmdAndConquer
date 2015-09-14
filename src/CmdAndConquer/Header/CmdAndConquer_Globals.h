@@ -47,6 +47,7 @@ extern "C" {
 
 	//	Global runtime variables
 	extern HWND		g_hwndTextView;
+	extern HWND		g_hwndBatchRunResults;
 	extern HWND		g_hwndMain;
 	extern HFONT	g_hFont;
 	extern TCHAR	g_szFileName[];
