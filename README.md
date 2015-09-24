@@ -154,3 +154,31 @@ VERSION LIST:
 					IN DEVELOPMENT
 					#runs current file as batch script (very basic running), doesn't actually do anything with the response it gets back yet
 					#Working on getting the window to hold the batch results up and running. Need to get a proper wndproc in order and might need to make a tweaked version of the TextView creation to fit the purpose of the window
+					
+0.0011.00 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					#runs simple batch script, returns result and displays it in seperate window
+					
+					KINKS
+					#The status bar and batch results window only appears when the whole window is resized, need to refresh the screen in a better place
+					#the bactch result is tacking on two control characters at the end, figure out why 

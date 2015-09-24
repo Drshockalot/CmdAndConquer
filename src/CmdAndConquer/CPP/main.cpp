@@ -125,6 +125,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 		OleInitialize(0);
 
 		InitTextView();
+		InitBatchResultWindow();
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
 		g_hwndMain = cAndC.getMainHWND();
 

@@ -132,6 +132,9 @@
     <ClCompile Include="..\Batch\Batch.cpp">
       <Filter>Source Files\Batch</Filter>
     </ClCompile>
+    <ClCompile Include="..\Batch\BatchTextViewAssist.cpp">
+      <Filter>Source Files\Batch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">

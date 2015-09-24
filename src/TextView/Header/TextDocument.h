@@ -16,6 +16,7 @@ public:
 
 	bool  init(HANDLE hFile);
 	bool  init(TCHAR *filename);
+	bool  initBatchResultWindow(CHAR *aText);
 
 	bool  clear();
 	bool EmptyDoc();

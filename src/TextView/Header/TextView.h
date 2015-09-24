@@ -13,7 +13,9 @@ extern "C" {
 //	TextView API declared here
 //
 BOOL InitTextView();
+BOOL InitBatchResultWindow();
 HWND CreateTextView(HWND hwndParent);
+HWND CreateBatchScriptResultWindow(HWND hwndParent);
 COLORREF RealizeColour(COLORREF col);
 
 //
@@ -65,6 +67,7 @@ COLORREF RealizeColour(COLORREF col);
 #define TXM_SETCONTEXTMENU		(TXM_BASE + 24)
 #define TXM_SAVEFILE			(TXM_BASE + 25)
 #define TXM_RUNFILEASBATCH		(TXM_BASE + 26)
+#define TXM_SETTEXT				(TXM_BASE + 27)
 
 //
 //	TextView Notification Messages defined here - 
@@ -133,11 +136,13 @@ typedef struct
 #define TextView_SetFont(hwndTV, hFont) SendMessage((hwndTV), WM_SETFONT, (WPARAM)(HFONT)(hFont), 0)
 #define TextView_SaveFile(hwndTV) SendMessage((hwndTV), TXM_SAVEFILE, 0, (LPARAM)(szFileName))
 #define TextView_RunFileAsBatch(hwndTV) SendMessage((hwndTV), TXM_RUNFILEASBATCH, 0, 0)
+#define TextView_SetText(hwndTV, aText)	SendMessage((hwndTV), TXM_SETTEXT, 0, (LPARAM)(aText))
 
 //
 //	TextView Macros defined here
 //
 #define TEXTVIEW_CLASS _T("CmdAndConquer_TextView")
+#define BATCHSCRIPTRESULT_CLASS _T("CmdAndConquer_BatchScriptResult")
 
 //
 //	TextView colours

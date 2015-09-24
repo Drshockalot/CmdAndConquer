@@ -6,6 +6,7 @@
 #include "../TextView/Header/TextView.h"
 #include "../TextView/Header/TextViewInternal.h"
 #include "../Unicode/Unicode.h"
+#include "../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
 #pragma comment(lib, "Shlwapi.lib")
 
@@ -14,6 +15,8 @@ HANDLE g_hChildStd_OUT_Rd = NULL;
 HANDLE g_hChildStd_OUT_Wr = NULL;
 HANDLE g_hChildStd_ERR_Rd = NULL;
 HANDLE g_hChildStd_ERR_Wr = NULL;
+
+BOOL  g_fShowBatchResultsWindow;
 
 PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine);
 CHAR* ReadFromPipe(PROCESS_INFORMATION);
@@ -43,7 +46,7 @@ CHAR* doStuff(TCHAR *cmdLine)
 	}
 	// Create the child process. 
 	PROCESS_INFORMATION piProcInfo = CreateChildProcess(cmdLine);
-
+	
 	// The remaining open handles are cleaned up when this process terminates. 
 	// To avoid resource leaks in a larger application, 
 	//   close handles explicitly.
@@ -92,10 +95,12 @@ PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine)
 // Stop when there is no more data. 
 CHAR* ReadFromPipe(PROCESS_INFORMATION piProcInfo) {
 	DWORD dwRead;
-	CHAR chBufSuccess[BUFFERFORTHISSIZE];
-	CHAR chBufFailure[BUFFERFORTHISSIZE];
+	CHAR chBufSuccess[BUFFERFORTHISSIZE] = { '\0' };
+	CHAR chBufFailure[BUFFERFORTHISSIZE] = { '\0' };
 	bool batchResult = FALSE;
 	bool bSuccess = FALSE;
+
+	WaitForSingleObject(piProcInfo.hProcess, INFINITE);
 
 	for (;;) {
 		bSuccess = ReadFile(g_hChildStd_OUT_Rd, chBufSuccess, BUFFERFORTHISSIZE, &dwRead, NULL);
@@ -148,6 +153,10 @@ ULONG TextView::runFileAsBatch()
 	FreeEnvironmentStrings(env);
 	
 	CHAR *batchResult = doStuff(cmdLine);
+
+	TextView_SetText(g_hwndBatchRunResults, batchResult);
+
+	g_fShowBatchResultsWindow = TRUE;
 
 	/*CRedirector redir;
 	redir.Open(cmdLine);

@@ -31,6 +31,7 @@ extern "C" {
 	extern BOOL		g_fAddToExplorer;
 	extern BOOL		g_fReplaceNotepad;
 	extern BOOL		g_fShowStatusbar;
+	extern BOOL		g_fShowBatchResultsWindow;
 
 	extern LONG		g_nPaddingAbove;
 	extern LONG		g_nPaddingBelow;

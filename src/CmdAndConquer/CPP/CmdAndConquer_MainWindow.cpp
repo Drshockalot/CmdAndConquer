@@ -221,6 +221,8 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			width = (short)LOWORD(lParam);
 			height = (short)HIWORD(lParam);
 
+			
+
 			GetWindowRect(g_hwndStatusbar, &rect);
 			heightsb = rect.bottom - rect.top;
 
@@ -231,6 +233,12 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 				DeferWindowPos(hdwp, g_hwndStatusbar, 0, 0, height - heightsb, width, heightsb, SWP_SHOWWINDOW);
 				//	MoveWindow(g_hwndStatusbar, 0, height - heightsb, width, heightsb, TRUE);
 				height -= heightsb;
+			}
+
+			if (g_fShowBatchResultsWindow)
+			{
+				DeferWindowPos(hdwp, g_hwndBatchRunResults, 0, 0, height - 200, width, 200, SWP_SHOWWINDOW);
+				height = height - 200;
 			}
 
 			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 0, width, height, SWP_SHOWWINDOW);
@@ -285,6 +293,8 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 
 	g_hwndStatusbar = CreateStatusBar(hWnd);
 	this->CC_hwndTextView = CreateTextView(hWnd_);
+	this->CC_hwndBatchRunResults = CreateBatchScriptResultWindow(hWnd_);
+	g_hwndBatchRunResults = this->CC_hwndBatchRunResults;
 	g_hwndTextView = this->CC_hwndTextView;
 
 	this->setImageList();

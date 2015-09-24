@@ -85,6 +85,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Batch\Batch.cpp" />
+    <ClCompile Include="..\Batch\BatchTextViewAssist.cpp" />
     <ClCompile Include="..\Options\CPP\Options.c" />
     <ClCompile Include="..\Options\CPP\OptionsFont.c" />
     <ClCompile Include="..\Printing\Printing.cpp" />

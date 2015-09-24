@@ -545,6 +545,179 @@ LRESULT WINAPI TextViewWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 }
 
 //
+//	Batch Results window proc
+//
+LONG WINAPI TextView::BatchResultsWndProc(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+		// Draw contents of TextView whenever window needs updating
+	case WM_ERASEBKGND:
+		return 1;
+
+		// Need to custom-draw the border for XP/Vista themes
+	case WM_NCPAINT:
+		return OnNcPaint((HRGN)wParam);
+
+	case WM_PAINT:
+		return OnPaint();
+
+		// Set a new font 
+	case WM_SETFONT:
+		return OnSetFont((HFONT)wParam);
+
+	case WM_SIZE:
+		return OnSize(wParam, LOWORD(lParam), HIWORD(lParam));
+
+	case WM_VSCROLL:
+		return OnVScroll(LOWORD(wParam), HIWORD(wParam));
+
+	case WM_HSCROLL:
+		return OnHScroll(LOWORD(wParam), HIWORD(wParam));
+
+	case WM_MOUSEACTIVATE:
+		return OnMouseActivate((HWND)wParam, LOWORD(lParam), HIWORD(lParam));
+
+	case WM_CONTEXTMENU:
+		return OnContextMenu((HWND)wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_MOUSEWHEEL:
+		return OnMouseWheel((short)HIWORD(wParam));
+
+	case WM_SETFOCUS:
+		return OnSetFocus((HWND)wParam);
+
+	case WM_KILLFOCUS:
+		return OnKillFocus((HWND)wParam);
+
+		// make sure we get arrow-keys, enter, tab, etc when hosted inside a dialog
+	case WM_GETDLGCODE:
+		return DLGC_WANTALLKEYS;
+
+	case WM_LBUTTONDOWN:
+		return OnLButtonDown(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_LBUTTONUP:
+		return OnLButtonUp(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_LBUTTONDBLCLK:
+		return OnLButtonDblClick(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_MOUSEMOVE:
+		return OnMouseMove(wParam, (short)LOWORD(lParam), (short)HIWORD(lParam));
+
+	case WM_SETCURSOR:
+
+		if (LOWORD(lParam) == HTCLIENT)
+			return TRUE;
+
+		break;
+
+	case WM_COPY:
+		return OnCopy();
+		return 0;
+
+	case WM_CLEAR:
+		return OnClear();
+
+	case WM_GETTEXT:
+		return 0;
+
+	case WM_TIMER:
+		return OnTimer(wParam);
+
+	case TXM_SETTEXT:
+		return SetTextBase((CHAR *)lParam);
+
+	case TXM_CLEAR:
+		return ClearFile();
+
+	case TXM_SETLINESPACING:
+		return SetLineSpacing(wParam, lParam);
+
+	case TXM_ADDFONT:
+		return AddFont((HFONT)wParam);
+
+	case TXM_SETCOLOR:
+		return SetColour(wParam, lParam);
+
+	case TXM_SETSTYLE:
+		return SetStyle(wParam, lParam);
+
+	case TXM_SETCARETWIDTH:
+		return SetCaretWidth(wParam);
+
+	case TXM_SETIMAGELIST:
+		return SetImageList((HIMAGELIST)wParam);
+
+	case TXM_SETLONGLINE:
+		return SetLongLine(lParam);
+
+	case TXM_GETFORMAT:
+		return m_pTextDoc->getformat();
+
+	case TXM_GETSELSIZE:
+		return SelectionSize();
+
+	case TXM_SETSELALL:
+		return SelectAll();
+
+	case TXM_GETCURPOS:
+		return m_nCursorOffset;
+
+	case TXM_GETCURLINE:
+		return m_nCurrentLine;
+
+	case TXM_GETCURCOL:
+		ULONG nOffset;
+		GetUspData(0, m_nCurrentLine, &nOffset);
+		return m_nCursorOffset - nOffset;
+
+	case TXM_SETCONTEXTMENU:
+		m_hUserMenu = (HMENU)wParam;
+		return 0;
+	default:
+		break;
+	}
+
+	return DefWindowProc(m_hWnd, msg, wParam, lParam);
+}
+
+//
+//	Win32 BatchScriptResult window procedure stub
+//
+LRESULT WINAPI BatchScriptResultWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	TextView *ptv = (TextView *)GetWindowLongPtr(hwnd, 0);
+
+	switch (msg)
+	{
+		// First message received by any window - make a new TextView object
+		// and store pointer to it in our extra-window-bytes
+	case WM_NCCREATE:
+
+		if ((ptv = new TextView(hwnd)) == 0)
+			return FALSE;
+
+		SetWindowLongPtr(hwnd, 0, (LONG)ptv);
+		return TRUE;
+
+		// Last message received by any window - delete the TextView object
+	case WM_NCDESTROY:
+		delete ptv;
+		SetWindowLongPtr(hwnd, 0, 0);
+		return 0;
+
+		// Pass everything to the TextView window procedure
+	default:
+		if (ptv)
+			return ptv->BatchResultsWndProc(msg, wParam, lParam);
+		else
+			return 0;
+	}
+}
+
+//
 //	Register the TextView window class
 //
 BOOL InitTextView()
@@ -569,6 +742,30 @@ BOOL InitTextView()
 }
 
 //
+//
+//
+BOOL InitBatchResultWindow()
+{
+	WNDCLASSEX wcx;
+
+	//Window class for the batch script result window
+	wcx.cbSize = sizeof(wcx);
+	wcx.style = CS_DBLCLKS;
+	wcx.lpfnWndProc = BatchScriptResultWndProc;
+	wcx.cbClsExtra = 0;
+	wcx.cbWndExtra = sizeof(TextView *);
+	wcx.hInstance = GetModuleHandle(0);
+	wcx.hIcon = 0;
+	wcx.hCursor = LoadCursor(NULL, IDC_IBEAM);
+	wcx.hbrBackground = (HBRUSH)0;		//NO FLICKERING FOR US!!
+	wcx.lpszMenuName = 0;
+	wcx.lpszClassName = BATCHSCRIPTRESULT_CLASS;
+	wcx.hIconSm = 0;
+
+	return RegisterClassEx(&wcx) ? TRUE : FALSE;
+}
+
+//
 //	Create a TextView control!
 //
 HWND CreateTextView(HWND hwndParent)
@@ -576,6 +773,21 @@ HWND CreateTextView(HWND hwndParent)
 	return CreateWindowEx(WS_EX_CLIENTEDGE,
 		//		L"EDIT", L"",
 		TEXTVIEW_CLASS, _T(""),
+		WS_VSCROLL | WS_HSCROLL | WS_CHILD | WS_VISIBLE,
+		0, 0, 0, 0,
+		hwndParent,
+		0,
+		GetModuleHandle(0),
+		0);
+}
+
+//
+//	Create a window control to house the Batch Script run results	
+//
+HWND CreateBatchScriptResultWindow(HWND hwndParent)
+{
+	return CreateWindowEx(WS_EX_CLIENTEDGE,
+		BATCHSCRIPTRESULT_CLASS, _T(""),
 		WS_VSCROLL | WS_HSCROLL | WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0,
 		hwndParent,

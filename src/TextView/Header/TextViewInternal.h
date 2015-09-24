@@ -74,6 +74,7 @@ public:
 	~TextView();
 
 	LONG WINAPI WndProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	LONG WINAPI BatchResultsWndProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
 
@@ -118,6 +119,7 @@ private:
 	LONG		ClearFile();
 	void		ResetLineCache();
 	ULONG		GetText(TCHAR *szDest, ULONG nStartOffset, ULONG nLength);
+	ULONG		SetTextBase(CHAR *wText);
 	ULONG		changeFileExt(TCHAR *fileName, TCHAR *extension);
 
 	//
