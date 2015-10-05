@@ -4,11 +4,43 @@ TO DO LIST:
 	N/A
 
 VERSION LIST:
-0.0001 - Included features: Opening files, vertical and horizontal scrolling. 
-0.0002 - Included features: Opening files, vertical and horizontal scrolling (enhanced painting, no more blinking)
-0.0003 - Included features: Opening files, vertical and horizontal scrolling, enhanced painting, options dialog (font/colors), mouse scrolling
-0.0004 - Included features: Opening files, vertical and horizontal scrolling, enhanced painting, options dialog (font/colors), mouse scrolling, margins, line numbers, breakpoints, long line highlighting, improved options, save options
+0.0001 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling
+					
+0.0002 - Included features: 
+					
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					
+0.0003 - Included features: 
+					
+					#Opening files
+					#vertical and horizontal scrolling
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					
+0.0004 - Included features: 
+					
+					#Opening files
+					#vertical and horizontal scrolling
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					
 0.0005 - General Cleanup
+					
+					#General code cleanup
+					
 0.0006 - Included features: 
 
 					#Opening files
@@ -182,3 +214,34 @@ VERSION LIST:
 					KINKS
 					#The status bar and batch results window only appears when the whole window is resized, need to refresh the screen in a better place
 					#the bactch result is tacking on two control characters at the end, figure out why 
+					
+0.0012.00 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					#runs simple batch script, returns result and displays it in seperate window
+					
+					SOLVED ISSUES
+					#The batch results window and status bar show up properly when activated now
+					#A breakpoint only appears when clicked inside of the left margin
+					
+					KINKS
+					#the batch result is tacking on two control characters at the end, figure out why 

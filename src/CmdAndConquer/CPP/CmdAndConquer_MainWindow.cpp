@@ -725,6 +725,9 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 	case IDM_BATCH_RUN:
 		TextView_RunFileAsBatch(this->CC_hwndTextView);
+		ShowWindow(g_hwndBatchRunResults, SW_HIDE);
+		GetClientRect(hwnd, &rect);
+		PostMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
 		return 0;
 
 	default:

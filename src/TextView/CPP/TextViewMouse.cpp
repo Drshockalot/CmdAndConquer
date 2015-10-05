@@ -177,9 +177,10 @@ LONG TextView::OnLButtonDown(UINT nFlags, int mx, int my)
 
 		// set capture for mouse-move selections
 		m_nSelectionMode = SEL_MARGIN;
+
+		SetLineImage(nLineNo, 1);
 	}
 
-	SetLineImage(nLineNo, 1);
 	RefreshWindow();
 
 	UpdateLine(nLineNo);
