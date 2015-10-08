@@ -86,6 +86,8 @@
   <ItemGroup>
     <ClCompile Include="..\Batch\Batch.cpp" />
     <ClCompile Include="..\Batch\BatchTextViewAssist.cpp" />
+    <ClCompile Include="..\Batch\CPP\BatchFile.cpp" />
+    <ClCompile Include="..\Batch\CPP\CmdCommand.cpp" />
     <ClCompile Include="..\Options\CPP\Options.c" />
     <ClCompile Include="..\Options\CPP\OptionsFont.c" />
     <ClCompile Include="..\Printing\Printing.cpp" />
@@ -119,6 +121,8 @@
     <ResourceCompile Include="resource\CmdAndConquer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Batch\Headers\BatchFile.h" />
+    <ClInclude Include="..\Batch\Headers\CmdCommand.h" />
     <ClInclude Include="..\Sequence\sequence.h" />
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />
