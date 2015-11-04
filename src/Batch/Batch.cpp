@@ -2,10 +2,8 @@
 #include <tchar.h>
 #include <iostream>
 #include "Shlwapi.h"
-#include "../CommandPipeRedirection/Header/Redir.h"
 #include "../TextView/Header/TextView.h"
 #include "../TextView/Header/TextViewInternal.h"
-#include "../Unicode/Unicode.h"
 #include "../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
 #pragma comment(lib, "Shlwapi.lib")
@@ -157,39 +155,6 @@ ULONG TextView::runFileAsBatch()
 	TextView_SetText(g_hwndBatchRunResults, batchResult);
 
 	g_fShowBatchResultsWindow = TRUE;
-
-	/*CRedirector redir;
-	redir.Open(cmdLine);
-*/
-	//STARTUPINFO si = { sizeof(STARTUPINFO) };
-	//PROCESS_INFORMATION pi;
-	//HANDLE readPipe = NULL;
-	//HANDLE writePipe = NULL;
-
-	//SECURITY_ATTRIBUTES saAttr;
-	//saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
-	//saAttr.bInheritHandle = TRUE;
-	//saAttr.lpSecurityDescriptor = NULL;
-
-	//CreatePipe(&readPipe, &readPipe, &saAttr, 0);
-	//SetHandleInformation(&readPipe, HANDLE_FLAG_INHERIT, 0);
-
-	//si.cb = sizeof(STARTUPINFO);
-	//si.hStdOutput = readPipe;
-	//si.dwFlags |= STARTF_USESTDHANDLES;
-
-
-	//CreateProcess(NULL, cmdLine, NULL, NULL, false, CREATE_UNICODE_ENVIRONMENT, (LPVOID)result.c_str(), NULL, &si, &pi);
-	//
-	//DWORD dwRead, dwWritten;
-	//TCHAR chBuf[4096];
-	//BOOL bSuccess = FALSE;
-
-	//for (;;)
-	//{
-	//	bSuccess = ReadFile(readPipe, chBuf, 4096, &dwRead, NULL);
-	//	if (!bSuccess || dwRead == 0) break;
-	//}
 
 	return TRUE;
 }

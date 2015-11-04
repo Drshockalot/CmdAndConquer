@@ -245,3 +245,41 @@ VERSION LIST:
 					
 					KINKS
 					#the batch result is tacking on two control characters at the end, figure out why 
+
+0.0012.01 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					#runs simple batch script, returns result and displays it in seperate window
+					
+					SOLVED ISSUES
+					#The batch results window and status bar show up properly when activated now
+					#A breakpoint only appears when clicked inside of the left margin
+					#The output from a batch script no longer has two control characters at the end - had to add 2 to the buffer length or else it wouldn't print the last "\n"
+					
+					KINKS
+					#
+					
+					TODO: 
+					#Figure out next features
+						- Most likely the batch command library implementation
+						- Move onto syntax help after that?
+						- Leave syntax highlighting until later?

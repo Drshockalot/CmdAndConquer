@@ -33,18 +33,13 @@ ULONG TextView::SetTextBase(CHAR *aText)
 
 bool TextDocument::initBatchResultWindow(CHAR *aText)
 {
-	ULONG numRead;
-
 	if ((m_nDocLength_bytes = strlen(aText)) == 0)
 		return false;
 
 	char *buffer = new char[m_nDocLength_bytes];
 
-	//	couple of strange control characters are appearing at the end, find out why
-	snprintf(buffer, m_nDocLength_bytes, "%s", aText);
-
-	if ((m_nDocLength_bytes = strlen(aText)) == 0)
-		return false;
+	//	Have to add 2 to the length, or else it won't copy the newline from the output
+	snprintf(buffer, m_nDocLength_bytes + 2, "%s", aText);
 
 	m_seq.init((BYTE *)buffer, m_nDocLength_bytes);
 
