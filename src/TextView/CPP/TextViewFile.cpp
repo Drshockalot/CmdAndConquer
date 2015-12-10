@@ -112,10 +112,10 @@ ULONG TextView::changeFileExt(TCHAR *fileName, TCHAR *extension)
 	size_t extLen = wcslen(extension);
 	size_t oldExtPos;
 	size_t oldExtLen;
-
+	
 	TCHAR newPath[MAX_PATH + 1];
 
-	for (int i = 0; i < fileLen; ++i)
+	for (auto i = 0; i < fileLen; ++i)
 	{
 		if (fileName[i] == _T('.'))
 		{
@@ -124,7 +124,7 @@ ULONG TextView::changeFileExt(TCHAR *fileName, TCHAR *extension)
 		}
 	}
 
-	for (int i = 0; i < extLen; ++i)
+	for (auto i = 0; i < extLen; ++i)
 	{
 		fileName[oldExtPos + 1 + i] = extension[i];
 	}

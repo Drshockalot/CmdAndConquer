@@ -527,7 +527,7 @@ void WINAPI UspInitFont(
 	uspFont->hFont = hFont;
 	uspFont->scriptCache = 0;
 
-	hFont = SelectObject(hdc, hFont);
+	hFont = (HFONT__*)SelectObject(hdc, hFont);
 
 	GetTextMetrics(hdc, &uspFont->tm);
 	InitCtrlChar(hdc, uspFont);

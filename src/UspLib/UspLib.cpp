@@ -142,7 +142,7 @@ static
 int MergeSimpleScripts(SCRIPT_ITEM *itemList, int itemCount)
 {
 	// global script-table, used for merging non-complex runs together :)
-	SCRIPT_PROPERTIES **propList;
+	const SCRIPT_PROPERTIES **propList;
 	int					propCount;
 	int					i;
 
@@ -219,7 +219,7 @@ BOOL BuildMergedItemRunList(
 		// allocate memory for SCRIPT_ITEM list
 		if (uspData->tempItemAllocLen < allocLen)
 		{
-			itemList = realloc(itemList, allocLen * sizeof(SCRIPT_ITEM));
+			itemList = (tag_SCRIPT_ITEM*)realloc(itemList, allocLen * sizeof(SCRIPT_ITEM));
 
 			if (itemList == 0)
 				return FALSE;
@@ -262,7 +262,7 @@ BOOL BuildMergedItemRunList(
 		if (m >= mergedAllocLen)
 		{
 			mergedAllocLen += 16;
-			mergedList = realloc(mergedList, mergedAllocLen * sizeof(ITEM_RUN));
+			mergedList = (_ITEM_RUN*)realloc(mergedList, mergedAllocLen * sizeof(ITEM_RUN));
 		}
 
 		// build an ITEM_RUN with default settings
@@ -435,10 +435,10 @@ BOOL ShapeAndPlaceItemRun(USPDATA *uspData, ITEM_RUN *itemRun, HDC hdc, WCHAR *w
 		{
 			uspData->glyphAllocLen += reallocSize;
 
-			uspData->glyphList = realloc(uspData->glyphList, uspData->glyphAllocLen * sizeof(WORD));
-			uspData->offsetList = realloc(uspData->offsetList, uspData->glyphAllocLen * sizeof(GOFFSET));
-			uspData->widthList = realloc(uspData->widthList, uspData->glyphAllocLen * sizeof(int));
-			uspData->svaList = realloc(uspData->svaList, uspData->glyphAllocLen * sizeof(SCRIPT_VISATTR));
+			uspData->glyphList = (unsigned short*)realloc(uspData->glyphList, uspData->glyphAllocLen * sizeof(WORD));
+			uspData->offsetList = (tagGOFFSET*)realloc(uspData->offsetList, uspData->glyphAllocLen * sizeof(GOFFSET));
+			uspData->widthList = (int*)realloc(uspData->widthList, uspData->glyphAllocLen * sizeof(int));
+			uspData->svaList = (tag_SCRIPT_VISATTR*)realloc(uspData->svaList, uspData->glyphAllocLen * sizeof(SCRIPT_VISATTR));
 		}
 
 		//
@@ -694,8 +694,8 @@ BOOL WINAPI UspAnalyze(
 	//	reallocate BIDI-arrays if item-run-list changed size
 	if (itemRunAllocLen < uspData->itemRunAllocLen)
 	{
-		uspData->bidiLevels = realloc(uspData->bidiLevels, uspData->itemRunAllocLen * sizeof(BYTE));
-		uspData->visualToLogicalList = realloc(uspData->visualToLogicalList, uspData->itemRunAllocLen * sizeof(int));
+		uspData->bidiLevels = (unsigned char*)realloc(uspData->bidiLevels, uspData->itemRunAllocLen * sizeof(BYTE));
+		uspData->visualToLogicalList = (int*)realloc(uspData->visualToLogicalList, uspData->itemRunAllocLen * sizeof(int));
 	}
 
 	//	Analyze the resulting runlist and build the BIDI-level array	
@@ -712,9 +712,9 @@ BOOL WINAPI UspAnalyze(
 	if (uspData->stringAllocLen < wlen)
 	{
 		uspData->stringAllocLen = wlen;
-		uspData->clusterList = realloc(uspData->clusterList, wlen * sizeof(WORD));
-		uspData->attrList = realloc(uspData->attrList, wlen * sizeof(ATTR));
-		uspData->breakList = realloc(uspData->breakList, wlen * sizeof(SCRIPT_LOGATTR));
+		uspData->clusterList = (unsigned short*)realloc(uspData->clusterList, wlen * sizeof(WORD));
+		uspData->attrList = (_ATTR*)realloc(uspData->attrList, wlen * sizeof(ATTR));
+		uspData->breakList = (tag_SCRIPT_LOGATTR*)realloc(uspData->breakList, wlen * sizeof(SCRIPT_LOGATTR));
 	}
 
 	// Generate the word-break information in logical order
@@ -779,7 +779,7 @@ BOOL WINAPI UspAnalyze(
 //
 USPDATA * WINAPI UspAllocate()
 {
-	USPDATA *uspData = malloc(sizeof(USPDATA));
+	USPDATA *uspData = (USPDATA*)malloc(sizeof(USPDATA));
 
 	if (uspData)
 	{

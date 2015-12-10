@@ -43,26 +43,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ShowIncludes>false</ShowIncludes>
+      <AdditionalIncludeDirectories>C:\Tools\boost\boost_1_59_0;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalManifestDependencies>
       </AdditionalManifestDependencies>
+      <AdditionalLibraryDirectories>C:\Tools\boost\boost_1_59_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,8 +88,10 @@
   <ItemGroup>
     <ClCompile Include="..\Batch\Batch.cpp" />
     <ClCompile Include="..\Batch\BatchTextViewAssist.cpp" />
-    <ClCompile Include="..\Options\CPP\Options.c" />
-    <ClCompile Include="..\Options\CPP\OptionsFont.c" />
+    <ClCompile Include="..\Batch\CPP\BatchFile.cpp" />
+    <ClCompile Include="..\Batch\CPP\CmdCommand.cpp" />
+    <ClCompile Include="..\Options\CPP\Options.cpp" />
+    <ClCompile Include="..\Options\CPP\OptionsFont.cpp" />
     <ClCompile Include="..\Printing\Printing.cpp" />
     <ClCompile Include="..\Sequence\sequence.cpp" />
     <ClCompile Include="..\TextView\CPP\TextDocument.cpp" />
@@ -101,16 +105,16 @@
     <ClCompile Include="..\TextView\CPP\TextViewPaint.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewParser.cpp" />
     <ClCompile Include="..\TextView\CPP\TextViewScroll.cpp" />
-    <ClCompile Include="..\Unicode\Unicode.c" />
+    <ClCompile Include="..\Unicode\Unicode.cpp" />
     <ClCompile Include="..\Unicode\Uniscribe.cpp" />
-    <ClCompile Include="..\UspLib\UspCtrl.c" />
-    <ClCompile Include="..\UspLib\UspLib.c" />
-    <ClCompile Include="..\UspLib\UspMain.c" />
-    <ClCompile Include="..\UspLib\UspMouse.c" />
-    <ClCompile Include="..\UspLib\UspPaint.c" />
-    <ClCompile Include="..\Utilities\OpenSave.c" />
-    <ClCompile Include="..\Utilities\Search.c" />
-    <ClCompile Include="..\Utilities\Toolbars.c" />
+    <ClCompile Include="..\UspLib\UspCtrl.cpp" />
+    <ClCompile Include="..\UspLib\UspLib.cpp" />
+    <ClCompile Include="..\UspLib\UspMain.cpp" />
+    <ClCompile Include="..\UspLib\UspMouse.cpp" />
+    <ClCompile Include="..\UspLib\UspPaint.cpp" />
+    <ClCompile Include="..\Utilities\OpenSave.cpp" />
+    <ClCompile Include="..\Utilities\Search.cpp" />
+    <ClCompile Include="..\Utilities\Toolbars.cpp" />
     <ClCompile Include="..\Utilities\Utilities.cpp" />
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp" />
     <ClCompile Include="CPP\main.cpp" />
@@ -119,6 +123,8 @@
     <ResourceCompile Include="resource\CmdAndConquer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Batch\Headers\BatchFile.h" />
+    <ClInclude Include="..\Batch\Headers\CmdCommand.h" />
     <ClInclude Include="..\Sequence\sequence.h" />
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />

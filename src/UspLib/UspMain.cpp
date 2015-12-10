@@ -1,7 +1,5 @@
 #include <windows.h>
 
-#pragma comment(linker, "/opt:nowin98")
-
 #pragma comment(linker, "/export:UspAnalyze=_UspAnalyze@40")
 #pragma comment(linker, "/export:UspFree=_UspFree@4")
 #pragma comment(linker, "/export:UspAllocate=_UspAllocate@0")

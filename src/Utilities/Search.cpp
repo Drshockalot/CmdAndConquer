@@ -17,7 +17,7 @@
 #include "../TextView/Header/TextView.h"
 #include "../CmdAndConquer/Resource/resource.h"
 
-HWND g_hwndSearchDlg;
+//HWND g_hwndSearchDlg;
 HWND g_hwndSearchBar;
 
 #define MAX_FIND_PANES 3

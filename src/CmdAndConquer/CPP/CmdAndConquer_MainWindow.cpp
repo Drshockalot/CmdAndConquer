@@ -8,7 +8,7 @@ HWND		g_hwndTextView;
 HWND		g_hwndBatchRunResults;
 HWND		g_hwndStatusbar;
 HWND		g_hwndSearchDlg;
-HFONT		g_hFont;
+//HFONT		g_hFont;
 
 TCHAR		g_szFileName[MAX_PATH];
 TCHAR		g_szFileTitle[MAX_PATH];

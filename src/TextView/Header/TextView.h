@@ -134,7 +134,7 @@ typedef struct
 #define TextView_GetEditMode(hwndTV) SendMessage((hwndTV), TXM_GETEDITMODE, 0, 0)
 #define TextView_SetContextMenu(hwndTV, hPopupMenu) SendMessage((hwndTV), TXM_SETCONTEXTMENU, (WPARAM)(hPopupMenu), 0)
 #define TextView_SetFont(hwndTV, hFont) SendMessage((hwndTV), WM_SETFONT, (WPARAM)(HFONT)(hFont), 0)
-#define TextView_SaveFile(hwndTV) SendMessage((hwndTV), TXM_SAVEFILE, 0, (LPARAM)(szFileName))
+#define TextView_SaveFile(hwndTV, szFileName) SendMessage((hwndTV), TXM_SAVEFILE, 0, (LPARAM)(szFileName))
 #define TextView_RunFileAsBatch(hwndTV) SendMessage((hwndTV), TXM_RUNFILEASBATCH, 0, 0)
 #define TextView_SetText(hwndTV, aText)	SendMessage((hwndTV), TXM_SETTEXT, 0, (LPARAM)(aText))
 

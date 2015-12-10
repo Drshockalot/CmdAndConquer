@@ -32,11 +32,12 @@ typedef struct
 	UINT	uMsg;
 } NOTIFY_DATA;
 
-DWORD WINAPI ChangeNotifyThread(NOTIFY_DATA *pnd)
+DWORD WINAPI ChangeNotifyThread(void *pndv)
 {
 	HANDLE hChange;
 	DWORD  dwResult;
 	TCHAR  szDirectory[MAX_PATH];
+	NOTIFY_DATA *pnd = (NOTIFY_DATA*)pndv;
 
 	lstrcpy(szDirectory, pnd->szFile);
 
@@ -72,7 +73,7 @@ DWORD WINAPI ChangeNotifyThread(NOTIFY_DATA *pnd)
 
 BOOL NotifyFileChange(TCHAR *szPathName, HWND hwndNotify, HANDLE hQuitEvent)
 {
-	NOTIFY_DATA *pnd = malloc(sizeof(NOTIFY_DATA));
+	NOTIFY_DATA *pnd = (NOTIFY_DATA*)malloc(sizeof(NOTIFY_DATA));
 
 	pnd->hQuitEvent = 0;
 	pnd->hwndNotify = hwndNotify;
@@ -80,7 +81,7 @@ BOOL NotifyFileChange(TCHAR *szPathName, HWND hwndNotify, HANDLE hQuitEvent)
 	lstrcpy(pnd->szFile, szPathName);
 
 	CreateThread(0, 0, ChangeNotifyThread, pnd, 0, 0);
-
+	
 	return TRUE;
 }
 
@@ -249,7 +250,7 @@ UINT FmtErrorMsg(HWND hwnd, DWORD dwMsgBoxType, DWORD dwError, TCHAR *szFmt, ...
 		(LPTSTR) &lpMsgBuf, 0, NULL 
 		);
 
-	ptr = LocalAlloc(LPTR, LocalSize(lpMsgBuf) + 1000 * sizeof(TCHAR));
+	ptr = (wchar_t*)LocalAlloc(LPTR, LocalSize(lpMsgBuf) + 1000 * sizeof(TCHAR));
 	_vstprintf(ptr, szFmt, varg);
 	_tcscat(ptr, lpMsgBuf);
 

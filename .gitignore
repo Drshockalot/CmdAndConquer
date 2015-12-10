@@ -1,0 +1,11 @@
+*.idb
+*.sdf
+*.opensdf
+*.exp
+*.tlog
+*.exe
+*.ilk
+*.lib
+*.pdb
+*.obj
+*.lnk

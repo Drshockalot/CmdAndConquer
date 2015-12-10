@@ -679,8 +679,8 @@ BOOL InitFontOptionsDlg(HWND hwnd)
 	//
 	//	Load the TrueType icon for the font-list
 	//
-	g_hIcon2 = LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
-	g_hIcon3 = LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON3), IMAGE_ICON, 16, 16, 0);
+	g_hIcon2 = (HICON__*)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON2), IMAGE_ICON, 16, 16, 0);
+	g_hIcon3 = (HICON__*)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON3), IMAGE_ICON, 16, 16, 0);
 
 	//
 	//	Create two fonts (normal+bold) based on current dialog's font settings

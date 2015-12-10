@@ -1,12 +1,3 @@
-//
-//	UspCtrl.c
-//
-//	Contains support routines for painting control-characters
-//	
-//	Written by J Brown 2006 Freeware
-//	www.catch22.net
-//
-
 #define _WIN32_WINNT 0x501
 
 #ifndef _UNICODE

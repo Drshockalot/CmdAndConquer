@@ -34,14 +34,14 @@
     <Filter Include="Header Files\UspLib">
       <UniqueIdentifier>{28b44f63-6060-4efd-9c32-06148638ff45}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Batch">
-      <UniqueIdentifier>{7eca20ee-c892-4413-acd0-7bb58e6de08d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Process Pipe Redirection">
-      <UniqueIdentifier>{bf648b1b-97a6-4c5a-9d5f-a433006df040}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Command Pipe Redirection">
       <UniqueIdentifier>{dd7a432f-2973-4dd0-ab2e-18fe30085751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\BatchUtility">
+      <UniqueIdentifier>{e4e40646-3346-457d-be5f-4ccf0ed4ee82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BatchUtility">
+      <UniqueIdentifier>{7eca20ee-c892-4413-acd0-7bb58e6de08d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,29 +72,11 @@
     <ClCompile Include="..\TextView\CPP\TextViewMouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Options\CPP\Options.c">
-      <Filter>Source Files\Options</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Options\CPP\OptionsFont.c">
-      <Filter>Source Files\Options</Filter>
-    </ClCompile>
     <ClCompile Include="..\Printing\Printing.cpp">
       <Filter>Source Files\Printing</Filter>
     </ClCompile>
     <ClCompile Include="..\Utilities\Utilities.cpp">
       <Filter>Source Files\Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UspLib\UspCtrl.c">
-      <Filter>Source Files\UspLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UspLib\UspLib.c">
-      <Filter>Source Files\UspLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UspLib\UspMouse.c">
-      <Filter>Source Files\UspLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UspLib\UspPaint.c">
-      <Filter>Source Files\UspLib</Filter>
     </ClCompile>
     <ClCompile Include="..\Unicode\Uniscribe.cpp">
       <Filter>Source Files\Unicode</Filter>
@@ -108,21 +90,6 @@
     <ClCompile Include="..\TextView\CPP\TextViewParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Utilities\OpenSave.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Utilities\Search.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Utilities\Toolbars.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UspLib\UspMain.c">
-      <Filter>Source Files\UspLib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Unicode\Unicode.c">
-      <Filter>Source Files\Unicode</Filter>
-    </ClCompile>
     <ClCompile Include="..\Sequence\sequence.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,10 +97,49 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Batch\Batch.cpp">
-      <Filter>Source Files\Batch</Filter>
+      <Filter>Source Files\BatchUtility</Filter>
     </ClCompile>
     <ClCompile Include="..\Batch\BatchTextViewAssist.cpp">
-      <Filter>Source Files\Batch</Filter>
+      <Filter>Source Files\BatchUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Batch\CPP\BatchFile.cpp">
+      <Filter>Source Files\BatchUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Batch\CPP\CmdCommand.cpp">
+      <Filter>Source Files\BatchUtility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\CPP\Options.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Options\CPP\OptionsFont.cpp">
+      <Filter>Source Files\Options</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Unicode\Unicode.cpp">
+      <Filter>Source Files\Unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Toolbars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Search.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\OpenSave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspCtrl.cpp">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspLib.cpp">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspMain.cpp">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspMouse.cpp">
+      <Filter>Source Files\UspLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UspLib\UspPaint.cpp">
+      <Filter>Source Files\UspLib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +180,12 @@
     </ClInclude>
     <ClInclude Include="..\Sequence\sequence.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Batch\Headers\BatchFile.h">
+      <Filter>Header Files\BatchUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Batch\Headers\CmdCommand.h">
+      <Filter>Header Files\BatchUtility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
