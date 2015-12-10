@@ -112,8 +112,6 @@ ULONG TextView::changeFileExt(TCHAR *fileName, TCHAR *extension)
 	size_t extLen = wcslen(extension);
 	size_t oldExtPos;
 	size_t oldExtLen;
-	
-	TCHAR newPath[MAX_PATH + 1];
 
 	for (auto i = 0; i < fileLen; ++i)
 	{

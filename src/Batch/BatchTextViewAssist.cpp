@@ -38,8 +38,8 @@ bool TextDocument::initBatchResultWindow(CHAR *aText)
 
 	char *buffer = new char[m_nDocLength_bytes];
 
-	//	couple of strange control characters are appearing at the end, find out why
-	snprintf(buffer, m_nDocLength_bytes - 2, "%s", aText);
+	//	Have to add 2 to the length, or else it won't copy the newline from the output
+	snprintf(buffer, m_nDocLength_bytes + 2, "%s", aText);
 
 	m_seq.init((BYTE *)buffer, m_nDocLength_bytes);
 
