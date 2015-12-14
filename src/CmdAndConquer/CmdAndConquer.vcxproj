@@ -90,6 +90,9 @@
     <ClCompile Include="..\Batch\BatchTextViewAssist.cpp" />
     <ClCompile Include="..\Batch\CPP\BatchFile.cpp" />
     <ClCompile Include="..\Batch\CPP\CmdCommand.cpp" />
+    <ClCompile Include="..\CMDLibrary\CPP\CMDCommand.cpp" />
+    <ClCompile Include="..\CMDLibrary\CPP\CMDCommandList.cpp" />
+    <ClCompile Include="..\CMDLibrary\CPP\CMDOption.cpp" />
     <ClCompile Include="..\Options\CPP\Options.cpp" />
     <ClCompile Include="..\Options\CPP\OptionsFont.cpp" />
     <ClCompile Include="..\Printing\Printing.cpp" />
@@ -125,6 +128,9 @@
   <ItemGroup>
     <ClInclude Include="..\Batch\Headers\BatchFile.h" />
     <ClInclude Include="..\Batch\Headers\CmdCommand.h" />
+    <ClInclude Include="..\CMDLibrary\Header\CMDCommand.h" />
+    <ClInclude Include="..\CMDLibrary\Header\CMDCommandList.h" />
+    <ClInclude Include="..\CMDLibrary\Header\CMDOption.h" />
     <ClInclude Include="..\Sequence\sequence.h" />
     <ClInclude Include="..\TextView\Header\TextDocument.h" />
     <ClInclude Include="..\TextView\Header\TextView.h" />

@@ -29,6 +29,8 @@
 #define IDB_BITMAP3                     128
 #define IDI_ICON4                       129
 #define IDB_BITMAP4                     130
+#define IDD_DIALOG3                     132
+#define IDD_ADD_CMD_TO_TEXTVIEW         134
 #define IDC_COMBO1                      1000
 #define IDC_FONTLIST                    1000
 #define IDC_COMBO2                      1001
@@ -127,13 +129,14 @@
 #define IDM_EDIT_GOTO                   40030
 #define IDM_SCHEME_NORMAL               40032
 #define IDM_SCHEME_SAVE                 40033
+#define ID_BATCH_RUN                    40034
 #define IDM_BATCH_RUN                   40035
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         40036
 #define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           101

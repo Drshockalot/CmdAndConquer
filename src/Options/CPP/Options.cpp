@@ -7,7 +7,9 @@
 #include "../../TextView/Header/TextView.h"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree_fwd.hpp>
+//#include <boost/property_tree/ptree_fwd.hpp>
+#include <boost/foreach.hpp>
+#include <vector>
 
 #pragma comment(lib, "comctl32.lib")
 
@@ -16,12 +18,12 @@
 
 #define IMAGEFILE_XOPT _T("Software\\Microsoft\\Windows NT\\CurrentVersion")\
 					   _T("\\Image File Execution Options\\CmdAndConquer.exe")
+#include <set>
+#include <list>
 
 BOOL CALLBACK FontOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK MiscOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DisplayOptionsDlgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-namespace pt = boost::property_tree;
 
 LONG  g_nFontSize;
 BOOL  g_fFontBold;
@@ -42,6 +44,10 @@ BOOL  g_fAddToExplorer = 0;
 BOOL  g_fReplaceNotepad = 0;
 
 HFONT g_hFont;
+
+namespace pt = boost::property_tree;
+std::string settingsFileName;
+std::vector<std::string> settings;
 
 COLORREF g_rgbColourList[TXC_MAX_COLOURS];
 COLORREF g_rgbCustColours[16];
@@ -204,6 +210,19 @@ void LoadRegSettings()
 
 	RegCloseKey(hColKey);
 	RegCloseKey(hKey);
+}
+
+void LoadXMLSettings()
+{
+	pt::ptree tree;
+	pt::read_xml(settingsFileName, tree);
+	pt::ptree ptreeSet = tree.get_child("settings");
+	BOOST_FOREACH(auto const &v, tree.get_child("settings"))
+	{
+		settings.push_back(v.second.data());
+	}
+
+
 }
 
 void LoadRegSysSettings()

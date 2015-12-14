@@ -129,6 +129,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR cmdLine, 
 		CmdAndConquer_MainWindow cAndC(hInstance, cmdShow, _T("CmdAndConquer"));
 		g_hwndMain = cAndC.getMainHWND();
 
+		settingsFileName = "CmdAndConquerOptions.xml";
+
 		LoadRegSettings();
 		
 

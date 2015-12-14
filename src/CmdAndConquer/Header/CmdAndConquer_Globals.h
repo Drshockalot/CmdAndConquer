@@ -5,11 +5,13 @@
 #include <shellapi.h>
 
 #ifdef __cplusplus
+#include <string>
+
 extern "C" {
 #endif
 
 #define APP_TITLE   _T("CmdAndConquer")
-#define REGLOC		_T("SOFTWARE\\Catch22\\Neatpad")
+#define REGLOC		_T("SOFTWARE\\CmdAndConquer")
 
 #define WEBSITE_STR _T("www.drshockalot.net")
 #define WEBSITE_URL _T("http://") WEBSITE_STR
@@ -32,6 +34,7 @@ extern "C" {
 	extern BOOL		g_fReplaceNotepad;
 	extern BOOL		g_fShowStatusbar;
 	extern BOOL		g_fShowBatchResultsWindow;
+	extern std::string settingsFileName;
 
 	extern LONG		g_nPaddingAbove;
 	extern LONG		g_nPaddingBelow;
@@ -69,6 +72,7 @@ extern "C" {
 	void ShowOptions(HWND hwndParent);
 	void ApplyRegSettings();
 	void LoadRegSettings();
+	void LoadXMLSettings();
 	void SaveRegSettings();
 	void LoadRegSysSettings();
 	void SaveRegSysSettings();

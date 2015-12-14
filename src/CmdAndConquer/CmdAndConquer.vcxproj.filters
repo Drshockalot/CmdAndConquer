@@ -43,6 +43,15 @@
     <Filter Include="Source Files\BatchUtility">
       <UniqueIdentifier>{7eca20ee-c892-4413-acd0-7bb58e6de08d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\CMDLibrary">
+      <UniqueIdentifier>{fd103b60-36fa-4211-8b48-6c7999d5ff09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CMDLibrary">
+      <UniqueIdentifier>{84154048-f529-4f9c-8e67-8a1ed5e8d91a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CMDUtility">
+      <UniqueIdentifier>{6533d00f-24a5-41da-9c38-fa4110acae8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CPP\CmdAndConquer_MainWindow.cpp">
@@ -141,6 +150,15 @@
     <ClCompile Include="..\UspLib\UspPaint.cpp">
       <Filter>Source Files\UspLib</Filter>
     </ClCompile>
+    <ClCompile Include="..\CMDLibrary\CPP\CMDCommand.cpp">
+      <Filter>Source Files\CMDLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CMDLibrary\CPP\CMDCommandList.cpp">
+      <Filter>Source Files\CMDLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\CMDLibrary\CPP\CMDOption.cpp">
+      <Filter>Source Files\CMDLibrary</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">
@@ -186,6 +204,15 @@
     </ClInclude>
     <ClInclude Include="..\Batch\Headers\CmdCommand.h">
       <Filter>Header Files\BatchUtility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CMDLibrary\Header\CMDCommand.h">
+      <Filter>Header Files\CMDLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CMDLibrary\Header\CMDCommandList.h">
+      <Filter>Header Files\CMDLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CMDLibrary\Header\CMDOption.h">
+      <Filter>Header Files\CMDLibrary</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
