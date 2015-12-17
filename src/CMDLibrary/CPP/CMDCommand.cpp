@@ -88,7 +88,8 @@ void CMDCommand::addArgumentAt(std::string arg, int i) {
     (*this).activeArguments.insert(std::begin((*this).activeArguments) + i, arg);
 }
 
-CMDCommand::CMDCommand(const std::string name, std::vector<CMDOption> availOps) {
+CMDCommand::CMDCommand(const std::string name, std::vector<CMDOption> availOps, bool deprecated) {
     (*this).name = name;
     (*this).availableOptions = availOps;
+	(*this).deprecated = deprecated;
 }
