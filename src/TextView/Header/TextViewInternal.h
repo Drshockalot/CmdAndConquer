@@ -128,6 +128,11 @@ private:
 	ULONG runFileAsBatch();
 
 	//
+	//	CMD assist functions
+	//
+	ULONG addCMD(TCHAR* cmdText);
+
+	//
 	//	Cursor/Selection
 	//
 	ULONG		SelectionSize();

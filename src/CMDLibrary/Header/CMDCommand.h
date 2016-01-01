@@ -14,25 +14,26 @@ public:
     CMDCommand(const std::string);
 	CMDCommand(const std::string, bool);
     CMDCommand(const std::string, std::vector<CMDOption>, bool);
-    CMDCommand(const std::string, std::vector<CMDOption>, std::vector<std::string>);
+    CMDCommand(const std::string, std::vector<CMDOption>, std::vector<CMDOption>);
     ~CMDCommand();
 
-    void setArguments(std::vector<std::string>);
+    void setArguments(std::vector<CMDOption>);
     void setArugments(std::string[], size_t size);
     void clearArguments();
     void addArgument(std::string);
     void addArgument(char[]);
+	void addArgument(CMDOption);
     void addArgumentAt(std::string, int);
     void addArgumentAt(char[], int);
     void removeArgument(int);
     std::string toString();
-    std::vector<std::string> getArguments();
+    std::vector<CMDOption> getActiveArguments();
     std::string getName();
     std::vector<CMDOption> getAvailableOptions();
 
 private:
     std::string name;
-    std::vector<std::string> activeArguments;
+    std::vector<CMDOption> activeArguments;
     std::vector<CMDOption> availableOptions;
 	bool deprecated;
 

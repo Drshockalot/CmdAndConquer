@@ -87,6 +87,10 @@ BEGIN
     BEGIN
         MENUITEM "Run",                         IDM_BATCH_RUN
     END
+    POPUP "CMD"
+    BEGIN
+        MENUITEM "Add CMD",                     IDM_CMD_ADDCMD
+    END
 END
 
 IDR_MENU2 MENU

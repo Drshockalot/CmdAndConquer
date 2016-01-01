@@ -34,6 +34,7 @@ extern "C" {
 	extern BOOL		g_fReplaceNotepad;
 	extern BOOL		g_fShowStatusbar;
 	extern BOOL		g_fShowBatchResultsWindow;
+	extern BOOL		g_fShowAddCMDWindow;
 	extern std::string settingsFileName;
 
 	extern LONG		g_nPaddingAbove;
@@ -45,6 +46,10 @@ extern "C" {
 	extern HWND g_hwndSearchDlg;
 	extern HWND g_hwndSearchBar;
 
+#define ADD_CMD_WINDOW_COMMANDLIST_KEY 2330
+#define ADD_CMD_WINDOW_SUBMIT_KEY 2331
+#define ADD_CMD_WINDOW_OPLIST_CHILD_KEY 2500 //meant for incrimenting and tracking manually to keep track of the options
+#define ADD_CMD_WINDOW_OPLIST_LABELS_KEY 2600 //ditto for labels
 
 #define COURIERNEW	1
 #define LUCIDACONS	2
@@ -52,6 +57,7 @@ extern "C" {
 	//	Global runtime variables
 	extern HWND		g_hwndTextView;
 	extern HWND		g_hwndBatchRunResults;
+	extern HWND		g_hwndAddCMDWindow;
 	extern HWND		g_hwndMain;
 	extern HFONT	g_hFont;
 	extern TCHAR	g_szFileName[];
@@ -62,7 +68,9 @@ extern "C" {
 	//	Global functions
 	//
 
-	
+	//Add CMD Window functions
+	bool InitAddCMDWindow();
+
 	void SetWindowFileName(HWND hwnd, TCHAR *szFileName, BOOL fModified);
 	void ShowProperties(HWND hwndParent);
 

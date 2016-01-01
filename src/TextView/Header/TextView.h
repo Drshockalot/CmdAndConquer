@@ -68,6 +68,7 @@ COLORREF RealizeColour(COLORREF col);
 #define TXM_SAVEFILE			(TXM_BASE + 25)
 #define TXM_RUNFILEASBATCH		(TXM_BASE + 26)
 #define TXM_SETTEXT				(TXM_BASE + 27)
+#define TXM_ADDCMD				(TXM_BASE + 28)
 
 //
 //	TextView Notification Messages defined here - 
@@ -137,6 +138,7 @@ typedef struct
 #define TextView_SaveFile(hwndTV, szFileName) SendMessage((hwndTV), TXM_SAVEFILE, 0, (LPARAM)(szFileName))
 #define TextView_RunFileAsBatch(hwndTV) SendMessage((hwndTV), TXM_RUNFILEASBATCH, 0, 0)
 #define TextView_SetText(hwndTV, aText)	SendMessage((hwndTV), TXM_SETTEXT, 0, (LPARAM)(aText))
+#define TextView_AddCMD(hwndTV, aCMDString) SendMessage((hwndTV), TXM_ADDCMD, 0, (LPARAM)(aCMDString))
 
 //
 //	TextView Macros defined here

@@ -159,6 +159,9 @@
     <ClCompile Include="..\CMDLibrary\CPP\CMDOption.cpp">
       <Filter>Source Files\CMDLibrary</Filter>
     </ClCompile>
+    <ClCompile Include="..\CMDUtility\AddCMDWindow.cpp">
+      <Filter>Source Files\CMDUtility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">

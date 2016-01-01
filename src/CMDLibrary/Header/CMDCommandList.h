@@ -8,17 +8,18 @@
 class CMDCommandList
 {
 public:
-    static CMDCommandList& instance();
+    static CMDCommandList* instance();
     CMDCommand at(int);
     void addCMD(CMDCommand);
     void removeCMD(std::string);
     void removeCMD(int);
     void removeCMD(CMDCommand);
     void addCMD(std::string);
+	size_t size();
 
 private:
     CMDCommandList();
-    ~CMDCommandList();
+	~CMDCommandList();
     static CMDCommandList* list;
     std::vector<CMDCommand> availableCommands;
 };

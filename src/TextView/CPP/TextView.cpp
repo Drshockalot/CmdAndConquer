@@ -503,6 +503,9 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case TXM_RUNFILEASBATCH:
 		return runFileAsBatch();
+
+	case TXM_ADDCMD:
+		return addCMD((TCHAR *)lParam);
 	default:
 		break;
 	}

@@ -4,9 +4,14 @@
 
 #include "../Header/CMDCommandList.h"
 
-CMDCommandList &CMDCommandList::instance() {
-    list = new CMDCommandList();
-    return *list;
+CMDCommandList * CMDCommandList::list = 0;
+
+CMDCommandList *CMDCommandList::instance() {
+	if(!list)
+	{
+		list = new CMDCommandList();
+	}
+    return list;
 }
 
 // ~name~ signals that the user needs to provide input for that field
@@ -14,33 +19,33 @@ CMDCommandList &CMDCommandList::instance() {
 CMDCommandList::CMDCommandList() {
 	this->availableCommands = {
 		CMDCommand("ADDUSERS.exe",
-		{
-			CMDOption("~filename", true),
-			CMDOption("/s:~delimiter~", false),
-			CMDOption("~Domain", false),
-			CMDOption("/c", false),
-			CMDOption("/d{:~filename#}", false),
-			CMDOption("/e", false),
-			CMDOption("/p:#l#c#e#d", false)
+		{									//most of this hinges on file name, make it required
+			CMDOption("~", "Filename", true, TextBox), //filename
+			CMDOption("/s:~", "Delimiter", false, TextBox), //delimiter
+			CMDOption("~", "Domain", false, TextBox), //Domain
+			CMDOption("/c", "Filename", false, CheckBox), //create user account by filename
+			CMDOption("/d{:~}", "Filename", false, TextBox), //dump to filename
+			CMDOption("/e", "Erase", false, CheckBox), //erase user in filename
+			CMDOption("/p:#l#c#e#d", "Password Option", false, DropDown) //password options
 		}, false),
         CMDCommand("cmd.exe",
         {
-				CMDOption("/c"),
-				CMDOption("/k"),
-				CMDOption("/a"),
-				CMDOption("/a"),
-				CMDOption("/u"),
-				CMDOption("/d"),
-				CMDOption("/e:on"),
-				CMDOption("/x"),
-				CMDOption("/e:off"),
-				CMDOption("/y"),
-				CMDOption("/f:on"),
-				CMDOption("/f:off"),
-				CMDOption("/q"),
-				CMDOption("/s"),
-				CMDOption("/v:on"),
-				CMDOption("/v:off")
+				CMDOption("~", "Command", true, TextBox),
+				CMDOption("/c", "Run and Terminate", false, CheckBox),
+				CMDOption("/k", "Return to prompt", false, CheckBox),
+				CMDOption("/a", "Output ANSI", false, CheckBox),
+				CMDOption("/u", "Output Unicode", false, CheckBox),
+				CMDOption("/d", "Ignore Registry Autorun", false, CheckBox),
+				CMDOption("/e:on", "Enable CMD Extensions", false, CheckBox),
+				CMDOption("/x", "Old above", false, CheckBox),
+				CMDOption("/e:off", "Disable CMD Extensions", false, CheckBox),
+				CMDOption("/y", "Old above", false, CheckBox),
+				CMDOption("/f:on", "Enable Autocomplete Path Name", false, CheckBox),
+				CMDOption("/f:off", "Disable Autocomplete Path Name", false, CheckBox),
+				CMDOption("/q", "Turn ECHO off", false, CheckBox),
+				CMDOption("/s", "Strip quotes from Command", false, CheckBox),
+				CMDOption("/v:on", "Enable Delayed Vars", false, CheckBox),
+				CMDOption("/v:off", "Disable Delayed Vars", false, CheckBox)
         }, false),
         CMDCommand("ADmodcmd.exe",
         {
@@ -144,12 +149,12 @@ CMDCommandList::CMDCommandList() {
     };
 }
 
-CMDCommandList::~CMDCommandList() {
-
+CMDCommandList::~CMDCommandList()
+{
 }
 
 CMDCommand CMDCommandList::at(int i) {
-    return this->list->at(i);
+    return this->list->availableCommands.at(i);
 }
 
 void CMDCommandList::addCMD(CMDCommand cmd) {
@@ -157,19 +162,15 @@ void CMDCommandList::addCMD(CMDCommand cmd) {
 }
 
 void CMDCommandList::removeCMD(std::string nameToRemove) {
-    std::sort(std::begin(this->list->availableCommands), std::end(this->list->availableCommands));
     auto elementToRemove = std::find_if(std::begin(this->list->availableCommands), std::end(this->list->availableCommands), [nameToRemove](CMDCommand cmd){return cmd.getName() == nameToRemove;});
     this->list->availableCommands.erase(elementToRemove, elementToRemove + 1);
 }
 
 void CMDCommandList::removeCMD(int i) {
-    std::sort(std::begin(this->list->availableCommands), std::end(this->list->availableCommands));
-    auto elementToRemove = std::begin(this->list->availableCommands) + i;
-    this->list->availableCommands.erase(elementToRemove, elementToRemove + 1);
+    this->list->availableCommands.erase(std::begin(this->list->availableCommands) + i);
 }
 
 void CMDCommandList::removeCMD(CMDCommand command) {
-    std::sort(std::begin(this->list->availableCommands), std::end(this->list->availableCommands));
     auto elementToRemove = std::begin(this->list->availableCommands);
     for(auto it = this->list->availableCommands.begin(); it != this->list->availableCommands.end(); ++it)
     {
@@ -184,3 +185,7 @@ void CMDCommandList::addCMD(std::string cmdName) {
     this->list->availableCommands.push_back(cmd);
 }
 
+size_t CMDCommandList::size()
+{
+	return this->list->availableCommands.size();
+}

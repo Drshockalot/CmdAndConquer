@@ -93,6 +93,7 @@
     <ClCompile Include="..\CMDLibrary\CPP\CMDCommand.cpp" />
     <ClCompile Include="..\CMDLibrary\CPP\CMDCommandList.cpp" />
     <ClCompile Include="..\CMDLibrary\CPP\CMDOption.cpp" />
+    <ClCompile Include="..\CMDUtility\AddCMDWindow.cpp" />
     <ClCompile Include="..\Options\CPP\Options.cpp" />
     <ClCompile Include="..\Options\CPP\OptionsFont.cpp" />
     <ClCompile Include="..\Printing\Printing.cpp" />

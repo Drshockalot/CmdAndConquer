@@ -16,7 +16,7 @@ CMDCommand::CMDCommand(const std::string name, bool deprecated)
 	(*this).deprecated = deprecated;
 }
 
-CMDCommand::CMDCommand(const std::string name, std::vector<CMDOption> availableOptions, std::vector<std::string> activeArgs) {
+CMDCommand::CMDCommand(const std::string name, std::vector<CMDOption> availableOptions, std::vector<CMDOption> activeArgs) {
     (*this).name = name;
     (*this).availableOptions = availableOptions;
     (*this).activeArguments = activeArgs;
@@ -24,7 +24,7 @@ CMDCommand::CMDCommand(const std::string name, std::vector<CMDOption> availableO
 
 CMDCommand::~CMDCommand() { }
 
-std::vector<std::string> CMDCommand::getArguments() {
+std::vector<CMDOption> CMDCommand::getActiveArguments() {
     return (*this).activeArguments;
 }
 
@@ -45,13 +45,13 @@ std::string CMDCommand::toString() {
 
 std::string CMDCommand::activeArgsToString() {
     std::string ret;
-    std::for_each(std::begin((*this).activeArguments), std::end((*this).activeArguments), [&ret] (std::string s) {ret = ret + " " + s;});
+    std::for_each(std::begin((*this).activeArguments), std::end((*this).activeArguments), [&ret] (CMDOption s) {ret = ret + " " + s.getCommand();});
     return ret;
 }
 
 
 void CMDCommand::removeArgument(int i) {
-    activeArguments.erase(std::remove(std::begin(activeArguments), std::end(activeArguments), i), std::end(activeArguments));
+    activeArguments.erase(std::begin(activeArguments) + i);
 }
 
 void CMDCommand::addArgument(char *arg) {
@@ -62,6 +62,12 @@ void CMDCommand::addArgument(char *arg) {
 void CMDCommand::addArgument(std::string arg) {
     (*this).activeArguments.push_back(arg);
 }
+
+void CMDCommand::addArgument(CMDOption op)
+{
+	(*this).activeArguments.push_back(op);
+}
+
 
 void CMDCommand::clearArguments() {
     (*this).activeArguments.clear();
@@ -75,7 +81,7 @@ void CMDCommand::setArugments(std::string *args, size_t size) {
     }
 }
 
-void CMDCommand::setArguments(std::vector<std::string> args) {
+void CMDCommand::setArguments(std::vector<CMDOption> args) {
     (*this).activeArguments = args;
 }
 

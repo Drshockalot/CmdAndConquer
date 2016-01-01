@@ -20,7 +20,6 @@ CmdAndConquer_MainWindow::CmdAndConquer_MainWindow(HINSTANCE hInstance, int cmdS
 {
 	//	Register the window class before creation
 	registerWindowClass(hInstance);
-
 	assert(HIWORD(class_atom) == 0);
 	assert(class_atom);
 	if (!class_atom)
@@ -226,7 +225,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			GetWindowRect(g_hwndStatusbar, &rect);
 			heightsb = rect.bottom - rect.top;
 
-			hdwp = BeginDeferWindowPos(3);
+			hdwp = BeginDeferWindowPos(4);
 
 			if (g_fShowStatusbar)
 			{
@@ -239,6 +238,12 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			{
 				DeferWindowPos(hdwp, g_hwndBatchRunResults, 0, 0, height - 200, width, 200, SWP_SHOWWINDOW);
 				height = height - 200;
+			}
+
+			if (g_fShowAddCMDWindow)
+			{
+				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 0, 300, height, SWP_SHOWWINDOW);
+				width -= 300;
 			}
 
 			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 0, width, height, SWP_SHOWWINDOW);
@@ -293,7 +298,11 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 
 	g_hwndStatusbar = CreateStatusBar(hWnd);
 	this->CC_hwndTextView = CreateTextView(hWnd_);
+	InitAddCMDWindow();
+	g_hwndMain = hWnd_;
 	this->CC_hwndBatchRunResults = CreateBatchScriptResultWindow(hWnd_);
+	this->CC_hwndAddCMDWindow = CreateAddCMDWindow(hWnd_);
+	g_hwndAddCMDWindow = this->CC_hwndAddCMDWindow;
 	g_hwndBatchRunResults = this->CC_hwndBatchRunResults;
 	g_hwndTextView = this->CC_hwndTextView;
 
@@ -729,7 +738,12 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		GetClientRect(hwnd, &rect);
 		PostMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
 		return 0;
-
+	case IDM_CMD_ADDCMD:
+		ShowAddCMDWindow();
+		ShowWindow(g_hwndSearchBar, SW_HIDE);
+		GetClientRect(hwnd, &rect);
+		PostMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+		return 0;
 	default:
 		return 0;
 	}
