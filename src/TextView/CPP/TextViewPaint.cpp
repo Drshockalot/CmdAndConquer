@@ -483,6 +483,12 @@ int	TextView::ApplySelection(USPDATA *uspData, ULONG nLine, ULONG nOffset, ULONG
 	return 0;
 }
 
+int	TextView::SyntaxColour(TCHAR *szText, ULONG nTextLen, ATTR *attr)
+{
+
+	return nTextLen;
+}
+
 //
 //	Apply visual-styles to the text by returning colour and font
 //	information into the supplied TEXT_ATTR structure
@@ -531,11 +537,11 @@ int TextView::ApplyTextAttributes(ULONG nLineNo, ULONG nOffset, ULONG &nColumn, 
 	//
 	//	TODO: 1. Apply syntax colouring first of all
 	//
-
+	SyntaxColour(szText, nTextLen, attr);
 	//
 	//	TODO: 2. Apply bookmarks, line highlighting etc (override syntax colouring)
 	//
-
+	
 	//
 	//	STEP 3:  Now apply text-selection (overrides everything else)
 	//
@@ -553,8 +559,6 @@ int TextView::ApplyTextAttributes(ULONG nLineNo, ULONG nOffset, ULONG &nColumn, 
 	else if (m_nSelectionType == SEL_BLOCK)
 	{
 	}
-
-	//SyntaxColour(szText, nTextLen, attr);
 
 	//
 	//	Turn any CR/LF at the end of a line into a single 'space' character
