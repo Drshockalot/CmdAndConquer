@@ -86,6 +86,28 @@ BEGIN
     POPUP "Batch"
     BEGIN
         MENUITEM "Run",                         IDM_BATCH_RUN
+        POPUP "IF Statements"
+        BEGIN
+            MENUITEM "IF NOT EXIST",                ID_IFSTATEMENTS_IFNOTEXIST
+            MENUITEM "IF NOT EXIST ELSE",           ID_IFSTATEMENTS_IFNOTEXISTELSE
+            MENUITEM SEPARATOR
+            MENUITEM "IF EQUALS",                   ID_IFSTATEMENTS_IFEQUALS
+            MENUITEM "IF COMPARISON",               ID_IFSTATEMENTS_IFCOMPARISON
+            MENUITEM "IF COMPARISON ELSE",          ID_IFSTATEMENTS_IFCOMPARISONELSE
+            MENUITEM SEPARATOR
+            MENUITEM "IF NOT DEFINED",              ID_IFSTATEMENTS_IFNOTDEFINED
+            MENUITEM "IF NOT ERRORLEVEL",           ID_IFSTATEMENTS_IFNOTERRORLEVEL
+        END
+        POPUP "FOR Loops"
+        BEGIN
+            MENUITEM "FOR-Files",                   ID_FORLOOPS_FOR_Files
+            MENUITEM "FOR-FilesRooted at Path",     ID_FORLOOPS_FOR_FileRootedAtPath
+            MENUITEM "FOR-Folders",                 ID_FORLOOPS_FOR_Folders
+            MENUITEM "FOR-List of Numbers",         ID_FORLOOPS_FOR_ListOfNumbers
+            MENUITEM "FOR-File List Contents",      ID_FORLOOPS_FOR_FileListContents
+            MENUITEM "FOR-File TextString Contents", ID_FORLOOPS_FOR_FileTextStringContents
+            MENUITEM "FOR-Command Results",         ID_FORLOOPS_FOR_CommandResults
+        END
     END
     POPUP "CMD"
     BEGIN
@@ -165,9 +187,13 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "icon1.ico"
+
 IDI_ICON2               ICON                    "icon2.ico"
+
 IDI_ICON3               ICON                    "icon3.ico"
+
 IDI_ICON4               ICON                    "icon4.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -478,8 +504,11 @@ END
 //
 
 IDB_BITMAP1             BITMAP                  "bitmap1.bmp"
+
 IDB_BITMAP3             BITMAP                  "bitmap3.bmp"
+
 IDB_BITMAP4             BITMAP                  "bitmap4.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -487,6 +516,7 @@ IDB_BITMAP4             BITMAP                  "bitmap4.bmp"
 //
 
 1                       RT_MANIFEST             "CmdAndConquer.exe.manifest"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

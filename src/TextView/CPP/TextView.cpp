@@ -506,6 +506,12 @@ LONG WINAPI TextView::WndProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case TXM_ADDCMD:
 		return addCMD((TCHAR *)lParam);
+
+	case TXM_ADDFORSTATEMENT:
+		return addForStatement((int)wParam);
+
+	case TXM_ADDIFSTATEMENT:
+		return addIfStatement((int)wParam);
 	default:
 		break;
 	}

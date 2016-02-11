@@ -132,13 +132,38 @@
 #define ID_BATCH_RUN                    40034
 #define IDM_BATCH_RUN                   40035
 #define IDM_CMD_ADDCMD                  40036
+#define ID_BATCH_IFSTATEMENTS           40038
+#define ID_BATCH_FORLOOPS               40039
+#define ID_FORLOOPS_FOR                 40040
+#define ID_FORLOOPS_FOR40041            40041
+#define ID_FORLOOPS_FOR40042            40042
+#define ID_FORLOOPS_FOR40043            40043
+#define ID_FORLOOPS_FOR40044            40044
+#define ID_FORLOOPS_FOR40045            40045
+#define ID_FORLOOPS_FOR40046            40046
+#define ID_IFSTATEMENTS_IFNOTEXIST      40047
+#define ID_IFSTATEMENTS_IFNOTEXISTELSE  40048
+#define ID_IFSTATEMENTS_IFEQUALS        40049
+#define ID_IFSTATEMENTS_IFCOMPARISON    40050
+#define ID_IFSTATEMENTS_IFCOMPARISONELSE 40051
+#define ID_IFSTATEMENTS_IFNOTDEFINED    40052
+#define ID_IFSTATEMENTS_                40053
+#define ID_IFSTATEMENTS_IFNOTERRORLEVEL 40054
+#define ID_FORLOOPS_FOR_FileRootedAtPath 40055
+#define ID_FORLOOPS_FORFolders          40056
+#define ID_FORLOOPS_FOR_Folders         40057
+#define ID_FORLOOPS_FOR_ListOfNumbers   40058
+#define ID_FORLOOPS_FOR_FileListContents 40059
+#define ID_FORLOOPS_FOR_FileTextStringContents 40060
+#define ID_FORLOOPS_FOR_CommandResults  40061
+#define ID_FORLOOPS_FOR_Files           40062
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         40038
+#define _APS_NEXT_COMMAND_VALUE         40063
 #define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

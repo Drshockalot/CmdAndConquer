@@ -162,6 +162,9 @@
     <ClCompile Include="..\CMDUtility\AddCMDWindow.cpp">
       <Filter>Source Files\CMDUtility</Filter>
     </ClCompile>
+    <ClCompile Include="..\Batch\CPP\BatchSyntax.cpp">
+      <Filter>Source Files\BatchUtility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource\CmdAndConquer.rc">
@@ -202,9 +205,6 @@
     <ClInclude Include="..\Sequence\sequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Batch\Headers\BatchFile.h">
-      <Filter>Header Files\BatchUtility</Filter>
-    </ClInclude>
     <ClInclude Include="..\Batch\Headers\CmdCommand.h">
       <Filter>Header Files\BatchUtility</Filter>
     </ClInclude>
@@ -216,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="..\CMDLibrary\Header\CMDOption.h">
       <Filter>Header Files\CMDLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Batch\Headers\BatchSyntax.h">
+      <Filter>Header Files\BatchUtility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

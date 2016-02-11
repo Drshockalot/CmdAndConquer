@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="CmdAndConquerSetup" Language="1033" Version="1.0.0.0" Manufacturer="Chad Simpson"
+           UpgradeCode="4391f23a-40f0-412d-81f4-66cbba29f9c5">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate />
+
+    <Feature Id="ProductFeature" Title="CmdAndConquer" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="CmdAndConquer" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="CmdAndConquer.exe">
+        <File Id="CmdAndConquer.exe" Source="..\CmdAndConquerOutput\Debug\CmdAndConquer.exe" KeyPath="yes" />
+      </Component>
+      <!--<Component Id="Settings">
+        <File Id="Settings" Source="??" KeyPath="yes" />
+      </Component>-->
+    </ComponentGroup>
+  </Fragment>
+</Wix>

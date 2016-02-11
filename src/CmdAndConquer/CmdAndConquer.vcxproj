@@ -44,6 +44,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)\CmdAndConquerOutput\$(Configuration)\</OutDir>
+    <CodeAnalysisRuleSet>MixedRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -89,6 +91,7 @@
     <ClCompile Include="..\Batch\Batch.cpp" />
     <ClCompile Include="..\Batch\BatchTextViewAssist.cpp" />
     <ClCompile Include="..\Batch\CPP\BatchFile.cpp" />
+    <ClCompile Include="..\Batch\CPP\BatchSyntax.cpp" />
     <ClCompile Include="..\Batch\CPP\CmdCommand.cpp" />
     <ClCompile Include="..\CMDLibrary\CPP\CMDCommand.cpp" />
     <ClCompile Include="..\CMDLibrary\CPP\CMDCommandList.cpp" />
@@ -127,7 +130,7 @@
     <ResourceCompile Include="resource\CmdAndConquer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Batch\Headers\BatchFile.h" />
+    <ClInclude Include="..\Batch\Headers\BatchSyntax.h" />
     <ClInclude Include="..\Batch\Headers\CmdCommand.h" />
     <ClInclude Include="..\CMDLibrary\Header\CMDCommand.h" />
     <ClInclude Include="..\CMDLibrary\Header\CMDCommandList.h" />

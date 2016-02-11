@@ -69,6 +69,8 @@ COLORREF RealizeColour(COLORREF col);
 #define TXM_RUNFILEASBATCH		(TXM_BASE + 26)
 #define TXM_SETTEXT				(TXM_BASE + 27)
 #define TXM_ADDCMD				(TXM_BASE + 28)
+#define TXM_ADDIFSTATEMENT		(TXM_BASE + 29)
+#define TXM_ADDFORSTATEMENT		(TXM_BASE + 30)
 
 //
 //	TextView Notification Messages defined here - 
@@ -139,6 +141,8 @@ typedef struct
 #define TextView_RunFileAsBatch(hwndTV) SendMessage((hwndTV), TXM_RUNFILEASBATCH, 0, 0)
 #define TextView_SetText(hwndTV, aText)	SendMessage((hwndTV), TXM_SETTEXT, 0, (LPARAM)(aText))
 #define TextView_AddCMD(hwndTV, aCMDString) SendMessage((hwndTV), TXM_ADDCMD, 0, (LPARAM)(aCMDString))
+#define TextView_AddIFStatement(hwndTV, ifId) SendMessage((hwndTV), TXM_ADDIFSTATEMENT, (WPARAM)(ULONG)(ifId), 0)
+#define TextView_AddForStatement(hwndTV, forId) SendMessage((hwndTV), TXM_ADDFORSTATEMENT, (WPARAM)(ULONG)(forId), 0)
 
 //
 //	TextView Macros defined here
@@ -165,7 +169,7 @@ typedef struct
 #define TXC_CURRENTLINETEXT		12			// active line text
 #define TXC_CURRENTLINE			13			// active line background
 
-#define TXC_MAX_COLOURS			14			// keep this updated!
+#define TXC_MAX_COLOURS			17			// keep this updated! //UPDATED FOR SYNTAX COLORS
 
 #define SYSCOL(COLOR_IDX)					   ( 0x80000000 |                     COLOR_IDX  )
 #define MIXED_SYSCOL(COLOR_IDX1, COLOR_IDX2)   ( 0xC0000000 | (COLOR_IDX2 << 8) | COLOR_IDX1 )

@@ -63,6 +63,14 @@ typedef struct
 
 } CURPOS;
 
+typedef struct
+{
+	std::wstring word;
+	size_t wordLength;
+	int wordLinePos;
+
+} WORDINFO;
+
 //
 //	TextView - internal window implementation
 //
@@ -131,6 +139,12 @@ private:
 	//	CMD assist functions
 	//
 	ULONG addCMD(TCHAR* cmdText);
+
+	//
+	// Batch Syntax functions
+	// 
+	ULONG addForStatement(int id);
+	ULONG addIfStatement(int id);
 
 	//
 	//	Cursor/Selection

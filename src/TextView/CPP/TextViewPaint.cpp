@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <tchar.h>
+#include <algorithm>
 #include "../Header/TextView.h"
 #include "../Header/TextViewInternal.h"
 
@@ -485,6 +486,115 @@ int	TextView::ApplySelection(USPDATA *uspData, ULONG nLine, ULONG nOffset, ULONG
 
 int	TextView::SyntaxColour(TCHAR *szText, ULONG nTextLen, ATTR *attr)
 {
+	
+	std::vector<WORDINFO> words;
+	std::wstring currWord;
+	size_t currWordSize = 0;
+
+	for (int i = 0; i < nTextLen; ++i)
+	{
+		if (szText[i] == '\r' || szText[i] == '\n')
+		{
+			WORDINFO word{ currWord,  currWordSize, i - currWordSize };
+			words.push_back(word);
+			currWord = _T("");
+			currWordSize = 0;
+			continue;
+		}
+
+		if(szText[i] == '@')
+		{
+			attr[i].fg = RGB(255, 0, 236);
+			attr[i].bg = GetColour(TXC_BACKGROUND);
+			continue;
+		}
+		
+		if(szText[i] == '(' || szText[i] == ')')
+		{
+			attr[i].fg = RGB(12, 130, 232);
+			attr[i].bg = GetColour(TXC_BACKGROUND);
+			continue;
+		}
+
+		if(!(szText[i] == 0x20) && !(szText[i] == 0x09))
+		{
+			if (i == nTextLen - 1)
+			{
+				currWord += szText[i];
+				currWordSize++;
+
+				WORDINFO word{ currWord, currWordSize, i - (currWordSize - 1) };
+				words.push_back(word);
+				currWord = _T(" ");
+				currWordSize = 0;
+			}
+			else
+			{
+				currWord += szText[i];
+				currWordSize++;
+			}
+		}
+		else
+		{
+			WORDINFO word{ currWord,  currWordSize, i - currWordSize };
+			words.push_back(word);
+			currWord = _T("");
+			currWordSize = 0;
+		}
+	}
+
+	for (auto it = std::begin(words); it != std::end(words); ++it)
+	{
+		std::transform(std::begin(it->word), std::end(it->word), std::begin(it->word), towupper);
+		//Variable colour RGB(255, 135, 13)
+		if(it->word == _T("SET"))
+		{
+			int distance = it->wordLinePos + it->wordLength;
+			for (int i = it->wordLinePos; i < distance; ++i)
+			{
+				attr[i].fg = RGB(125, 0, 225);
+				attr[i].bg = GetColour(TXC_BACKGROUND);
+			}
+		}
+		else if(it->word == _T("ECHO"))
+		{
+			int distance = it->wordLinePos + it->wordLength;
+			for (int i = it->wordLinePos; i < distance; ++i)
+			{
+				attr[i].fg = RGB(0, 0, 255);
+				attr[i].bg = GetColour(TXC_BACKGROUND);
+			}
+		}
+		else if(it->word[0] == _T('%') && it->word[it->wordLength - 1] == _T('%'))
+		{
+			int distance = it->wordLinePos + it->wordLength;
+			for (int i = it->wordLinePos; i < distance; ++i)
+			{
+				attr[i].fg = RGB(255, 95, 0);
+				attr[i].bg = GetColour(TXC_BACKGROUND);
+			}
+		}
+		else if(it->word[0] == _T('[') && it->word[it->wordLength - 1] == _T(']'))
+		{
+			int distance = it->wordLinePos + it->wordLength;
+			for (int i = it->wordLinePos; i < distance; ++i)
+			{
+				attr[i].fg = RGB(255, 0, 0);
+				attr[i].bg = GetColour(TXC_BACKGROUND);
+			}
+		}
+		else if(it->word == _T("IF") || it->word == _T("EXIST") || it->word == _T("DEFINED") || it->word == _T("ERRORLEVEL"))
+		{
+			int distance = it->wordLinePos + it->wordLength;
+			for (int i = it->wordLinePos; i < distance; ++i)
+			{
+				attr[i].fg = RGB(0, 55, 255);
+				attr[i].bg = GetColour(TXC_BACKGROUND);
+			}
+		}
+		
+
+	}
 
 	return nTextLen;
 }

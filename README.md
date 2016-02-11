@@ -363,3 +363,43 @@ VERSION LIST:
 					#Figure out next features
 						- Move onto syntax help after that?
 						- Leave syntax highlighting until later?
+						
+0.0015.00 - Included features: 
+
+					#Opening files
+					#vertical and horizontal scrolling 
+					#enhanced painting
+					#options dialog (font/colors)
+					#mouse scrolling
+					#margins
+					#line numbers
+					#breakpoints
+					#long line highlighting
+					#improved options
+					#save options
+					#unicode support
+					#unicode text rendering
+					#keyboard navigation
+					#right click context menu
+					#copy functionality
+					#Text Editing
+					#save file
+					#save as file
+					#status bar
+					#runs simple batch script, returns result and displays it in seperate window
+					#Command library implemented
+					#Command implementation completed
+					#Syntax hightlighting
+					#Sytnax assistance (FOR and IF statements)
+					
+					SOLVED ISSUES
+					#The batch results window and status bar show up properly when activated now
+					#A breakpoint only appears when clicked inside of the left margin
+					#The output from a batch script no longer has two control characters at the end - had to add 2 to the buffer length or else it wouldn't print the last "\n"
+					
+					KINKS
+					#
+					
+					TODO: 
+					#See if there is a way to sort out scrolling for the CMD window
+					#LAST NEW FEATURE : MENU BAR (ICONS)

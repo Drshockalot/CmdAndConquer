@@ -1,5 +1,7 @@
 #include "../Header/CmdAndConquer_MainWindow.h"
 #include "../Header/CmdAndConquer_Globals.h"
+#include "../../Batch/Headers/BatchSyntax.h"
+
 HDC	ShowPrintDlg(HWND hwndParent);
 TCHAR		g_szAppName[] = APP_TITLE;
 HWND		g_hwndMain;
@@ -743,6 +745,48 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		ShowWindow(g_hwndSearchBar, SW_HIDE);
 		GetClientRect(hwnd, &rect);
 		PostMessage(hwnd, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+		return 0;
+	case ID_FORLOOPS_FOR_Files:
+		TextView_AddForStatement(g_hwndTextView, FORFiles);
+		return 0;
+	case ID_FORLOOPS_FOR_FileRootedAtPath:
+		TextView_AddForStatement(g_hwndTextView, FORFilesRootedAtPath);
+		return 0;
+	case ID_FORLOOPS_FOR_Folders:
+		TextView_AddForStatement(g_hwndTextView, FORFolders);
+		return 0;
+	case ID_FORLOOPS_FOR_ListOfNumbers:
+		TextView_AddForStatement(g_hwndTextView, FORListOfNumbers);
+		return 0;
+	case ID_FORLOOPS_FOR_FileListContents:
+		TextView_AddForStatement(g_hwndTextView, FORFileSetContents);
+		return 0;
+	case ID_FORLOOPS_FOR_FileTextStringContents:
+		TextView_AddForStatement(g_hwndTextView, FORFileTextStringContents);
+		return 0;
+	case ID_FORLOOPS_FOR_CommandResults:
+		TextView_AddForStatement(g_hwndTextView, FORCommandResults);
+		return 0;
+	case ID_IFSTATEMENTS_IFNOTEXIST:
+		TextView_AddIFStatement(g_hwndTextView, IFExist);
+		return 0;
+	case ID_IFSTATEMENTS_IFNOTEXISTELSE:
+		TextView_AddIFStatement(g_hwndTextView, IFExistElse);
+		return 0;
+	case ID_IFSTATEMENTS_IFEQUALS:
+		TextView_AddIFStatement(g_hwndTextView, IFEquals);
+		return 0;
+	case ID_IFSTATEMENTS_IFCOMPARISON:
+		TextView_AddIFStatement(g_hwndTextView, IFComparison);
+		return 0;
+	case ID_IFSTATEMENTS_IFCOMPARISONELSE:
+		TextView_AddIFStatement(g_hwndTextView, IFComparisonElse);
+		return 0;
+	case ID_IFSTATEMENTS_IFNOTDEFINED:
+		TextView_AddIFStatement(g_hwndTextView, IFNotDefined);
+		return 0;
+	case ID_IFSTATEMENTS_IFNOTERRORLEVEL:
+		TextView_AddIFStatement(g_hwndTextView, IFErrorLevel);
 		return 0;
 	default:
 		return 0;

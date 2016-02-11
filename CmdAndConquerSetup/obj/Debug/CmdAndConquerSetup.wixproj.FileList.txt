@@ -1,0 +1,7 @@
+C:\Users\Drshockalot\GitRepos\CmdAndConquer\CmdAndConquerSetup\bin\Debug\cab1.cab
+C:\Users\Drshockalot\GitRepos\CmdAndConquer\CmdAndConquerSetup\bin\Debug\CmdAndConquerSetup.msi
+C:\Users\Drshockalot\GitRepos\CmdAndConquer\CmdAndConquerSetup\bin\Debug\CmdAndConquerSetup.wixpdb
+obj\Debug\Product.wixobj
+obj\Debug\CmdAndConquerSetup.wixproj.BindContentsFileListnull.txt
+obj\Debug\CmdAndConquerSetup.wixproj.BindOutputsFileListnull.txt
+obj\Debug\CmdAndConquerSetup.wixproj.BindBuiltOutputsFileListnull.txt
