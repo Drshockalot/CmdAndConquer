@@ -391,6 +391,7 @@ VERSION LIST:
 					#Command implementation completed
 					#Syntax hightlighting
 					#Sytnax assistance (FOR and IF statements)
+					#WiX installer included
 					
 					SOLVED ISSUES
 					#The batch results window and status bar show up properly when activated now
@@ -403,3 +404,4 @@ VERSION LIST:
 					TODO: 
 					#See if there is a way to sort out scrolling for the CMD window
 					#LAST NEW FEATURE : MENU BAR (ICONS)
+					#Test installer
