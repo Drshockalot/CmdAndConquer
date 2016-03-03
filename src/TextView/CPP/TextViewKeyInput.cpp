@@ -13,6 +13,7 @@
 #include <tchar.h>
 #include "../Header/TextView.h"
 #include "../Header/TextViewInternal.h"
+#include "../../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
 //
 //	TextView::EnterText
@@ -273,6 +274,9 @@ LONG TextView::OnChar(UINT nChar, UINT nFlags)
 			m_pTextDoc->m_seq.breakopt();
 
 		NotifyParent(TVN_CHANGED);
+
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)CanUndo());
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)CanRedo());
 	}
 
 	return 0;

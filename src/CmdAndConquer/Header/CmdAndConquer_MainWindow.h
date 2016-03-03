@@ -128,7 +128,7 @@ private:
 	std::string convertWStringToString(std::wstring);
 	std::wstring convertStringToWString(std::string);
 	//	Toolbar Initialisation
-	//void initToolbar(HWND hWnd, CREATESTRUCT *cs);
+	HWND initToolbar(HWND hWnd, CREATESTRUCT *cs);
 };
 
 #endif

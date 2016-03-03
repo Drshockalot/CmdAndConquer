@@ -509,6 +509,40 @@ IDB_BITMAP3             BITMAP                  "bitmap3.bmp"
 
 IDB_BITMAP4             BITMAP                  "bitmap4.bmp"
 
+IDR_TOOLBAR1            BITMAP                  "toolbar1.bmp"
+
+IDB_BITMAP5             BITMAP                  "bitmap5.bmp"
+
+IDB_BITMAP6             BITMAP                  "C:\\Users\\Drshockalot\\Downloads\\wrench_icon_16.BMP"
+
+IDB_BITMAP7             BITMAP                  "c:\\users\\drshockalot\\downloads\\bitmap7.bmp"
+
+IDB_BITMAP8             BITMAP                  "C:\\Users\\Drshockalot\\Downloads\\wrench_icon_16 (1).bmp"
+
+IDB_BITMAP9             BITMAP                  "C:\\Users\\Drshockalot\\Downloads\\wrench_icon&16.bmp"
+
+IDB_BITMAP10            BITMAP                  "C:\\Users\\Drshockalot\\Desktop\\bmp\\wrench_icon&16.bmp"
+
+IDB_BITMAP11            BITMAP                  "openFile.bmp"
+
+IDB_BITMAP12            BITMAP                  "C:\\Users\\Drshockalot\\GitRepos\\CmdAndConquer\\src\\CmdAndConquer\\Resource\\newFile.bmp"
+
+IDB_BITMAP13            BITMAP                  "copy.bmp"
+
+IDB_BITMAP14            BITMAP                  "cut.bmp"
+
+IDB_BITMAP15            BITMAP                  "closeFile.bmp"
+
+IDB_BITMAP16            BITMAP                  "paste.bmp"
+
+IDB_BITMAP17            BITMAP                  "saveFile.bmp"
+
+IDB_BITMAP18            BITMAP                  "print.bmp"
+
+IDB_BITMAP19            BITMAP                  "redo.bmp"
+
+IDB_BITMAP20            BITMAP                  "undo.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -572,6 +606,14 @@ IDD_ADD_CMD_TO_TEXTVIEW AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_PNG1                PNG                     "C:\\Users\\Drshockalot\\GitRepos\\CmdAndConquer\\src\\CmdAndConquer\\Resource\\wrench_icon&16.png"
 
 
 /////////////////////////////////////////////////////////////////////////////

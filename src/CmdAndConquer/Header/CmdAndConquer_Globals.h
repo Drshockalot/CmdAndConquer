@@ -51,6 +51,18 @@ extern "C" {
 #define ADD_CMD_WINDOW_OPLIST_CHILD_KEY 2500 //meant for incrimenting and tracking manually to keep track of the options
 #define ADD_CMD_WINDOW_OPLIST_LABELS_KEY 2600 //ditto for labels
 
+#define TOOLBARCOMMAND_COPY		600
+#define TOOLBARCOMMAND_NEW		601
+#define TOOLBARCOMMAND_CUT		602
+#define TOOLBARCOMMAND_PASTE	604
+#define TOOLBARCOMMAND_CLOSE	605
+#define TOOLBARCOMMAND_PRINT	606
+#define TOOLBARCOMMAND_OPEN		607
+#define TOOLBARCOMMAND_SAVE		608
+#define TOOLBARCOMMAND_REDO		609
+#define TOOLBARCOMMAND_UNDO		610
+
+
 #define COURIERNEW	1
 #define LUCIDACONS	2
 
@@ -58,6 +70,7 @@ extern "C" {
 	extern HWND		g_hwndTextView;
 	extern HWND		g_hwndBatchRunResults;
 	extern HWND		g_hwndAddCMDWindow;
+	extern HWND		g_hwndToolbar;
 	extern HWND		g_hwndMain;
 	extern HFONT	g_hFont;
 	extern TCHAR	g_szFileName[];

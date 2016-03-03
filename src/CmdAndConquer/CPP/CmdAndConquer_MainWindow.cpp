@@ -10,6 +10,7 @@ HWND		g_hwndTextView;
 HWND		g_hwndBatchRunResults;
 HWND		g_hwndStatusbar;
 HWND		g_hwndSearchDlg;
+HWND		g_hwndToolbar;
 //HFONT		g_hFont;
 
 TCHAR		g_szFileName[MAX_PATH];
@@ -244,11 +245,14 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 
 			if (g_fShowAddCMDWindow)
 			{
-				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 0, 300, height, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 28, 300, height, SWP_SHOWWINDOW);
 				width -= 300;
 			}
 
-			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 0, width, height, SWP_SHOWWINDOW);
+			//Remove height futher for the toolbar
+			height -= 28;
+
+			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 28, width, height, SWP_SHOWWINDOW);
 			//MoveWindow(g_hwndTextView, 0, 0, width, height, TRUE);
 
 			EndDeferWindowPos(hdwp);
@@ -309,85 +313,136 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 	g_hwndTextView = this->CC_hwndTextView;
 
 	this->setImageList();
-	//initToolbar(hWnd, cs);
+	g_hwndToolbar = initToolbar(hWnd, cs);
 
 	return 0;
 }
 
-//void CmdAndConquer_MainWindow::initToolbar(HWND hWnd, CREATESTRUCT *cs)
-//{
-//	INITCOMMONCONTROLSEX InitCtrlEx;
-//
-//	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
-//	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
-//	InitCommonControlsEx(&InitCtrlEx);
-//
-//	TBBUTTON tbrButtons[7];
-//
-//	tbrButtons[0].iBitmap = 0;
-//	tbrButtons[0].idCommand = IDM_FILE_NEW;
-//	tbrButtons[0].fsState = TBSTATE_ENABLED;
-//	tbrButtons[0].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[0].dwData = 0L;
-//	tbrButtons[0].iBitmap = 0;
-//	tbrButtons[0].iString = 0;
-//
-//	tbrButtons[1].iBitmap = 1;
-//	tbrButtons[1].idCommand = IDM_FILE_OPEN;
-//	tbrButtons[1].fsState = TBSTATE_ENABLED;
-//	tbrButtons[1].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[1].dwData = 0L;
-//	tbrButtons[1].iString = 0;
-//
-//	tbrButtons[2].iBitmap = 0;
-//	tbrButtons[2].idCommand = IDM_FILE_EXIT;
-//	tbrButtons[2].fsState = TBSTATE_ENABLED;
-//	tbrButtons[2].fsStyle = TBSTYLE_SEP;
-//	tbrButtons[2].dwData = 0L;
-//	tbrButtons[2].iString = 0;
-//
-//	tbrButtons[3].iBitmap = 2;
-//	tbrButtons[3].idCommand = IDM_FILE_OPEN;
-//	tbrButtons[3].fsState = TBSTATE_ENABLED;
-//	tbrButtons[3].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[3].dwData = 0L;
-//	tbrButtons[3].iString = 0;
-//
-//	tbrButtons[4].iBitmap = 3;
-//	tbrButtons[4].idCommand = IDM_FILE_OPEN;
-//	tbrButtons[4].fsState = TBSTATE_ENABLED;
-//	tbrButtons[4].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[4].dwData = 0L;
-//	tbrButtons[4].iString = 0;
-//
-//	tbrButtons[5].iBitmap = 4;
-//	tbrButtons[5].idCommand = IDM_FILE_OPEN;
-//	tbrButtons[5].fsState = TBSTATE_ENABLED;
-//	tbrButtons[5].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[5].dwData = 0L;
-//	tbrButtons[5].iString = 0;
-//
-//	tbrButtons[6].iBitmap = 5;
-//	tbrButtons[6].idCommand = IDM_FILE_OPEN;
-//	tbrButtons[6].fsState = TBSTATE_ENABLED;
-//	tbrButtons[6].fsStyle = TBSTYLE_BUTTON;
-//	tbrButtons[6].dwData = 0L;
-//	tbrButtons[6].iString = 0;
-//
-//	HWND hWndToolbar;
-//	hWndToolbar = CreateToolbarEx(hWnd,
-//		WS_VISIBLE | WS_CHILD | WS_BORDER,
-//		IDR_TOOLBAR3,
-//		7,
-//		cs->hInstance,
-//		IDR_TOOLBAR3,
-//		tbrButtons,
-//		7,
-//		16, 16, 16, 16,
-//		sizeof(TBBUTTON));
-//
-//	UpdateWindow(hWnd);
-//}
+HWND CmdAndConquer_MainWindow::initToolbar(HWND hWnd, CREATESTRUCT *cs)
+{
+	INITCOMMONCONTROLSEX InitCtrlEx;
+
+	InitCtrlEx.dwSize = sizeof(INITCOMMONCONTROLSEX);
+	InitCtrlEx.dwICC = ICC_BAR_CLASSES;
+	InitCommonControlsEx(&InitCtrlEx);
+
+	TBADDBITMAP tbab;
+	TBBUTTON tbb[13];
+
+	HWND hWndToolbar = CreateWindowEx(0, TOOLBARCLASSNAME, NULL,
+		WS_CHILD | TBSTYLE_TOOLTIPS | TBSTYLE_TRANSPARENT | TBSTYLE_FLAT, 0, 0, 0, 0, hWnd, 0, cs->hInstance, NULL);
+
+	::SendMessage(hWndToolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+	::SendMessage(hWndToolbar, TB_SETBITMAPSIZE, 0, (LPARAM)MAKELONG(20, 20));
+
+	tbab.hInst = cs->hInstance;
+
+	tbab.nID = IDB_BITMAP12;	// NEW DOCUMENT
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP11;	//OPEN DOCUMENT
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP17;	//SAVE DOCUMENT
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP15;	//CLOSE DOCUMENT
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP18;	//PRINT DOCUMENT
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP14;	//CUT SELECTION
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP13;	//COPY SELECTION
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP16;	//PASTE
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP20;	//REDO
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	tbab.nID = IDB_BITMAP19;	//UNDO
+
+	::SendMessage(hWndToolbar, TB_ADDBITMAP, 1, (LPARAM)&tbab);
+
+	ZeroMemory(tbb, sizeof(tbb));
+
+	tbb[0].iBitmap = 0;
+	tbb[0].idCommand = TOOLBARCOMMAND_NEW;
+	tbb[0].fsState = TBSTATE_ENABLED;
+	tbb[0].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[1].iBitmap = 1;
+	tbb[1].idCommand = TOOLBARCOMMAND_OPEN;
+	tbb[1].fsState = TBSTATE_ENABLED;
+	tbb[1].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[2].iBitmap = 2;
+	tbb[2].idCommand = TOOLBARCOMMAND_SAVE;
+	tbb[2].fsState = TBSTATE_ENABLED;
+	tbb[2].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[3].iBitmap = 3;
+	tbb[3].idCommand = TOOLBARCOMMAND_CLOSE;
+	tbb[3].fsState = TBSTATE_ENABLED;
+	tbb[3].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[4].fsStyle = TBSTYLE_SEP;
+
+	tbb[5].iBitmap = 4;
+	tbb[5].idCommand = TOOLBARCOMMAND_PRINT;
+	tbb[5].fsState = TBSTATE_ENABLED;
+	tbb[5].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[6].fsStyle = TBSTYLE_SEP;
+
+	tbb[7].iBitmap = 5;
+	tbb[7].idCommand = TOOLBARCOMMAND_CUT;
+	tbb[7].fsState = TBSTATE_ENABLED;
+	tbb[7].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[8].iBitmap = 6;
+	tbb[8].idCommand = TOOLBARCOMMAND_COPY;
+	tbb[8].fsState = TBSTATE_ENABLED;
+	tbb[8].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[9].iBitmap = 7;
+	tbb[9].idCommand = TOOLBARCOMMAND_PASTE;
+	tbb[9].fsState = TBSTATE_ENABLED;
+	tbb[9].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[10].fsStyle = TBSTYLE_SEP;
+
+	tbb[11].iBitmap = 8;
+	tbb[11].idCommand = TOOLBARCOMMAND_UNDO;
+	tbb[11].fsState = TBSTATE_ENABLED;
+	tbb[11].fsStyle = TBSTYLE_BUTTON;
+
+	tbb[12].iBitmap = 9;
+	tbb[12].idCommand = TOOLBARCOMMAND_REDO;
+	tbb[12].fsState = TBSTATE_ENABLED;
+	tbb[12].fsStyle = TBSTYLE_BUTTON;
+
+	::SendMessage(hWndToolbar, TB_ADDBUTTONS, 13, (LPARAM)&tbb);
+
+	::SendMessage(hWndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)FALSE);
+	::SendMessage(hWndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)FALSE);
+
+	ShowWindow(hWndToolbar, SW_SHOW);
+	return hWndToolbar;
+}
 
 BOOL CmdAndConquer_MainWindow::ShowOpenFileDlg(HWND hwnd, TCHAR *pstrFileName, TCHAR *pstrTitleName)
 {
@@ -608,7 +663,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 	switch (nCtrlId)
 	{
-	case IDM_FILE_NEW:
+	case IDM_FILE_NEW: case TOOLBARCOMMAND_NEW:
 
 		// reset to an empty file
 		SetWindowFileName(hwnd, _T("Untitled"), FALSE);
@@ -618,7 +673,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 		g_fFileChanged = FALSE;
 		return 0;
 
-	case IDM_FILE_OPEN:
+	case IDM_FILE_OPEN: case TOOLBARCOMMAND_OPEN:
 
 		// get a filename to open
 		if (ShowOpenFileDlg(hwnd, g_szFileName, g_szFileTitle))
@@ -628,7 +683,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 		return 0;
 
-	case IDM_FILE_SAVE:
+	case IDM_FILE_SAVE: case TOOLBARCOMMAND_SAVE:
 		if(!DoSaveFile(hwnd, g_szFileName, g_szFileTitle))
 		{
 			MessageBox(hwnd, _T("Save Failed"), APP_TITLE, MB_ICONINFORMATION);
@@ -648,7 +703,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 		return 0;
 
-	case IDM_FILE_PRINT:
+	case IDM_FILE_PRINT: case TOOLBARCOMMAND_PRINT:
 
 		DeleteDC(
 			ShowPrintDlg(hwnd)
@@ -656,27 +711,28 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 
 		return 0;
 
-	case IDM_FILE_EXIT:
+	case IDM_FILE_EXIT: case TOOLBARCOMMAND_CLOSE:
 		PostMessage(hwnd, WM_CLOSE, 0, 0);
 		return 0;
 
-	case IDM_EDIT_UNDO:	case WM_UNDO:
+	case IDM_EDIT_UNDO:	case WM_UNDO: case TOOLBARCOMMAND_UNDO:
 		SendMessage(this->CC_hwndTextView, WM_UNDO, 0, 0);
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)TextView_CanUndo(g_hwndTextView));
 		return 0;
 
-	case IDM_EDIT_REDO:
+	case IDM_EDIT_REDO: case TOOLBARCOMMAND_REDO:
 		SendMessage(this->CC_hwndTextView, TXM_REDO, 0, 0);
 		return 0;
 
-	case IDM_EDIT_COPY: case WM_COPY:
+	case IDM_EDIT_COPY: case WM_COPY: case TOOLBARCOMMAND_COPY:
 		SendMessage(this->CC_hwndTextView, WM_COPY, 0, 0);
 		return 0;
 
-	case IDM_EDIT_CUT: case WM_CUT:
+	case IDM_EDIT_CUT: case WM_CUT: case TOOLBARCOMMAND_CUT:
 		SendMessage(this->CC_hwndTextView, WM_CUT, 0, 0);
 		return 0;
 
-	case IDM_EDIT_PASTE: case WM_PASTE:
+	case IDM_EDIT_PASTE: case WM_PASTE: case TOOLBARCOMMAND_PASTE:
 		SendMessage(this->CC_hwndTextView, WM_PASTE, 0, 0);
 		return 0;
 

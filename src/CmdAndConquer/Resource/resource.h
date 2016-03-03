@@ -31,6 +31,24 @@
 #define IDB_BITMAP4                     130
 #define IDD_DIALOG3                     132
 #define IDD_ADD_CMD_TO_TEXTVIEW         134
+#define IDB_PNG1                        135
+#define IDR_TOOLBAR1                    136
+#define IDB_BITMAP5                     139
+#define IDB_BITMAP6                     141
+#define IDB_BITMAP7                     143
+#define IDB_BITMAP8                     144
+#define IDB_BITMAP9                     145
+#define IDB_BITMAP10                    146
+#define IDB_BITMAP11                    147
+#define IDB_BITMAP12                    148
+#define IDB_BITMAP13                    149
+#define IDB_BITMAP14                    150
+#define IDB_BITMAP15                    151
+#define IDB_BITMAP16                    153
+#define IDB_BITMAP17                    154
+#define IDB_BITMAP18                    155
+#define IDB_BITMAP19                    156
+#define IDB_BITMAP20                    157
 #define IDC_COMBO1                      1000
 #define IDC_FONTLIST                    1000
 #define IDC_COMBO2                      1001
@@ -162,7 +180,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        135
+#define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40063
 #define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           101

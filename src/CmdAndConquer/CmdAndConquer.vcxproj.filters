@@ -252,6 +252,87 @@
     <Image Include="resource\icon4.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="resource\bitmap5.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\downloads\bitmap7.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="openFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\openFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="newFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="copy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cut.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="closeFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Downloads\wrench_icon_16.BMP">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Downloads\wrench_icon_16 (1).bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Downloads\wrench_icon&amp;16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\..\Desktop\bmp\wrench_icon&amp;16.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\newFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\copy.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\cut.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\closeFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource\wrench_icon&amp;16.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="paste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="saveFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="print.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\paste.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\saveFile.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\print.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="redo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="undo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\redo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resource\undo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="resource\CmdAndConquer.exe.manifest" />

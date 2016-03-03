@@ -13,6 +13,7 @@
 #include <tchar.h>
 #include "../Header/TextView.h"
 #include "../Header/TextViewInternal.h"
+#include "../../CmdAndConquer/Header/CmdAndConquer_Globals.h"
 
 /*struct SCRIPT_LOGATTR
 {
@@ -377,6 +378,9 @@ LONG TextView::OnKeyDown(UINT nKeyCode, UINT nFlags)
 		if (fCtrlDown && Undo())
 			NotifyParent(TVN_CHANGED);
 
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)CanUndo());
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)CanRedo());
+
 		return 0;
 
 		// CTRL+Y redo
@@ -384,6 +388,9 @@ LONG TextView::OnKeyDown(UINT nKeyCode, UINT nFlags)
 
 		if (fCtrlDown && Redo())
 			NotifyParent(TVN_CHANGED);
+
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)CanUndo());
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)CanRedo());
 
 		return 0;
 
