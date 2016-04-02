@@ -53,6 +53,8 @@ private:
 
 	//	Batch results text view
 	HWND CC_hwndBatchRunResults;
+	HWND CC_hwndBatchRunResultsHeader;
+	HWND CC_hwndBatchRunResultsHeaderExitButton;
 
 	HWND CC_hwndAddCMDWindow;
 	
@@ -88,10 +90,14 @@ private:
 	
 	UINT CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtrlCode, HWND hwndFrom);
 
+	HWND CreateBatchScriptResultWindowHeader(HWND hWnd);
+	HWND CreateBatchScriptResultWindowHeaderExitButton(HWND hWnd);
+
 	int addCMDWindowScrollPos;
 	bool InitAddCMDWindow();
 	HWND CreateAddCMDWindow(HWND parentHwnd);
 	void ShowAddCMDWindow();
+	void HideAddCMDWindow();
 	void CleanCurrentSelectionWindows();
 	void CleanUpLastCommandSelection();
 	CMDCommand GenerateCommandFromOptions();
@@ -117,6 +123,8 @@ private:
 	{
 		HWND CommandList;
 		HWND SubmitButton;
+		HWND CancelButton;
+		HWND ExitButton;
 		std::vector<std::pair<HWND, HWND>> OptionList;
 		std::vector<int> opKeyList;
 	} AddCMDWindowComponents;

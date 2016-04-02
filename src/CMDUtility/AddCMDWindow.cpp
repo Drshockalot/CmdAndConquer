@@ -79,6 +79,24 @@ void CmdAndConquer_MainWindow::CreateAddCMDWindowCompontentsForCommand(CMDComman
 		(HMENU)ADD_CMD_WINDOW_SUBMIT_KEY,
 		GetModuleHandle(0),
 		0);
+
+	rect.left += 60;
+
+	AddCMDWindowComponents.CancelButton = CreateWindow(WC_BUTTON, _T("CANCEL"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		rect.left, rect.top, 60, 25,
+		g_hwndAddCMDWindow,
+		(HMENU)ADD_CMD_WINDOW_CANCEL_KEY,
+		GetModuleHandle(0),
+		0);
+
+	AddCMDWindowComponents.ExitButton = CreateWindow(WC_BUTTON, _T("X"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		260, 10, 25, 25,
+		g_hwndAddCMDWindow,
+		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
+		GetModuleHandle(0),
+		0);
 }
 
 std::pair<HWND, HWND> CmdAndConquer_MainWindow::CreateDropDownCMDControl(CMDOption op, RECT& rect, int opNo)
@@ -469,6 +487,22 @@ LRESULT WINAPI CmdAndConquer_MainWindow::addCMDWindowWndProc(HWND hwnd, UINT msg
 							CleanCurrentSelectionWindows();
 							CleanUpLastCommandSelection();
 							SetWindowText(AddCMDWindowComponents.CommandList, _T(""));
+							HideAddCMDWindow();
+							return 0;
+						}
+					}
+				}
+				case ADD_CMD_WINDOW_EXIT_KEY:
+				case ADD_CMD_WINDOW_CANCEL_KEY:
+				{
+					switch(HIWORD(wParam))
+					{
+						case BN_CLICKED:
+						{
+							CleanCurrentSelectionWindows();
+							CleanUpLastCommandSelection();
+							SetWindowText(AddCMDWindowComponents.CommandList, _T(""));
+							HideAddCMDWindow();
 							return 0;
 						}
 					}
@@ -578,9 +612,7 @@ HWND CmdAndConquer_MainWindow::CreateAddCMDWindow(HWND parentHwnd)
 {
 	HWND ret = CreateWindowEx(WS_EX_CLIENTEDGE,
 		ADDCMDWINDOW_CLASS, _T(""),
-		WS_CHILD | WS_VISIBLE | WS_HSCROLL |
-		WS_VSCROLL | ES_LEFT | ES_MULTILINE |
-		ES_AUTOHSCROLL | ES_AUTOVSCROLL,
+		WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE,
 		0, 0, 0, 0,
 		parentHwnd,
 		0,
@@ -592,6 +624,14 @@ HWND CmdAndConquer_MainWindow::CreateAddCMDWindow(HWND parentHwnd)
 		10, 10, 150, 210,
 		ret,
 		(HMENU)ADD_CMD_WINDOW_COMMANDLIST_KEY,
+		GetModuleHandle(0),
+		0);
+
+	AddCMDWindowComponents.ExitButton = CreateWindow(WC_BUTTON, _T("X"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
+		260, 10, 25, 25,
+		ret,
+		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
 		GetModuleHandle(0),
 		0);
 
@@ -627,11 +667,19 @@ void CmdAndConquer_MainWindow::CleanCurrentSelectionWindows()
 		DestroyWindow(p.second);
 	}
 	DestroyWindow(AddCMDWindowComponents.SubmitButton);
+	DestroyWindow(AddCMDWindowComponents.CancelButton);
 }
 
 void CmdAndConquer_MainWindow::ShowAddCMDWindow()
 {
 	g_fShowAddCMDWindow = TRUE;
+}
 
-	
+void CmdAndConquer_MainWindow::HideAddCMDWindow()
+{
+	g_fShowAddCMDWindow = FALSE;
+	ShowWindow(g_hwndAddCMDWindow, SW_HIDE);
+	RECT rect;
+	GetClientRect(g_hwndMain, &rect);
+	PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
 }

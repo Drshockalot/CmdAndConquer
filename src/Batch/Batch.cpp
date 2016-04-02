@@ -66,7 +66,8 @@ PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine)
 	siStartInfo.cb = sizeof(STARTUPINFO);
 	siStartInfo.hStdError = g_hChildStd_ERR_Wr;
 	siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
-	siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+	siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+	siStartInfo.wShowWindow = SW_HIDE;
 
 	// Create the child process. 
 	bSuccess = CreateProcess(NULL,
@@ -82,9 +83,9 @@ PROCESS_INFORMATION CreateChildProcess(TCHAR *cmdLine)
 	CloseHandle(g_hChildStd_ERR_Wr);
 	CloseHandle(g_hChildStd_OUT_Wr);
 	// If an error occurs, exit the application. 
-	if (!bSuccess) {
+	/*if (!bSuccess) {
 		exit(1);
-	}
+	}*/
 	return piProcInfo;
 }
 

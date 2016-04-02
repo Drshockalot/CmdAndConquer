@@ -223,12 +223,10 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			width = (short)LOWORD(lParam);
 			height = (short)HIWORD(lParam);
 
-			
-
 			GetWindowRect(g_hwndStatusbar, &rect);
 			heightsb = rect.bottom - rect.top;
 
-			hdwp = BeginDeferWindowPos(4);
+			hdwp = BeginDeferWindowPos(5);
 
 			if (g_fShowStatusbar)
 			{
@@ -239,26 +237,30 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 
 			if (g_fShowBatchResultsWindow)
 			{
-				DeferWindowPos(hdwp, g_hwndBatchRunResults, 0, 0, height - 200, width, 200, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, g_hwndBatchRunResults, 0, 0, height - 175, width, 175, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, this->CC_hwndBatchRunResultsHeader, 0, 0, height - 200, width - 25, 25, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, this->CC_hwndBatchRunResultsHeaderExitButton, 0, width - 25, height - 200, 25, 25, SWP_SHOWWINDOW);
 				height = height - 200;
 			}
 
+			//Remove height futher for the toolbar
+			height -= 32;
+			
 			if (g_fShowAddCMDWindow)
 			{
-				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 28, 300, height, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 32, 300, height, SWP_SHOWWINDOW);
 				width -= 300;
 			}
 
-			//Remove height futher for the toolbar
-			height -= 28;
-
-			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 28, width, height, SWP_SHOWWINDOW);
+			DeferWindowPos(hdwp, g_hwndTextView, 0, 0, 32, width, height, SWP_SHOWWINDOW);
 			//MoveWindow(g_hwndTextView, 0, 0, width, height, TRUE);
 
 			EndDeferWindowPos(hdwp);
 
 			SetStatusBarParts(g_hwndStatusbar);
-
+			::SendMessage(g_hwndToolbar, WM_SIZE, 0, 0);
+			SetWindowPos(this->CC_hwndBatchRunResultsHeaderExitButton, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			SetWindowPos(this->CC_hwndBatchRunResultsHeader, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 			return 0;
 
 	}
@@ -307,6 +309,9 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 	InitAddCMDWindow();
 	g_hwndMain = hWnd_;
 	this->CC_hwndBatchRunResults = CreateBatchScriptResultWindow(hWnd_);
+	this->CC_hwndBatchRunResultsHeader = CreateBatchScriptResultWindowHeader(hWnd_);
+	this->CC_hwndBatchRunResultsHeaderExitButton = CreateBatchScriptResultWindowHeaderExitButton(hWnd_);
+	SetForegroundWindow(this->CC_hwndBatchRunResultsHeaderExitButton);
 	this->CC_hwndAddCMDWindow = CreateAddCMDWindow(hWnd_);
 	g_hwndAddCMDWindow = this->CC_hwndAddCMDWindow;
 	g_hwndBatchRunResults = this->CC_hwndBatchRunResults;
@@ -718,10 +723,13 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 	case IDM_EDIT_UNDO:	case WM_UNDO: case TOOLBARCOMMAND_UNDO:
 		SendMessage(this->CC_hwndTextView, WM_UNDO, 0, 0);
 		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)TextView_CanUndo(g_hwndTextView));
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)TextView_CanRedo(g_hwndTextView));
 		return 0;
 
 	case IDM_EDIT_REDO: case TOOLBARCOMMAND_REDO:
 		SendMessage(this->CC_hwndTextView, TXM_REDO, 0, 0);
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_UNDO, (LPARAM)TextView_CanUndo(g_hwndTextView));
+		SendMessage(g_hwndToolbar, TB_ENABLEBUTTON, (WPARAM)TOOLBARCOMMAND_REDO, (LPARAM)TextView_CanRedo(g_hwndTextView));
 		return 0;
 
 	case IDM_EDIT_COPY: case WM_COPY: case TOOLBARCOMMAND_COPY:
@@ -844,7 +852,47 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 	case ID_IFSTATEMENTS_IFNOTERRORLEVEL:
 		TextView_AddIFStatement(g_hwndTextView, IFErrorLevel);
 		return 0;
+	case ADD_CMD_WINDOW_EXIT_KEY:
+	{
+		switch (nCtrlCode)
+		{
+			case BN_CLICKED:
+			{
+				g_fShowBatchResultsWindow = FALSE;
+				ShowWindow(this->CC_hwndBatchRunResultsHeader, SW_HIDE);
+				ShowWindow(this->CC_hwndBatchRunResultsHeaderExitButton, SW_HIDE);
+				ShowWindow(this->CC_hwndBatchRunResults, SW_HIDE);
+				RECT rect;
+				GetClientRect(g_hwndMain, &rect);
+				PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+				return 0;
+			}
+		}
+	}
 	default:
 		return 0;
 	}
+}
+
+HWND CmdAndConquer_MainWindow::CreateBatchScriptResultWindowHeader(HWND hWnd)
+{
+	return CreateWindowEx(WS_EX_CLIENTEDGE,
+		WC_STATIC, _T(""),
+		WS_CHILD | WS_VISIBLE,
+		0, 0, 0, 0,
+		hWnd,
+		0,
+		GetModuleHandle(0),
+		0);
+}
+
+HWND CmdAndConquer_MainWindow::CreateBatchScriptResultWindowHeaderExitButton(HWND hWnd)
+{
+	return CreateWindowEx(0, WC_BUTTON, _T("X"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON ,
+		0, 0, 0, 0,
+		hWnd,
+		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
+		GetModuleHandle(0),
+		0);
 }

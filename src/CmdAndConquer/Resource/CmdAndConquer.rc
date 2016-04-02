@@ -85,7 +85,7 @@ BEGIN
     END
     POPUP "Batch"
     BEGIN
-        MENUITEM "Run",                         IDM_BATCH_RUN
+        MENUITEM "&Run\t(Ctrl+Shift+R)",        IDM_BATCH_RUN
         POPUP "IF Statements"
         BEGIN
             MENUITEM "IF NOT EXIST",                ID_IFSTATEMENTS_IFNOTEXIST
@@ -111,7 +111,7 @@ BEGIN
     END
     POPUP "CMD"
     BEGIN
-        MENUITEM "Add CMD",                     IDM_CMD_ADDCMD
+        MENUITEM "&Add CMD\t(Ctrl+R)",          IDM_CMD_ADDCMD, HELP
     END
 END
 
@@ -232,7 +232,7 @@ BEGIN
     CONTROL         "&Remember last window position",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,119,117,10
     CONTROL         "For &individual files",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,28,131,163,10
     ICON            "",IDC_SHIELD,16,24,20,20
-    LTEXT           "Neatpad requires Administrator privileges to change these settings. You may be presented with the User Account Control prompt when making changes.",IDC_STATIC,43,22,204,26
+    LTEXT           "CmdAndConquer requires Administrator privileges to change these settings. You may be presented with the User Account Control prompt when making changes.",IDC_STATIC,43,22,204,26
 END
 
 IDD_FONT DIALOGEX 0, 0, 290, 205
@@ -603,6 +603,11 @@ BEGIN
 END
 
 IDD_ADD_CMD_TO_TEXTVIEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_OPTIONS AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

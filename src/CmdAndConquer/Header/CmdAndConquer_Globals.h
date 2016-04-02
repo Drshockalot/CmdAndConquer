@@ -48,6 +48,8 @@ extern "C" {
 
 #define ADD_CMD_WINDOW_COMMANDLIST_KEY 2330
 #define ADD_CMD_WINDOW_SUBMIT_KEY 2331
+#define ADD_CMD_WINDOW_CANCEL_KEY 2332
+#define ADD_CMD_WINDOW_EXIT_KEY	  2333
 #define ADD_CMD_WINDOW_OPLIST_CHILD_KEY 2500 //meant for incrimenting and tracking manually to keep track of the options
 #define ADD_CMD_WINDOW_OPLIST_LABELS_KEY 2600 //ditto for labels
 

@@ -395,6 +395,30 @@ LONG TextView::OnKeyDown(UINT nKeyCode, UINT nFlags)
 		return 0;
 
 		// Change insert mode / clipboard copy&paste
+	case 'r': case 'R':
+	{
+		if (fCtrlDown)
+			NotifyParent(TVN_CHANGED);
+
+		if(fCtrlDown && !fShiftDown)
+		{
+			g_fShowAddCMDWindow = TRUE;
+
+			RECT rect;
+			GetClientRect(g_hwndMain, &rect);
+			PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+		}
+
+		if(fCtrlDown && fShiftDown)
+		{
+			TextView_RunFileAsBatch(g_hwndTextView);
+			ShowWindow(g_hwndBatchRunResults, SW_HIDE);
+			RECT rect;
+			GetClientRect(g_hwndMain, &rect);
+			PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+		}
+		
+	}
 	case VK_INSERT:
 
 		if (fCtrlDown)
