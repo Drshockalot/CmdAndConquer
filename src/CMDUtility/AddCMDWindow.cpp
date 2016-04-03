@@ -89,14 +89,6 @@ void CmdAndConquer_MainWindow::CreateAddCMDWindowCompontentsForCommand(CMDComman
 		(HMENU)ADD_CMD_WINDOW_CANCEL_KEY,
 		GetModuleHandle(0),
 		0);
-
-	AddCMDWindowComponents.ExitButton = CreateWindow(WC_BUTTON, _T("X"),
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-		260, 10, 25, 25,
-		g_hwndAddCMDWindow,
-		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
-		GetModuleHandle(0),
-		0);
 }
 
 std::pair<HWND, HWND> CmdAndConquer_MainWindow::CreateDropDownCMDControl(CMDOption op, RECT& rect, int opNo)
@@ -105,7 +97,7 @@ std::pair<HWND, HWND> CmdAndConquer_MainWindow::CreateDropDownCMDControl(CMDOpti
 	
 	int listWidth = 150;
 	int listHeight = 210;
-	int labelWidth = 100;
+	int labelWidth = 120;
 	int labelHeight = 20;
 
 	if(opNo == 0)
@@ -161,7 +153,7 @@ std::pair<HWND, HWND> CmdAndConquer_MainWindow::CreateTextBoxCMDControl(CMDOptio
 {
 	int boxWidth = 150;
 	int boxHeight = 25;
-	int labelWidth = 100;
+	int labelWidth = 120;
 	int labelHeight = 20;
 
 	if (opNo == 0)
@@ -202,7 +194,7 @@ std::pair<HWND, HWND> CmdAndConquer_MainWindow::CreateCheckBoxCMDControl(CMDOpti
 {
 	int boxWidth = 25;
 	int boxHeight = 25;
-	int labelWidth = 100;
+	int labelWidth = 250;
 	int labelHeight = 20;
 
 	if (opNo == 0)
@@ -492,7 +484,6 @@ LRESULT WINAPI CmdAndConquer_MainWindow::addCMDWindowWndProc(HWND hwnd, UINT msg
 						}
 					}
 				}
-				case ADD_CMD_WINDOW_EXIT_KEY:
 				case ADD_CMD_WINDOW_CANCEL_KEY:
 				{
 					switch(HIWORD(wParam))
@@ -624,14 +615,6 @@ HWND CmdAndConquer_MainWindow::CreateAddCMDWindow(HWND parentHwnd)
 		10, 10, 150, 210,
 		ret,
 		(HMENU)ADD_CMD_WINDOW_COMMANDLIST_KEY,
-		GetModuleHandle(0),
-		0);
-
-	AddCMDWindowComponents.ExitButton = CreateWindow(WC_BUTTON, _T("X"),
-		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-		260, 10, 25, 25,
-		ret,
-		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
 		GetModuleHandle(0),
 		0);
 

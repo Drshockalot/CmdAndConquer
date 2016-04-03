@@ -57,6 +57,8 @@ private:
 	HWND CC_hwndBatchRunResultsHeaderExitButton;
 
 	HWND CC_hwndAddCMDWindow;
+	HWND CC_hwndAddCMDWindowHeader;
+	HWND CC_hwndAddCMDWindowHeaderExitButton;
 	
 	//	Class Registration
 	void registerWindowClass(HINSTANCE hInstance);
@@ -92,6 +94,9 @@ private:
 
 	HWND CreateBatchScriptResultWindowHeader(HWND hWnd);
 	HWND CreateBatchScriptResultWindowHeaderExitButton(HWND hWnd);
+	HWND CreateAddCMDWindowHeader(HWND hWnd);
+	HWND CreateAddCMDWindowHeaderExitButton(HWND hWnd);
+	
 
 	int addCMDWindowScrollPos;
 	bool InitAddCMDWindow();

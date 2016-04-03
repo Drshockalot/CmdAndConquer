@@ -226,7 +226,7 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			GetWindowRect(g_hwndStatusbar, &rect);
 			heightsb = rect.bottom - rect.top;
 
-			hdwp = BeginDeferWindowPos(5);
+			hdwp = BeginDeferWindowPos(7);
 
 			if (g_fShowStatusbar)
 			{
@@ -248,7 +248,9 @@ LRESULT CALLBACK CmdAndConquer_MainWindow::WndProc(HWND hWnd, UINT Msg, WPARAM w
 			
 			if (g_fShowAddCMDWindow)
 			{
-				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 32, 300, height, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, g_hwndAddCMDWindow, 0, width - 300, 57, 300, height - 25, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, this->CC_hwndAddCMDWindowHeader, 0, width - 300, 32, 275, 25, SWP_SHOWWINDOW);
+				DeferWindowPos(hdwp, this->CC_hwndAddCMDWindowHeaderExitButton, 0, width - 25, 32, 25, 25, SWP_SHOWWINDOW);
 				width -= 300;
 			}
 
@@ -311,8 +313,9 @@ int CmdAndConquer_MainWindow::onCreate(HWND hWnd, CREATESTRUCT *cs)
 	this->CC_hwndBatchRunResults = CreateBatchScriptResultWindow(hWnd_);
 	this->CC_hwndBatchRunResultsHeader = CreateBatchScriptResultWindowHeader(hWnd_);
 	this->CC_hwndBatchRunResultsHeaderExitButton = CreateBatchScriptResultWindowHeaderExitButton(hWnd_);
-	SetForegroundWindow(this->CC_hwndBatchRunResultsHeaderExitButton);
 	this->CC_hwndAddCMDWindow = CreateAddCMDWindow(hWnd_);
+	this->CC_hwndAddCMDWindowHeader = CreateAddCMDWindowHeader(hWnd_);
+	this->CC_hwndAddCMDWindowHeaderExitButton = CreateAddCMDWindowHeaderExitButton(hWnd_);
 	g_hwndAddCMDWindow = this->CC_hwndAddCMDWindow;
 	g_hwndBatchRunResults = this->CC_hwndBatchRunResults;
 	g_hwndTextView = this->CC_hwndTextView;
@@ -852,7 +855,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 	case ID_IFSTATEMENTS_IFNOTERRORLEVEL:
 		TextView_AddIFStatement(g_hwndTextView, IFErrorLevel);
 		return 0;
-	case ADD_CMD_WINDOW_EXIT_KEY:
+	case BATCH_RESULTS_WINDOW_EXIT_KEY:
 	{
 		switch (nCtrlCode)
 		{
@@ -862,6 +865,23 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 				ShowWindow(this->CC_hwndBatchRunResultsHeader, SW_HIDE);
 				ShowWindow(this->CC_hwndBatchRunResultsHeaderExitButton, SW_HIDE);
 				ShowWindow(this->CC_hwndBatchRunResults, SW_HIDE);
+				RECT rect;
+				GetClientRect(g_hwndMain, &rect);
+				PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
+				return 0;
+			}
+		}
+	}
+	case ADD_CMD_WINDOW_EXIT_KEY:
+	{
+		switch (nCtrlCode)
+		{
+			case BN_CLICKED:
+			{
+				g_fShowAddCMDWindow = FALSE;
+				ShowWindow(this->CC_hwndAddCMDWindowHeader, SW_HIDE);
+				ShowWindow(this->CC_hwndAddCMDWindowHeaderExitButton, SW_HIDE);
+				ShowWindow(this->CC_hwndAddCMDWindow, SW_HIDE);
 				RECT rect;
 				GetClientRect(g_hwndMain, &rect);
 				PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));
@@ -890,6 +910,29 @@ HWND CmdAndConquer_MainWindow::CreateBatchScriptResultWindowHeaderExitButton(HWN
 {
 	return CreateWindowEx(0, WC_BUTTON, _T("X"),
 		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON ,
+		0, 0, 0, 0,
+		hWnd,
+		(HMENU)BATCH_RESULTS_WINDOW_EXIT_KEY,
+		GetModuleHandle(0),
+		0);
+}
+
+HWND CmdAndConquer_MainWindow::CreateAddCMDWindowHeader(HWND hWnd)
+{
+	return CreateWindowEx(WS_EX_CLIENTEDGE,
+		WC_STATIC, _T(""),
+		WS_CHILD | WS_VISIBLE,
+		0, 0, 0, 0,
+		hWnd,
+		0,
+		GetModuleHandle(0),
+		0);
+}
+
+HWND CmdAndConquer_MainWindow::CreateAddCMDWindowHeaderExitButton(HWND hWnd)
+{
+	return CreateWindowEx(0, WC_BUTTON, _T("X"),
+		WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
 		0, 0, 0, 0,
 		hWnd,
 		(HMENU)ADD_CMD_WINDOW_EXIT_KEY,
