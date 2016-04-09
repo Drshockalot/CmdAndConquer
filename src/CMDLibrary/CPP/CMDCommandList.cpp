@@ -18,7 +18,7 @@ CMDCommandList *CMDCommandList::instance() {
 // #item means that those options should be put in a dropdown list
 CMDCommandList::CMDCommandList() {
 	this->availableCommands = {
-		CMDCommand("ADDUSERS.exe",
+		CMDCommand("ADDUSERS",
 		{									//most of this hinges on file name, make it required
 			CMDOption("~", "Filename", true, TextBox), //filename
 			CMDOption("/s:~", "Delimiter", false, TextBox), //delimiter
@@ -28,7 +28,7 @@ CMDCommandList::CMDCommandList() {
 			CMDOption("/e", "Erase", false, CheckBox), //erase user in filename
 			CMDOption("/p:#l#c#e#d", "Password Option", false, DropDown) //password options
 		}, false),
-        CMDCommand("cmd.exe",
+        CMDCommand("CMD",
         {
 				CMDOption("~", "Command", true, TextBox),
 				CMDOption("/c", "Run and Terminate", false, CheckBox),
@@ -47,105 +47,83 @@ CMDCommandList::CMDCommandList() {
 				CMDOption("/v:on", "Enable Delayed Vars", false, CheckBox),
 				CMDOption("/v:off", "Disable Delayed Vars", false, CheckBox)
         }, false),
-        CMDCommand("ADmodcmd.exe",
+        CMDCommand("COMPRESS",
         {
-				CMDOption("-dn \"\""),
-				CMDOption("~modification~"),
-				CMDOption("-p \"\""),
-				CMDOption("-s"),
-				CMDOption("-server \"\""),
-				CMDOption("-f \"\""),
-				CMDOption("-undo \"\"")
+				CMDOption("-R", "Rename files", false, CheckBox),
+				CMDOption("-D", "Update files", false, CheckBox),
+				CMDOption("-S", "Suppress copyright info", false, CheckBox),
+				CMDOption("-ZX", "Default compression", false, CheckBox),
+				CMDOption("Source", "Source files", false, TextBox),
+				CMDOption("Destination", "Destination location", false, TextBox)
         }, false),
-		CMDCommand("ARP.exe",
+		CMDCommand("@ECHO",
 		{
-			CMDOption("-a"),
-			CMDOption("-g"),
-			CMDOption("-N \"\""),
-			CMDOption("-d \"\""),
-			CMDOption("-s \"\" \"\"")
+			CMDOption("ON", "Enable Echo", false, CheckBox),
+			CMDOption("OFF", "Disable Echo", false, CheckBox),
+			CMDOption("\"~\"", "Message", false, TextBox)
 		}, false),
-		CMDCommand("ASSOC",
+		CMDCommand("FIND",
 		{
-			CMDOption("\"\"")
+			CMDOption("\"~\"", "Key string", false, TextBox),
+			CMDOption("\"~\"", "Pathname", false, TextBox),
+			CMDOption("/v", "Display irrelevant lines", false, CheckBox),
+			CMDOption("/c", "Display line count", false, CheckBox),
+			CMDOption("/n", "Display line numbers", false, CheckBox),
+			CMDOption("/i", "Case insensitive", false, CheckBox)
 		}, false),
-		CMDCommand("ASSOCIATE.exe",
+		CMDCommand("EXIT",
 		{
-			CMDOption("~.ext"),
-			CMDOption("~filename"),
-			CMDOption("/q"),
-			CMDOption("/f"),
-			CMDOption("/d")
+			CMDOption("/b", "Exit script only", CheckBox),
+			CMDOption("\"~\"", "Exit code", false, TextBox),
 		}, false),
-		CMDCommand("ATTRIB.exe",
+		CMDCommand("GOTO",
 		{
-			CMDOption("+ \"\""),
-			CMDOption("- \"\""),
-			CMDOption("/s"),
-			CMDOption("/d")
+			CMDOption(":~", "Label", false, TextBox),
+			CMDOption(":eof", "End of file", false, CheckBox)
 		}, false),
-		CMDCommand("BCDBOOT.exe",
+		CMDCommand("IPCONFIG",
 		{
-			CMDOption("~source~"),
-			CMDOption("/l \"\""),
-			CMDOption("/s \"\""),
-			CMDOption("/v"),
-			CMDOption("/m \"[{}]\"")
+			CMDOption("/all", "Full information", false, CheckBox),
+			CMDOption("/release ~", "Release Adaptor IP", false, TextBox),
+			CMDOption("/renew ~", "Renew Adaptor IP", false, TextBox),
+			CMDOption("/flushdns", "Purge DNS cache", false, CheckBox),
+			CMDOption("/registerdns", "Refresh DNS names", false, CheckBox),
+			CMDOption("/displaydns", "Display DNS names", false, CheckBox),
+			CMDOption("/showclassid ~", "Display Adaptor classes", false, TextBox),
 		}, false),
-		CMDCommand("BCDEdit.exe",
+		CMDCommand("MEM",
 		{
-			CMDOption("/createstore"),
-			CMDOption("/export"),
-			CMDOption("/import"),
-			CMDOption("/store")
+			CMDOption("/p", "List programs in memory", false, CheckBox),
+			CMDOption("/d", "List Devices", false, CheckBox),
+			CMDOption("/c", "List all memory", false, CheckBox),
 		}, false),
-		CMDCommand("BITSADMIN",
+		CMDCommand("REGEDIT",
 		{
-			CMDOption("/UTIL /?"),
-			CMDOption(""),
+			CMDOption("\"~\"", "Import", false, TextBox),
+			CMDOption("/e", "Export registry", false, CheckBox),
+			CMDOption("/s", "Silent import", false, CheckBox)
 		}, true),
-		CMDCommand("BCDEdit.exe",
+		CMDCommand("REGSVR32",
 		{
-			CMDOption("/addsw"),
-			CMDOption("/copy"),
-			CMDOption("/dbg1394"),
-			CMDOption("/debug"),
-			CMDOption("/default"),
-			CMDOption("/delete"),
-			CMDOption("/ems"),
-			CMDOption("/list"),
-			CMDOption("/query"),
-			CMDOption("/raw"),
-			CMDOption("/rebuild"),
-			CMDOption("/rmsw"),
-			CMDOption("/timeout")
+			CMDOption("\"~\"", "Path to DLL", false, TextBox),
+			CMDOption("/u", "Unregister server", false, CheckBox),
+			CMDOption("/s", "Silent", false, CheckBox),
+			CMDOption("/i", "Call DllInstall", false, CheckBox),
+			CMDOption("/n", "No DllRegisterServer call", false, CheckBox),
+			CMDOption("\"~\"", "DllInstall CMDLine", false, TextBox),
+			CMDOption("/c", "Console output", false, CheckBox)
+
 		}, false),
-		CMDCommand("BROWSTAT.exe",
+		CMDCommand("TELNET",
 		{
-			CMDOption("dn"),
-			CMDOption("gp"),
-			CMDOption("gm"),
-			CMDOption("gb"),
-			CMDOption("wfw"),
-			CMDOption("sts"),
-			CMDOption("sta"),
-			CMDOption("sta -v"),
-			CMDOption("Tic"),
-			CMDOption("el"),
-			CMDOption("vw"),
-		}, false),
-		CMDCommand("",
-		{
-			CMDOption("")
-		}, false),
-		CMDCommand("",
-		{
-			CMDOption("")
-		}, false),
-		CMDCommand("",
-		{
-			CMDOption("")
-		}, false),
+			CMDOption("-a", "Automatic login", false, CheckBox),
+			CMDOption("-e ~", "Escape character", false, TextBox),
+			CMDOption("-f ~", "Log file", false, TextBox),
+			CMDOption("-l", "Username", false, TextBox),
+			CMDOption("-t", "Terminal type", false, TextBox),
+			CMDOption("~", "Host", false, TextBox),
+			CMDOption("~", "Port", false, TextBox)
+		}, false)
     };
 }
 

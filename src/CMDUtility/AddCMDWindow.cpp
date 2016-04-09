@@ -661,7 +661,9 @@ void CmdAndConquer_MainWindow::ShowAddCMDWindow()
 void CmdAndConquer_MainWindow::HideAddCMDWindow()
 {
 	g_fShowAddCMDWindow = FALSE;
-	ShowWindow(g_hwndAddCMDWindow, SW_HIDE);
+	ShowWindow(this->CC_hwndAddCMDWindowHeader, SW_HIDE);
+	ShowWindow(this->CC_hwndAddCMDWindowHeaderExitButton, SW_HIDE);
+	ShowWindow(this->CC_hwndAddCMDWindow, SW_HIDE);
 	RECT rect;
 	GetClientRect(g_hwndMain, &rect);
 	PostMessage(g_hwndMain, WM_SIZE, 0, MAKEWPARAM(rect.right, rect.bottom));

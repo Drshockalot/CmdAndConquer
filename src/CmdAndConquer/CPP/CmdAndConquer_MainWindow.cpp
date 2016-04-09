@@ -897,7 +897,7 @@ UINT CmdAndConquer_MainWindow::CommandHandler(HWND hwnd, UINT nCtrlId, UINT nCtr
 HWND CmdAndConquer_MainWindow::CreateBatchScriptResultWindowHeader(HWND hWnd)
 {
 	return CreateWindowEx(WS_EX_CLIENTEDGE,
-		WC_STATIC, _T(""),
+		WC_STATIC, _T("Batch Script Results"),
 		WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0,
 		hWnd,
@@ -920,7 +920,7 @@ HWND CmdAndConquer_MainWindow::CreateBatchScriptResultWindowHeaderExitButton(HWN
 HWND CmdAndConquer_MainWindow::CreateAddCMDWindowHeader(HWND hWnd)
 {
 	return CreateWindowEx(WS_EX_CLIENTEDGE,
-		WC_STATIC, _T(""),
+		WC_STATIC, _T("Command Wizard"),
 		WS_CHILD | WS_VISIBLE,
 		0, 0, 0, 0,
 		hWnd,
